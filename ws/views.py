@@ -11,10 +11,6 @@ class ProtectedTemplateView(TemplateView):
     def dispatch(self, *args, **kwargs):
         return super(ProtectedTemplateView, self).dispatch(*args, **kwargs)
 
-#from django.views.decorators.csrf import csrf_exempt
-#TODO: Esto es una pifia! en cuanto me asegure de que funciona el resto me
-#      pongo con ello
-#@csrf_exempt
 def JSONLogin(request):
     success = False
     message = ""
