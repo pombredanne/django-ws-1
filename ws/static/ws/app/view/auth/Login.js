@@ -1,5 +1,5 @@
 Ext.define('WS.view.auth.Login', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.window.Window',
     alias: 'widget.login',
     layout: 'fit',
     frame: true,
@@ -26,11 +26,6 @@ Ext.define('WS.view.auth.Login', {
             {
                 text: 'Login',
                 action: 'login'
-            },
-            {
-                text: 'Cancel',
-                scope: this,
-                handler: this.close
             }];
 
         this.callParent(arguments);

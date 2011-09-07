@@ -35,9 +35,9 @@ Ext.define('WS.controller.Auth', {
             method:'POST', 
             waitTitle:'Connecting', 
             waitMsg:'Sending data...',
-            success:function(){ 
-                console.log('success!');
-                Ext.Msg.alert('Status', 'Login Successful!');
+            success:function(form, action){ 
+                var win = form.owner.up('window');
+                win.close();
             },
 
             failure: function(form, action) {
@@ -56,7 +56,8 @@ Ext.define('WS.controller.Auth', {
     },
 
     auth_required: function (){
-        console.log("Auth required event received");
+        var loginWindow = Ext.create('widget.login');
+        loginWindow.show();
     }
 
 });
