@@ -7,12 +7,14 @@ Ext.define('WS.controller.Auth', {
 
     init: function() {
         //console.log('Initialized Tasks! This happens before the Application launch function is called');
+        this.addEvents('auth_required');
         this.control({
             'login button[action=login]': {
                 click: this.login
             }
         });
         Ext.Ajax.on('beforerequest', this.ajax_csrf);
+        this.on('auth_required', this.auth_required);
     },
 
     ajax_csrf: function(conn, options) {
@@ -51,6 +53,10 @@ Ext.define('WS.controller.Auth', {
                }
             }
         });
+    },
+
+    auth_required: function (){
+        console.log("Auth required event received");
     }
 
 });

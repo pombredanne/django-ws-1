@@ -5,5 +5,6 @@ from django.views.generic import TemplateView
 urlpatterns = patterns('ws.views',
     (r'^$', TemplateView.as_view(template_name='ws/main.html')),
     #(r'^$', ProtectedTemplateView.as_view(template_name='ws/main.html')),
-    (r'^login$', 'JSONLogin')
+    (r'^login$', 'JSONLogin'),
+    (r'^tasks.json$', 'TaskListView'),
 )

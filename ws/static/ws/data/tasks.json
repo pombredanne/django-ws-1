@@ -1,9 +1,0 @@
-{
-    success: true,
-    tasks: [
-        {id: 1, task: 'ordainketa egiaztatu', process: 'Futurama 1',           process_type: 'kapitulu berri bat',  priority: 5, date:'2011/08/31 10:05'},
-        {id: 2, task: 'gidoia idatzi',        process: 'Futurama 1',           process_type: 'kapitulu berri bat',  priority: 3, date:'2011/08/31 10:05'},
-        {id: 3, task: 'komuna garbitu',       process: 'lokalaren mantentzea', process_type: 'mantentzea',          priority: 1, date:'2011/08/31 10:05'},
-        {id: 4, task: 'argazkiak aukeratu',   process: '15M erreportaia',      process_type: 'erreportai grafikoa', priority: 5, date:'2011/08/31 10:05'},
-    ]
-}

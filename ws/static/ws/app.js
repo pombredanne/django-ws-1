@@ -18,8 +18,8 @@ Ext.application({
                     //xtype: 'taskgrid',
                     //xtype: 'portlet',
                     //xtype: 'portlettaskview',
-                    //xtype: 'dashboard',
-                    xtype: 'login',
+                    xtype: 'dashboard',
+                    //xtype: 'login',
                 }
             ]
         });
