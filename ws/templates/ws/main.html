@@ -1,8 +1,18 @@
-{%extends "ws/base.html"%}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WS BPMS</title>
 
-{%block js%}
-{%endblock%}
+    <link rel="stylesheet" type="text/css" href="/static/extjs/resources/css/ext-all.css">
 
-{%block body_content%}
-<h1>Kaixo</h1>
-{%endblock%}
+    <script type="text/javascript" src="/static/extjs/ext-debug.js"></script>
+
+    <script type="text/javascript" src="/static/ws/app.js"></script>
+</head>
+<body>
+    {%csrf_token%}
+</body>
+</html>
+
