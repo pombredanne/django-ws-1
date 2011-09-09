@@ -11,6 +11,9 @@ Ext.define('WS.controller.Auth', {
         this.control({
             'login button[action=login]': {
                 click: this.login
+            },
+            'button[action=logout]': {
+                click: this.logout
             }
         });
         Ext.Ajax.on('beforerequest', this.ajax_csrf);
@@ -53,6 +56,10 @@ Ext.define('WS.controller.Auth', {
                }
             }
         });
+    },
+
+    logout: function(button) {
+        console.log('clicked the logout button');
     },
 
     auth_required: function (){

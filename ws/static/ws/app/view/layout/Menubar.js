@@ -13,6 +13,11 @@ Ext.define('WS.view.layout.Menubar', {
                 menu: this.fileMenu
             },{
                 text: 'Preferences'
+            },
+            '->', //Begin with right aligned elements
+            {
+                text: 'Logout',
+                action: 'logout'
             }];
 
         this.callParent(arguments);
