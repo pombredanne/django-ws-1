@@ -10,18 +10,8 @@ Ext.application({
     ],
 
     launch: function() {
-        Ext.create('Ext.container.Viewport', {
+        Ext.create('WS.view.layout.Main', {
             id: 'viewport',
-            layout: 'fit',
-            items: [
-                {
-                    //xtype: 'taskgrid',
-                    //xtype: 'portlet',
-                    //xtype: 'portlettaskview',
-                    xtype: 'dashboard',
-                    //xtype: 'login',
-                }
-            ]
         });
     },
 });

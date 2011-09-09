@@ -9,13 +9,9 @@ Ext.define('WS.view.layout.Dashboard', {
     defaultType: 'dashboardcolumn',
     //componentLayout: 'body',
     autoScroll: true,
+    layout: 'column',
 
     initComponent : function() {
-        // Implement a Container beforeLayout call from the layout to this Container
-        this.layout = {
-            type : 'column'
-        };
-
         this.items = [{
             id: "col1",
             items: [{
@@ -30,19 +26,11 @@ Ext.define('WS.view.layout.Dashboard', {
                 xtype: 'portlet',
                 html: "kaixo3"
             }]
+        },{
+            id: "col3",
         }];
 
         this.callParent(arguments);
-
-        this.addEvents({
-            validatedrop: true,
-            beforedragover: true,
-            dragover: true,
-            beforedrop: true,
-            drop: true
-        });
-        this.on('drop', this.doLayout, this);
-
     },
 
     // Set columnWidth, and set first and last column classes to allow exact CSS targeting.
