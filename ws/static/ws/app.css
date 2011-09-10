@@ -6,3 +6,21 @@
 .x-grid-row-alt .complete {
     background: #ccc;
 }
+
+.x-dashboard > .x-panel-body{
+    padding-top: 5px;
+}
+
+.x-portlet {
+    margin-bottom: 5px;
+    margin-left: 5px;
+    padding: 1px;
+}
+
+.x-panel-dd-spacer {
+    border: 2px dashed #99bbe8;
+    background: #f6f6f6;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+}

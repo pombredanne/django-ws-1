@@ -4,6 +4,7 @@ Ext.define('WS.controller.Layout', {
         'layout.Portlet',
         'layout.DashboardColumn',
         'layout.Dashboard',
+        'layout.DashboardDropZone',
         'layout.Menubar',
         'layout.Header',
         'layout.Main',

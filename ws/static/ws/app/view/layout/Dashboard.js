@@ -15,25 +15,34 @@ Ext.define('WS.view.layout.Dashboard', {
         this.items = [{
             id: "col1",
             items: [{
-                xtype: 'portlet',
                 items: [{
                     xtype: 'taskgrid'
                 }]
             },{
-                xtype: 'portlet',
                 html: "kaixo2"
             }]
         },{
             id: "col2",
             items: [{
-                xtype: 'portlet',
                 html: "kaixo3"
             }]
         },{
             id: "col3",
+            items: [{
+                html: "kaixo4"
+            }]
         }];
 
         this.callParent(arguments);
+
+        this.addEvents({
+            validatedrop: true,
+            beforedragover: true,
+            dragover: true,
+            beforedrop: true,
+            drop: true
+        });
+        this.on('drop', this.doLayout, this);
     },
 
     // Set columnWidth, and set first and last column classes to allow exact CSS targeting.
@@ -53,18 +62,16 @@ Ext.define('WS.view.layout.Dashboard', {
         return this.callParent(arguments);
     },
 
-    // private
-    //initEvents : function(){
-    //    this.callParent();
-    //    this.dd = Ext.create('Ext.app.PortalDropZone', this, this.dropConfig);
-    //},
+    initEvents : function(){
+        this.callParent();
+        this.dd = Ext.create('WS.view.layout.DashboardDropZone', this, this.dropConfig);
+    },
 
-    // private
-    //beforeDestroy : function() {
-    //    if (this.dd) {
-    //        this.dd.unreg();
-    //    }
-    //    Ext.app.PortalPanel.superclass.beforeDestroy.call(this);
-    //}
+    beforeDestroy : function() {
+        if (this.dd) {
+            this.dd.unreg();
+        }
+        WS.view.layout.Dashboard.superclass.beforeDestroy.call(this);
+    }
 });
 
