@@ -6,7 +6,8 @@ Ext.application({
     controllers: [
         'Layout',
         'Auth',
-        'Tasks'
+        'Tasks',
+        'Process'
     ],
 
     launch: function() {

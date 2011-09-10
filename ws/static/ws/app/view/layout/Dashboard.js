@@ -20,16 +20,18 @@ Ext.define('WS.view.layout.Dashboard', {
                 }]
             },{
                 html: "kaixo2"
-            }]
+            }],
         },{
             id: "col2",
             items: [{
-                html: "kaixo3"
+                items: [{
+                    xtype: 'processstarter'
+                }]
             }]
         },{
             id: "col3",
             items: [{
-                html: "kaixo4"
+                html: "kaixo3"
             }]
         }];
 
