@@ -2,8 +2,6 @@ Ext.define('WS.controller.Layout', {
     extend: 'Ext.app.Controller',
     views: [
         'layout.Portlet',
-        'layout.PortletTaskGrid',
-        'layout.PortletTaskView',
         'layout.DashboardColumn',
         'layout.Dashboard',
         'layout.Menubar',

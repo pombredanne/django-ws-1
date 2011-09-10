@@ -2,6 +2,7 @@ Ext.define('WS.view.task.Grid' ,{
     extend: 'Ext.grid.Panel',
     alias : 'widget.taskgrid',
     store: 'Tasks',
+    autoScroll: true,
 
     initComponent: function() {
         this.columns = [

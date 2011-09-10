@@ -15,7 +15,10 @@ Ext.define('WS.view.layout.Dashboard', {
         this.items = [{
             id: "col1",
             items: [{
-                xtype: 'portlettaskgrid',
+                xtype: 'portlet',
+                items: [{
+                    xtype: 'taskgrid'
+                }]
             },{
                 xtype: 'portlet',
                 html: "kaixo2"
