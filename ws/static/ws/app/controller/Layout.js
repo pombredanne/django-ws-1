@@ -22,13 +22,16 @@ Ext.define('WS.controller.Layout', {
                 items: [view],
             }),
             target_column = -1,
-            target_count = 9999,
-            column = 0;
-        for (column=0; column<dashboard.items.length ; column++) {
+            target_height = 999999,
+            column_idx = 0,
+            column, column_size;
+        for (column_idx=0; column_idx<dashboard.items.length ; column_idx++) {
             // The second 'items' required, not sure why
-            if (target_count > dashboard.items.items[column].items.length) {
-                target_column = dashboard.items.items[column];
-                target_count = dashboard.items.items[column].items.length;
+            column = dashboard.items.items[column_idx];
+            column_size = column.getSize();
+            if (column_size['height'] < target_height) {
+                target_height = column_size['height'];
+                target_column = column;
             }
         }
         target_column.add(portlet);
