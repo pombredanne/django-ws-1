@@ -1,0 +1,8 @@
+.x-grid-row .active,
+.x-grid-row-alt .active {
+    background: green;
+}
+.x-grid-row .complete,
+.x-grid-row-alt .complete {
+    background: #ccc;
+}

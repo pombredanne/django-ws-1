@@ -10,7 +10,7 @@ Ext.define('WS.view.task.Grid' ,{
             {header: 'Process type', dataIndex: 'process_type', flex: 1},
             {header: 'Priority', dataIndex: 'priority', flex: 1},
             {header: 'Date', dataIndex: 'date', flex: 1},
-            {header: 'Status', dataIndex: 'status', flex: 1},
+            {header: 'Status', dataIndex: 'status', flex: 1, renderer: this.statusRenderer},
             {xtype:'actioncolumn', 
                 width: 70,
                 items: [{
@@ -28,4 +28,10 @@ Ext.define('WS.view.task.Grid' ,{
         var record = grid.getStore().getAt(rowIndex);
         alert("View " + record.get('taskid')+' '+record.get('task'));
     },
+
+    statusRenderer: function(value, metadata, record, rowIndex, colIndex, store, view) {
+        // set td class same as value
+        metadata["tdCls"]= value;
+        return value;
+    }
 });
