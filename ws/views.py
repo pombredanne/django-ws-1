@@ -1,15 +1,37 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login
 from django.utils import simplejson as json
 from django.http import HttpResponse
 
+from goflow.runtime.models import WorkItem
+from goflow.workflow.models import Process
+
 class ProtectedTemplateView(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(ProtectedTemplateView, self).dispatch(*args, **kwargs)
+
+class JSONResponseMixin(object):
+    """ Inherit this before a generic view to send context in json format.
+    """
+    def render_to_response(self, context):
+        "Returns a JSON response containing 'context' as payload"
+        return HttpResponse(self.convert_context_to_json(context),
+                            content_type='application/json')
+
+    def convert_context_to_json(self, context):
+        """Convert the context dictionary into a JSON object.
+        
+        This function should be overriden with more specific code, this
+        only works with integers and strings."""
+        # Note: This is *EXTREMELY* naive; in reality, you'll need
+        # to do much more complex handling to ensure that arbitrary
+        # objects -- such as Django model instances or querysets
+        # -- can be serialized as JSON.
+        return json.dumps(context)
 
 def JSONLogin(request):
     success = False
@@ -31,16 +53,37 @@ def JSONLogin(request):
 
 @login_required
 def TaskListView(request):
-    data = {
-        'success': True,
-        'tasks': [
-            {'id': 1, 'task': 'ordainketa egiaztatu', 'process': 'Futurama 1',           'process_type': 'kapitulu berri bat', 'priority': 5, 'date':'2011/08/31 10:05'},
-            {'id': 2, 'task': 'gidoia idatzi',        'process': 'Futurama 1',           'process_type': 'kapitulu berri bat',  'priority': 3, 'date':'2011/08/31 10:05'},
-            {'id': 3, 'task': 'komuna garbitu',       'process': 'lokalaren mantentzea', 'process_type': 'mantentzea',          'priority': 1, 'date':'2011/08/31 10:05'},
-            {'id': 4, 'task': 'argazkiak aukeratu',   'process': '15M erreportaia',      'process_type': 'erreportai grafikoa', 'priority': 5, 'date':'2011/08/31 10:05'},
-            {'id': 5, 'task': 'faktura bidali',       'process': 'Futurama 1',           'process_type': 'kapitulu berri bat',  'priority': 5, 'date':'2011/08/31 10:05'},
-        ]
+    workitems = WorkItem.objects.list_safe(user=request.user, status=None,
+                                           notstatus=None)
+    data = {'success': True,
+            'tasks':[]
     }
+    for work in workitems:
+        data['tasks'].append({
+            'id': work.pk,
+            'task': work.activity.title,
+            'process': work.instance.title,
+            'process_type': work.activity.process.title,
+            'priority': work.priority,
+            'date': work.date.strftime("%Y/%m/%d %H:%m"),
+            'status': work.status
+        })
     return HttpResponse(json.dumps(data),
                         mimetype="application/json")
 
+class ProcessListView(JSONResponseMixin, ListView):
+    model = Process
+
+    def convert_context_to_json(self, context):
+        data = {
+            'success': True,
+            'processes': [],
+        }
+        for process in context['process_list']:
+            data['processes'].append({
+                    'id': process.pk,
+                    'title': process.title,
+                    'description': process.description,
+                    'enabled': process.enabled,
+            })
+        return json.dumps(data)
