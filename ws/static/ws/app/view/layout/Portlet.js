@@ -8,6 +8,10 @@ Ext.define('WS.view.layout.Portlet', {
     collapsible: true,
     animCollapse: true,
     draggable: true,
+    resizable: {
+        handles: 'n s',
+        pinned: true,
+    },
     cls: 'x-portlet',
 
     // Override Panel's default doClose to provide a custom fade out effect
