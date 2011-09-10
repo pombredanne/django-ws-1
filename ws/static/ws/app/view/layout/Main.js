@@ -15,6 +15,7 @@ Ext.define('WS.view.layout.Main', {
                 xtype: 'header',
                 region: 'north'
             },{
+                id: 'dashboard',
                 xtype: 'dashboard',
                 region: 'center',
                 split: true,

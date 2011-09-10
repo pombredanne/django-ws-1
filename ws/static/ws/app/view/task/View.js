@@ -1,10 +1,9 @@
 Ext.define('WS.view.task.View', {
-    extend: 'Ext.window.Window',
+    extend: 'Ext.panel.Panel',
     alias : 'widget.taskview',
 
     title : 'View task',
     layout: 'fit',
-    autoShow: true,
 
     initComponent: function() {
         this.items = [
@@ -38,8 +37,7 @@ Ext.define('WS.view.task.View', {
             },
             {
                 text: 'Cancel',
-                scope: this,
-                handler: this.close
+                action: 'cancel'
             }
         ];
 

@@ -43,9 +43,11 @@ Ext.define('WS.controller.Tasks', {
     },
 
     editTask: function(grid, record) {
-        console.log('Double clicked on ' + record.get('name'));
+        console.log('Double clicked on ' + record.get('task'));
         var view = Ext.widget('taskview');
         view.down('form').loadRecord(record);
+        var layoutController = this.getController('Layout');
+        layoutController.fireEvent('new_widget',view)
     },
 
     updateTask: function(button) {
