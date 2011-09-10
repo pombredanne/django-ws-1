@@ -19,6 +19,7 @@ Ext.define('WS.controller.Layout', {
     new_widget: function(view) {
         var dashboard = Ext.ComponentManager.get('dashboard'),
             portlet = Ext.create('WS.view.layout.Portlet', {
+                title: view.title_suggestion,
                 items: [view],
             }),
             target_column = -1,

@@ -1,29 +1,26 @@
 Ext.define('WS.view.process.Starter', {
     extend: 'Ext.panel.Panel',
-    alias : 'widget.processstarter',
+    alias: 'widget.processstarter',
 
-    title : 'Start new process',
+    title: 'Start new process',
+    items: [{
+            xtype: 'form',
+            items: [{
+                    id:'processescontainer',
+                    xtype: 'fieldcontainer',
+                    fieldLabel: 'Process type',
+                }
+            ]
+    }],
+    buttons : [
+        {
+            text: 'Start',
+            action: 'start'
+        }
+    ],
 
     initComponent: function() {
-        this.items = [
-            {
-                xtype: 'form',
-                items: [{
-                        id:'processescontainer',
-                        xtype: 'fieldcontainer',
-                        fieldLabel: 'Process type',
-                    }
-                ]
-            }
-        ];
-
-        this.buttons = [
-            {
-                text: 'Start',
-                action: 'start'
-            }
-        ];
-
+        this.title_suggestion = 'Start new process';
         this.callParent(arguments);
     }
 });

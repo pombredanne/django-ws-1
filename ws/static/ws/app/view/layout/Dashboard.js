@@ -59,8 +59,12 @@ Ext.define('WS.view.layout.Dashboard', {
             item.columnWidth = 1 / len;
             item.removeCls(['x-portal-column-first', 'x-portal-column-last']);
         }
-        items[0].addCls('x-portal-column-first');
-        items[len - 1].addCls('x-portal-column-last');
+        if (len > 0) {
+            items[0].addCls('x-portal-column-first');
+        };
+        if (len > 1) {
+            items[len - 1].addCls('x-portal-column-last');
+        };
         return this.callParent(arguments);
     },
 

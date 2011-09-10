@@ -2,7 +2,6 @@ Ext.define('WS.view.process.New', {
     extend: 'Ext.panel.Panel',
     alias : 'widget.newprocess',
 
-    title : 'New process',
     tpl: Ext.create('Ext.XTemplate',
         '<div class="process">',
         '<h3>{title}</h3>',
@@ -14,5 +13,10 @@ Ext.define('WS.view.process.New', {
         '<p>Disabled</p>',
         '</tpl>',
         '</div>'
-    )
+    ),
+
+    initComponent: function() {
+        this.title_suggestion = 'New process';
+        this.callParent(arguments);
+    }
 });
