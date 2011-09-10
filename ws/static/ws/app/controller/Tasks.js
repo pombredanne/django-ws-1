@@ -52,8 +52,8 @@ Ext.define('WS.controller.Tasks', {
 
     updateTask: function(button) {
         console.log('clicked the Save button');
-        var win    = button.up('window'),
-            form   = win.down('form'),
+        var panel  = button.up('panel'),
+            form   = panel.down('form'),
             record = form.getRecord(),
             values = form.getValues();
 
