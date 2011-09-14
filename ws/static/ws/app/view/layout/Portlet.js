@@ -10,7 +10,7 @@ Ext.define('WS.view.layout.Portlet', {
     draggable: true,
     resizable: {
         handles: 'n s',
-        pinned: true,
+        //pinned: true,
     },
     cls: 'x-portlet',
 

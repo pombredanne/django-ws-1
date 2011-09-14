@@ -5,6 +5,7 @@ Ext.define('WS.view.task.Grid' ,{
     autoScroll: true,
 
     initComponent: function() {
+        this.title_suggestion = 'Tasks';
         this.columns = [
             {header: 'Task',  dataIndex: 'task',  flex: 1},
             {header: 'Process', dataIndex: 'process', flex: 1},
