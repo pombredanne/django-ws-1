@@ -24,6 +24,9 @@ Ext.define('WS.view.layout.Main', {
                 html: 'aquivalasidebar',
                 collapsible: true,
                 split: true,
+            },{
+                xtype: 'statusbar',
+                region: 'south',
             }];
 
         this.callParent(arguments);

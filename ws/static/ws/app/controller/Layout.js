@@ -8,6 +8,7 @@ Ext.define('WS.controller.Layout', {
         'layout.Menubar',
         'layout.Header',
         'layout.Main',
+        'layout.Statusbar',
     ],
 
     init: function() {
