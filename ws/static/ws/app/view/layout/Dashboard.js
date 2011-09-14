@@ -12,29 +12,6 @@ Ext.define('WS.view.layout.Dashboard', {
     layout: 'column',
 
     initComponent : function() {
-        this.items = [{
-            id: "col1",
-            items: [{
-                items: [{
-                    xtype: 'taskgrid'
-                }]
-            },{
-                html: "kaixo2"
-            }],
-        },{
-            id: "col2",
-            items: [{
-                items: [{
-                    xtype: 'processstarter'
-                }]
-            }]
-        },{
-            id: "col3",
-            items: [{
-                html: "kaixo3"
-            }]
-        }];
-
         this.callParent(arguments);
 
         this.addEvents({
