@@ -16,6 +16,15 @@ Ext.define('WS.controller.Layout', {
             'main': {
                 add: this.loadColumns,
             },
+            'menubar menuitem[action=viewAllTasks]': {
+                click: this.viewAllTasks
+            },
+            'menubar menuitem[action=startProcess]': {
+                click: this.startProcess
+            },
+            'menubar button[action=preferences]': {
+                click: this.preferences
+            }
         });
         this.on('new_widget', this.new_widget);
     },
@@ -36,6 +45,7 @@ Ext.define('WS.controller.Layout', {
                     xtype: 'taskgrid',
                 }],
             });
+            //portlet.add(Ext.create('WS.view.task.Grid'));
             component.items.items[0].add(portlet);
             portlet = Ext.create('WS.view.layout.Portlet', {
                 html: "kaixo2",
@@ -75,5 +85,22 @@ Ext.define('WS.controller.Layout', {
             }
         }
         target_column.add(portlet);
+    },
+
+    viewAllTasks: function(button) {
+        var view = Ext.create('WS.view.task.Grid');
+        this.fireEvent('new_widget',view);
+    },
+
+    startProcess: function(button) {
+        var view = Ext.create('WS.view.process.Starter');
+        this.fireEvent('new_widget',view);
+    },
+
+    preferences: function(button) {
+        var view = Ext.create('Ext.panel.Panel', {
+            html: "Kaixo!"
+        });
+        this.fireEvent('new_widget',view);
     }
 });

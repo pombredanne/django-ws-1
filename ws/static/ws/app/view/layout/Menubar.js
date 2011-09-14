@@ -9,10 +9,35 @@ Ext.define('WS.view.layout.Menubar', {
         // Implement a Container beforeLayout call from the layout to this Container
 
         this.items = [{
-                text: 'File',
-                menu: this.fileMenu
+                text: 'Tasks',
+                menu: {
+                    xtype: 'menu',
+                    items: [{
+                        text: 'View all tasks',
+                        action: 'viewAllTasks',
+                    },{
+                        text: 'My tasks',
+                        action: 'myTasks',
+                    },{
+                        text: 'Tasks of another user',
+                    }]
+                }
             },{
-                text: 'Preferences'
+                text: 'Processes',
+                menu: {
+                    xtype: 'menu',
+                    items: [{
+                        text: 'Start new process',
+                        action: 'startProcess',
+                    },{
+                        text: 'Running processes',
+                    },{
+                        text: 'All processes',
+                    }]
+                }
+            },{
+                text: 'Preferences',
+                action: 'preferences'
             },
             '->', //Begin with right aligned elements
             {
@@ -21,16 +46,7 @@ Ext.define('WS.view.layout.Menubar', {
             }];
 
         this.callParent(arguments);
-    },
-
-    fileMenu: Ext.create('Ext.menu.Menu', {
-        items: [{
-            text: 'button 1'
-        },{
-            text: 'button 2'
-        }]
-    })
-
+    }
 
 });
 
