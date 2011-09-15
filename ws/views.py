@@ -9,6 +9,8 @@ from django.http import HttpResponse
 from goflow.runtime.models import WorkItem
 from goflow.workflow.models import Process
 
+from ws.models import ProcessLauncher
+
 class ProtectedTemplateView(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -85,5 +87,20 @@ class ProcessListView(JSONResponseMixin, ListView):
                     'title': process.title,
                     'description': process.description,
                     'enabled': process.enabled,
+            })
+        return json.dumps(data)
+
+class ProcessLauncherListView(JSONResponseMixin, ListView):
+    model = ProcessLauncher
+
+    def convert_context_to_json(self, context):
+        data = {
+            'success': True,
+            'processlaunchers': [],
+        }
+        for process in context['processlauncher_list']:
+            data['processlaunchers'].append({
+                    'id': process.pk,
+                    'title': process.title,
             })
         return json.dumps(data)
