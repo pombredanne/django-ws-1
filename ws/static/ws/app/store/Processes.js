@@ -6,12 +6,12 @@ Ext.define('WS.store.Processes', {
     proxy: {
         type: 'ajax',
         api: {
-            read: '/ws/processes.json',
+            read: '/ws/processlaunchers.json',
             update: '/static/ws/data/updateTasks.json'
         },
         reader: {
             type: 'json',
-            root: 'processes',
+            root: 'processlaunchers',
             successProperty: 'success'
         }
     }

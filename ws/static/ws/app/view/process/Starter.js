@@ -5,11 +5,18 @@ Ext.define('WS.view.process.Starter', {
     items: [{
             xtype: 'form',
             items: [{
-                    id:'processescontainer',
-                    xtype: 'fieldcontainer',
-                    fieldLabel: 'Process type',
-                }
-            ]
+                xtype: 'fieldset',
+                title: 'Process type',
+                items: [{
+                        id:'processescontainer',
+                        xtype: 'fieldcontainer',
+                        fieldLabel: 'Process type',
+                }],
+            },{
+                xtype: 'fieldset',
+                title: 'Process details',
+                hidden: true,
+            }],
     }],
     buttons : [
         {

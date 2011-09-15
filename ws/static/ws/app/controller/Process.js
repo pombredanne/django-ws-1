@@ -11,6 +11,9 @@ Ext.define('WS.controller.Process', {
             'processstarter': {
                 beforeadd: this.loadProcesses,
             },
+            'processstarter radiofield': {
+                change: this.processFields,
+            },
             'processstarter button[action=start]': {
                 click: this.startProcess
             }
@@ -45,13 +48,31 @@ Ext.define('WS.controller.Process', {
         });
     },
 
+    processFields: function(field, newvalue) {
+        if (newvalue == true) {
+            var form   = field.up('form'),
+                fieldset = form.down('fieldset[title="Process details"]'),
+                store = this.getProcessesStore(),
+                record_idx = store.find('id',field.inputValue),
+                record = store.getAt(record_idx);
+            fieldset.removeAll();
+            Ext.Array.each(record.form_fields(), function(field) {
+                fieldset.add({
+                    xtype: field['type'], 
+                    fieldLabel: field['label']
+                });
+            });
+            fieldset.setVisible(true);
+         };
+    },
+
     startProcess: function(button) {
         var panel  = button.up('panel'),
             form   = panel.down('form'),
             values = form.getValues(),
             store = this.getProcessesStore(),
             record_idx = store.find('id',values['process']),
-            record = store.getAt(record_idx);
+            record = store.getAt(record_idx),
             view = Ext.create('WS.view.process.New'),
             layoutController = this.getController('Layout');
         view.update(record.data);
