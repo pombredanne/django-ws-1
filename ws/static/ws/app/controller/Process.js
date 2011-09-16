@@ -56,10 +56,12 @@ Ext.define('WS.controller.Process', {
                 record_idx = store.find('id',field.inputValue),
                 record = store.getAt(record_idx);
             fieldset.removeAll();
-            Ext.Array.each(record.form_fields(), function(field) {
-                fieldset.add({
-                    xtype: field['type'], 
-                    fieldLabel: field['label']
+            record.form_fields(function(fields) {
+                Ext.Array.each(fields, function(field) {
+                    fieldset.add({
+                        xtype: field['type'], 
+                        fieldLabel: field['label']
+                    });
                 });
             });
             fieldset.setVisible(true);
