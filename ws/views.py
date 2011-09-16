@@ -6,7 +6,7 @@ from django.contrib.auth import login
 from django.utils import simplejson as json
 from django.http import HttpResponse
 
-from goflow.runtime.models import WorkItem
+from goflow.runtime.models import WorkItem, ProcessInstance
 from goflow.workflow.models import Process
 
 from ws.models import ProcessLauncher
@@ -118,3 +118,19 @@ class ProcessLauncherDetailView(JSONResponseMixin, DetailView):
         }
         return json.dumps(data)
 
+class RunningProcessListView(JSONResponseMixin, ListView):
+    model = ProcessInstance
+    def convert_context_to_json(self, context):
+        data = {
+            'success': True,
+            'runningprocesses': [],
+        }
+        for process in context['processinstance_list']:
+            data['runningprocesses'].append({
+                    'id': process.pk,
+                    'title': process.title,
+                    'type': process.process.title,
+                    'creationTime': process.creationTime.strftime("%Y/%m/%d %H:%m"),
+                    'status': process.status,
+            })
+        return json.dumps(data)

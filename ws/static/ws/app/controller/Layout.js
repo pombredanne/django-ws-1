@@ -23,6 +23,9 @@ Ext.define('WS.controller.Layout', {
             'menubar menuitem[action=startProcess]': {
                 click: this.startProcess
             },
+            'menubar menuitem[action=runningProcesses]': {
+                click: this.runningProcesses
+            },
             'menubar button[action=preferences]': {
                 click: this.preferences
             }
@@ -43,14 +46,17 @@ Ext.define('WS.controller.Layout', {
             //Create portlets
             portlet = Ext.create('WS.view.layout.Portlet', {
                 items: [{
+                    xtype: 'runningprocesses',
+                }],
+            });
+            
+            component.items.items[0].add(portlet);
+            portlet = Ext.create('WS.view.layout.Portlet', {
+                items: [{
                     xtype: 'taskgrid',
                 }],
             });
             //portlet.add(Ext.create('WS.view.task.Grid'));
-            component.items.items[0].add(portlet);
-            portlet = Ext.create('WS.view.layout.Portlet', {
-                html: "kaixo2",
-            });
             component.items.items[0].add(portlet);
             portlet = Ext.create('WS.view.layout.Portlet', {
                 items: [{
@@ -95,6 +101,11 @@ Ext.define('WS.controller.Layout', {
 
     startProcess: function(button) {
         var view = Ext.create('WS.view.process.Starter');
+        this.fireEvent('new_widget',view);
+    },
+
+    runningProcesses: function(button) {
+        var view = Ext.create('WS.view.process.Running');
         this.fireEvent('new_widget',view);
     },
 
