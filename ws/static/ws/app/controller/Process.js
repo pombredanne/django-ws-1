@@ -58,10 +58,14 @@ Ext.define('WS.controller.Process', {
             fieldset.removeAll();
             record.form_fields(function(fields) {
                 Ext.Array.each(fields, function(field) {
-                    fieldset.add({
+                    fieldset.add([{
+                        html: field['help'],
+                        cls: 'x-field-help',
+                    },{
                         xtype: field['type'], 
-                        fieldLabel: field['label']
-                    });
+                        fieldLabel: field['label'],
+                        value: field['default']
+                    }]);
                 });
             });
             fieldset.setVisible(true);
