@@ -16,10 +16,61 @@ class AssetedProcess(models.Model):
     title = models.CharField(max_length=250)
     description = models.TextField()
 
+    def ext_fields(self):
+        return [{
+            'name': 'asset_id',
+            'label': 'Asset ID',
+            'type': 'textfield',
+            'default': '',
+            'help': 'The identifier of this asset.'
+        },{
+            'name': 'title',
+            'label': 'Title',
+            'type': 'textfield',
+            'default': '',
+            'help': 'The title of this process.'
+        },{
+            'name': 'description',
+            'label': 'Description',
+            'type': 'textareafield',
+            'default': 'This is the description',
+            'help': 'The description of this process.'
+        }]
+
 class CreateNewChapter(AssetedProcess):
     serie = models.CharField(max_length=250)
     number = models.CharField(max_length=50)
 
+    def ext_fields(self):
+        return AssetedProcess.ext_fields(self) + [{
+            'name': 'serie',
+            'label': 'Serie',
+            'type': 'textfield',
+            'default': '',
+            'help': 'The title of this serie.'
+        },{
+            'name': 'number',
+            'label': 'Number',
+            'type': 'textfield',
+            'default': '',
+            'help': 'The number of this chapter.'
+        }]
+
 class AdministrativeProcess(models.Model):
     title = models.CharField(max_length=250)
     description = models.TextField()
+
+    def ext_fields(self):
+        return [{
+            'name': 'title',
+            'label': 'Title',
+            'type': 'textfield',
+            'default': '',
+            'help': 'The title of this process.'
+        },{
+            'name': 'description',
+            'label': 'Description',
+            'type': 'textareafield',
+            'default': 'This is the description',
+            'help': 'The description of this process.'
+        }]

@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login
 from django.utils import simplejson as json
@@ -104,3 +104,17 @@ class ProcessLauncherListView(JSONResponseMixin, ListView):
                     'title': process.title,
             })
         return json.dumps(data)
+
+class ProcessLauncherDetailView(JSONResponseMixin, DetailView):
+    model = ProcessLauncher
+
+    def convert_context_to_json(self, context):
+        model = context['processlauncher'].content_type.model_class()
+        #FIXME?: maybe a class method should be better: model.ext_fields()
+        fields = model().ext_fields()
+        data = {
+            'success': True,
+            'fields': fields
+        }
+        return json.dumps(data)
+
