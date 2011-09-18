@@ -58,21 +58,19 @@ Ext.define('WS.controller.Process', {
         });
     },
 
-    loadRunningProcesses: function(grid, component) {
+    loadRunningProcesses: function(portlet, component) {
+        console.log("loading running processes");
         var that = this;
         this.getRunningProcessesStore().load( function(records, operation, success) {
             if (success) {
                 console.log("Running processes loaded: "+operation.resultSet.count)
             } else {
-                var portlet = grid.up('portlet');
                 portlet.setTitle(portlet.title+' (unauthorized)');
-                grid.hide();
                 var authController = that.getController('Auth');
                 authController.fireEvent('auth_required');
             };
         });
     },
-
 
     processFields: function(field, newvalue) {
         if (newvalue == true) {

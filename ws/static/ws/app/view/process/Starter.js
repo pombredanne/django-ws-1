@@ -1,7 +1,8 @@
 Ext.define('WS.view.process.Starter', {
-    extend: 'Ext.panel.Panel',
+    extend: 'WS.view.layout.Portlet',
     alias: 'widget.processstarter',
     autoScroll: true,
+    title: 'Start new process',
 
     items: [{
             xtype: 'form',
@@ -24,10 +25,5 @@ Ext.define('WS.view.process.Starter', {
             text: 'Start',
             action: 'start'
         }
-    ],
-
-    initComponent: function() {
-        this.title_suggestion = 'Start new process';
-        this.callParent(arguments);
-    }
+    ]
 });

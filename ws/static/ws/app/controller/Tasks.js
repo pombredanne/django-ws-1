@@ -28,6 +28,7 @@ Ext.define('WS.controller.Tasks', {
     //},
     
     loadTasks: function(grid, component) {
+        console.log("loading tasks");
         var that = this;
         this.getTasksStore().load( function(records, operation, success) {
             if (success) {

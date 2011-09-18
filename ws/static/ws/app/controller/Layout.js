@@ -44,26 +44,15 @@ Ext.define('WS.controller.Layout', {
                 });
             };
             //Create portlets
-            portlet = Ext.create('WS.view.layout.Portlet', {
-                items: [{
-                    xtype: 'runningprocesses',
-                }],
-            });
-            
+            portlet = Ext.create('WS.view.process.Running');
             component.items.items[0].add(portlet);
-            portlet = Ext.create('WS.view.layout.Portlet', {
-                items: [{
-                    xtype: 'taskgrid',
-                }],
-            });
-            //portlet.add(Ext.create('WS.view.task.Grid'));
+
+            portlet = Ext.create('WS.view.task.Grid');
             component.items.items[0].add(portlet);
-            portlet = Ext.create('WS.view.layout.Portlet', {
-                items: [{
-                    xtype: 'processstarter',
-                }],
-            });
+
+            portlet = Ext.create('WS.view.process.Starter');
             component.items.items[1].add(portlet);
+
             portlet = Ext.create('WS.view.layout.Portlet', {
                 html: "kaixo3",
             });
@@ -73,12 +62,8 @@ Ext.define('WS.controller.Layout', {
     },
 
     // Add the new widgeth to the dashboard column with less elements
-    new_widget: function(view) {
+    new_widget: function(portlet) {
         var dashboard = Ext.ComponentManager.get('dashboard'),
-            portlet = Ext.create('WS.view.layout.Portlet', {
-                title: view.title_suggestion,
-                items: [view],
-            }),
             target_column = -1,
             target_height = 999999,
             column_idx, column, column_size;

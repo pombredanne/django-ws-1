@@ -1,11 +1,11 @@
 Ext.define('WS.view.task.View', {
-    extend: 'Ext.panel.Panel',
+    extend: 'WS.view.layout.Portlet',
     alias : 'widget.taskview',
+    title: 'View task',
 
     layout: 'fit',
 
     initComponent: function() {
-        this.title_suggestion = 'View task';
         this.items = [
             {
                 xtype: 'form',

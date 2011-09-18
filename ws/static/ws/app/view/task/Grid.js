@@ -1,12 +1,12 @@
-Ext.define('WS.view.task.Grid' ,{
-    extend: 'Ext.grid.Panel',
-    alias : 'widget.taskgrid',
-    store: 'Tasks',
+Ext.define('WS.view.task.Grid', {
+    extend: 'WS.view.layout.Portlet',
+    alias: 'widget.taskgrid',
     autoScroll: true,
-
-    initComponent: function() {
-        this.title_suggestion = 'Tasks';
-        this.columns = [
+    title: 'Tasks',
+    items:[{
+        xtype: 'grid',
+        store: 'Tasks',
+        columns: [
             {header: 'Task',  dataIndex: 'task',  flex: 1},
             {header: 'Process', dataIndex: 'process', flex: 1},
             {header: 'Process type', dataIndex: 'process_type', flex: 1},
@@ -21,14 +21,15 @@ Ext.define('WS.view.task.Grid' ,{
                     handler: this.viewTask
                 }]
             },
-        ];
+        ],
+    }],
 
+    initComponent: function() {
         this.callParent(arguments);
-        //this.interval = setInterval(this.update, 1000);
-        that = this;
+        grid = this.down('gridpanel');
         this.interval = setInterval(function(){
-            console.log("refresh grid");
-            that.store.load();
+            console.log("refresh tasks");
+            grid.store.load();
         }, 10000);
     },
 
