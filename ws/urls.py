@@ -12,4 +12,5 @@ urlpatterns = patterns('ws.views',
     (r'^runningprocesses.json$', RunningProcessListView.as_view()),
     (r'^processlaunchers.json$', ProcessLauncherListView.as_view()),
     (r'^processlauncher/(?P<pk>\d+).json$', ProcessLauncherDetailView.as_view()),
+    (r'^startprocess.json$', 'StartProcessView'),
 )

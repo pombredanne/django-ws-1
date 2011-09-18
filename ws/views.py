@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, ListView, DetailView
+from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login
 from django.utils import simplejson as json
@@ -134,3 +135,31 @@ class RunningProcessListView(JSONResponseMixin, ListView):
                     'status': process.status,
             })
         return json.dumps(data)
+
+def StartProcessView(request):
+    response = {}
+    processlauncher_id = request.POST.get('process', None)
+    response['success'] = True
+    if processlauncher_id is None:
+        response['success'] = False
+    else:
+        pl = ProcessLauncher.objects.get(pk=processlauncher_id)
+        process_model = pl.content_type.model_class()
+        class Form(ModelForm):
+            class Meta:
+                model = process_model
+        form = Form(request.POST)
+        item = None
+        try:
+            item = form.save()
+        except ValueError:
+            response['success'] = False
+            return json.dumps(response)
+        # The content is ready, let's start the process
+        ProcessInstance.objects.start(
+            process_name=pl.workflow.title,
+            user=request.user,
+            item=item
+        )
+    return HttpResponse(json.dumps(response),
+                        mimetype="application/json")
