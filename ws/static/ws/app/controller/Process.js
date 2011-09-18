@@ -90,7 +90,8 @@ Ext.define('WS.controller.Process', {
                     },{
                         xtype: field['type'], 
                         fieldLabel: field['label'],
-                        value: field['default']
+                        value: field['default'],
+                        name: field['name'],
                     }]);
                 });
             });
@@ -107,6 +108,9 @@ Ext.define('WS.controller.Process', {
             record = store.getAt(record_idx),
             view = Ext.create('WS.view.process.New'),
             layoutController = this.getController('Layout');
+        record.start(values, function(runningprocess) {
+            console.log("Started process id: "+runningprocess.data.id);
+        });
         view.update(record.data);
         layoutController.fireEvent('new_widget',view);
     }
