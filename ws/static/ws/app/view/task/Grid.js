@@ -24,6 +24,12 @@ Ext.define('WS.view.task.Grid' ,{
         ];
 
         this.callParent(arguments);
+        //this.interval = setInterval(this.update, 1000);
+        that = this;
+        this.interval = setInterval(function(){
+            console.log("refresh grid");
+            that.store.load();
+        }, 10000);
     },
 
     viewTask: function(grid, rowIndex, colIndex) {
