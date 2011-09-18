@@ -1,6 +1,7 @@
 Ext.define('WS.view.process.Starter', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.processstarter',
+    autoScroll: true,
 
     items: [{
             xtype: 'form',
