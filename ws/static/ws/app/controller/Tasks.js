@@ -28,19 +28,18 @@ Ext.define('WS.controller.Tasks', {
     //},
     
     loadTasks: function(grid, component) {
-        console.log("loading tasks");
-        var that = this;
-        this.getTasksStore().load( function(records, operation, success) {
-            if (success) {
-                console.log("Tasks loaded: "+operation.resultSet.count)
-            } else {
-                var portlet = grid.up('portlet');
-                portlet.setTitle(portlet.title+' (unauthorized)');
-                grid.hide();
-                var authController = that.getController('Auth');
-                authController.fireEvent('auth_required');
-            };
-        });
+        if (component.xtype == 'grid') {
+            var that = this;
+            this.getTasksStore().load( function(records, operation, success) {
+                if (success) {
+                    console.log("Tasks loaded: "+operation.resultSet.count)
+                } else {
+                    portlet.setTitle(portlet.title+' (unauthorized)');
+                    var authController = that.getController('Auth');
+                    authController.fireEvent('auth_required');
+                };
+            });
+        };
     },
 
     editTask: function(grid, record) {

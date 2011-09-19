@@ -40,7 +40,7 @@ Ext.define('WS.view.layout.Portlet', {
                 },{
                     xtype: 'checkboxfield',
                     name: 'enableRefresh',
-                    checked: true,
+                    checked: false,
                     listeners: {
                         change: this.toggleInterval,
                     },
@@ -51,9 +51,6 @@ Ext.define('WS.view.layout.Portlet', {
                 hidden: true,
             });
             this.insert(0,this.refreshPanel);
-            this.refreshInterval = setInterval(function(){
-                    that.doRefresh()
-            }, 5000);
         }
     },
 
