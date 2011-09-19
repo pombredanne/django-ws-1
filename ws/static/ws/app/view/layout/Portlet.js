@@ -48,20 +48,18 @@ Ext.define('WS.view.layout.Portlet', {
                     xtype: 'label',
                     text: 'enabled',
                 }],
-                hidden: true,
             });
-            this.insert(0,this.refreshPanel);
         }
     },
 
     setRefresh: function(event, toolEl, panel) {
-        var portlet = panel.up('portlet');
-        if (portlet.refreshPanel.isHidden()) {
-            portlet.refreshPanel.show()
+        var portlet = panel.up('portlet'),
+            first = portlet.items.items[0];
+        if (first.getXType() == 'toolbar') {
+            portlet.remove(portlet.refreshPanel,false); //autodestroy: false
         } else {
-            portlet.refreshPanel.hide()
-        }
-        portlet.doRefresh();
+            portlet.insert(0, portlet.refreshPanel);
+        };
     },
 
     doRefresh: function(portlet) {
