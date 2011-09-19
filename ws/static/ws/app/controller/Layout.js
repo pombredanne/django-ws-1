@@ -28,7 +28,7 @@ Ext.define('WS.controller.Layout', {
             },
             'menubar button[action=preferences]': {
                 click: this.preferences
-            }
+            },
         });
         this.on('new_widget', this.new_widget);
     },
@@ -99,5 +99,5 @@ Ext.define('WS.controller.Layout', {
             html: "Kaixo!"
         });
         this.fireEvent('new_widget',view);
-    }
+    },
 });

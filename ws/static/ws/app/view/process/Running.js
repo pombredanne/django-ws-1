@@ -3,6 +3,7 @@ Ext.define('WS.view.process.Running', {
     alias: 'widget.runningprocesses',
     autoScroll: true,
     title: 'Running processes',
+    refreshable: true,
     items: [{
         xtype: 'grid',
         store: 'RunningProcesses',
@@ -14,12 +15,8 @@ Ext.define('WS.view.process.Running', {
         ],
     }],
 
-    initComponent: function() {
-        this.callParent(arguments);
-        grid = this.down('gridpanel');
-        this.interval = setInterval(function(){
-            console.log("refresh running processes");
-            grid.store.load();
-        }, 10000);
+    doRefresh: function() {
+        var grid = this.down('gridpanel');
+        grid.store.load();
     },
 });

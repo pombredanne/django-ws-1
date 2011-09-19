@@ -3,6 +3,7 @@ Ext.define('WS.view.task.Grid', {
     alias: 'widget.taskgrid',
     autoScroll: true,
     title: 'Tasks',
+    refreshable: true,
     items:[{
         xtype: 'grid',
         store: 'Tasks',
@@ -24,15 +25,6 @@ Ext.define('WS.view.task.Grid', {
         ],
     }],
 
-    initComponent: function() {
-        this.callParent(arguments);
-        grid = this.down('gridpanel');
-        this.interval = setInterval(function(){
-            console.log("refresh tasks");
-            grid.store.load();
-        }, 10000);
-    },
-
     viewTask: function(grid, rowIndex, colIndex) {
         var record = grid.getStore().getAt(rowIndex);
         alert("View " + record.get('taskid')+' '+record.get('task'));
@@ -42,5 +34,11 @@ Ext.define('WS.view.task.Grid', {
         // set td class same as value
         metadata["tdCls"]= value;
         return value;
-    }
+    },
+
+    doRefresh: function() {
+        var grid = this.down('gridpanel');
+        grid.store.load();
+    },
+
 });
