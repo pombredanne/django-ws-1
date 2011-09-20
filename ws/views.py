@@ -65,6 +65,7 @@ def TaskListView(request):
         data['tasks'].append({
             'id': work.pk,
             'task': work.activity.title,
+            'user': work.user.username,
             'process': work.instance.title,
             'process_type': work.activity.process.title,
             'priority': work.priority,
