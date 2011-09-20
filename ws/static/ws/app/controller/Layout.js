@@ -37,7 +37,7 @@ Ext.define('WS.controller.Layout', {
         if (component.alias == 'widget.dashboard') {
             //Create columns
             var i,
-                num_columns = 3;
+                num_columns = 2;
             for (i=1; i<=num_columns; i++) {
                 component.add({
                     id: "col"+i,
@@ -56,7 +56,7 @@ Ext.define('WS.controller.Layout', {
             portlet = Ext.create('WS.view.layout.Portlet', {
                 html: "kaixo3",
             });
-            component.items.items[2].add(portlet);
+            component.items.items[1].add(portlet);
         }
         return true;
     },
