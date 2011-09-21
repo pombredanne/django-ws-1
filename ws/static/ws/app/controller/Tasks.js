@@ -8,13 +8,11 @@ Ext.define('WS.controller.Tasks', {
     ],
 
     init: function() {
-        //console.log('Initialized Tasks! This happens before the Application launch function is called');
         this.control({
-            //'viewport > panel': {
-            //    render: this.onPanelRendered
-            //},
             'taskgrid': {
                 beforeadd: this.loadTasks,
+            },
+            'taskgrid gridpanel': {
                 itemdblclick: this.editTask
             },
             'taskview button[action=save]': {
@@ -23,10 +21,6 @@ Ext.define('WS.controller.Tasks', {
         });
     },
 
-    //onPanelRendered: function() {
-    //    console.log('The panel was rendered');
-    //},
-    
     loadTasks: function(grid, component) {
         if (component.xtype == 'grid') {
             var that = this;
