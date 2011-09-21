@@ -3,16 +3,16 @@ Ext.define('WS.controller.Tasks', {
     stores: ['Tasks'],
     models: ['Task'],
     views: [
-        'task.Grid',
+        'task.All',
         'task.View',
     ],
 
     init: function() {
         this.control({
-            'taskgrid': {
+            'alltasks': {
                 beforeadd: this.loadTasks,
             },
-            'taskgrid gridpanel': {
+            'alltasks gridpanel': {
                 itemdblclick: this.editTask
             },
             'taskview button[action=save]': {

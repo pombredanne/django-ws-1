@@ -47,7 +47,7 @@ Ext.define('WS.controller.Layout', {
             portlet = Ext.create('WS.view.process.Running');
             component.items.items[0].add(portlet);
 
-            portlet = Ext.create('WS.view.task.Grid');
+            portlet = Ext.create('WS.view.task.All');
             component.items.items[0].add(portlet);
 
             portlet = Ext.create('WS.view.process.Starter');
@@ -80,7 +80,7 @@ Ext.define('WS.controller.Layout', {
     },
 
     viewAllTasks: function(button) {
-        var view = Ext.create('WS.view.task.Grid');
+        var view = Ext.create('WS.view.task.All');
         this.fireEvent('new_widget',view);
     },
 
