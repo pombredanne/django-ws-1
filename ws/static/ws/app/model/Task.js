@@ -10,7 +10,6 @@ Ext.define('WS.model.Task', {
         reader: {
             type: 'json',
             root: 'tasks',
-            successProperty: 'success'
         }
     }
 });
