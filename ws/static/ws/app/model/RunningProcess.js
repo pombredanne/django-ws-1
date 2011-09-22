@@ -10,8 +10,7 @@ Ext.define('WS.model.RunningProcess', {
         },
         reader: {
             type: 'json',
-            root: 'runningprocesses',
-            successProperty: 'success'
+            root: 'rows',
         }
     },
 });

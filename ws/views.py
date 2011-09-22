@@ -36,9 +36,18 @@ class JSONResponseMixin(object):
         # -- can be serialized as JSON.
         return json.dumps(context)
 
-class ExtPaginationMixin(object):
-    """ A Paginator integration with ExtJS request params.
-        Ext sends pagination info like this: page=1&start=0&limit=25
+class ExtListView(JSONResponseMixin, ListView):
+    """
+    List view prepared to send data to a ExtJS application.
+    Features:
+
+        - send response in JSON format
+        - look for pagination parameters
+        - send 'success' value
+        - send listings inside a 'rows' array.
+
+    The convert_object_to_json function should be overwritten to provide
+    specific information for each row.
     """
     def get_paginate_by(self, queryset):
         limit = self.request.GET.get('limit', self.paginate_by)
@@ -47,6 +56,27 @@ class ExtPaginationMixin(object):
         except ValueError:
             limit = None
         return limit
+
+    def convert_context_to_json(self, context):
+        if context['paginator'] is not None:
+            total = context['paginator'].count
+        else:
+            total = len(context['object_list'])
+        data = {'success': True,
+                'total': total,
+                'rows':[]
+        }
+        for obj in context['object_list']:
+            data['rows'].append(self.convert_object_to_dict(obj))
+        return json.dumps(data)
+
+    def convert_object_to_dict(obj):
+        """ Convert a object to a dict, with keys as strings, and values
+        serializable to JSON."""
+        return {
+            'pk': obj.pk,
+            'name': unicode(obj),
+        }
 
 def JSONLogin(request):
     success = False
@@ -66,70 +96,51 @@ def JSONLogin(request):
     return HttpResponse(json.dumps({'success':success, 'message': message}),
                         mimetype="application/json")
 
-class TaskListView(JSONResponseMixin, ExtPaginationMixin, ListView):
+class TaskListView(ExtListView):
     model = WorkItem
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(TaskListView, self).dispatch(*args, **kwargs)
 
-    def convert_context_to_json(self, context):
-        if context['paginator'] is not None:
-            total = context['paginator'].count
+    def convert_object_to_dict(self, obj):
+        if obj.user:
+            user = obj.user.username
         else:
-            total = len(context['object_list'])
-        data = {'success': True,
-                'total': total,
-                'tasks':[]
+            user = "unknown"
+        data = {
+            'id': obj.pk,
+            'task': obj.activity.title,
+            'user': user,
+            'process': obj.instance.title,
+            'process_type': obj.activity.process.title,
+            'priority': obj.priority,
+            'date': obj.date.strftime("%Y/%m/%d %H:%m"),
+            'status': obj.status
         }
-        for work in context['workitem_list']:
-            if work.user:
-                user = work.user.username
-            else:
-                user = "unknown"
-            data['tasks'].append({
-                'id': work.pk,
-                'task': work.activity.title,
-                'user': user,
-                'process': work.instance.title,
-                'process_type': work.activity.process.title,
-                'priority': work.priority,
-                'date': work.date.strftime("%Y/%m/%d %H:%m"),
-                'status': work.status
-            })
-        return json.dumps(data)
+        return data
 
-class ProcessListView(JSONResponseMixin, ListView):
+class ProcessListView(ExtListView):
     model = Process
 
-    def convert_context_to_json(self, context):
+    def convert_object_to_dict(self, obj):
         data = {
-            'success': True,
-            'processes': [],
+            'id': obj.pk,
+            'title': obj.title,
+            'description': obj.description,
+            'enabled': obj.enabled,
         }
-        for process in context['process_list']:
-            data['processes'].append({
-                    'id': process.pk,
-                    'title': process.title,
-                    'description': process.description,
-                    'enabled': process.enabled,
-            })
-        return json.dumps(data)
+        return data
 
-class ProcessLauncherListView(JSONResponseMixin, ListView):
+class ProcessLauncherListView(ExtListView):
     model = ProcessLauncher
 
-    def convert_context_to_json(self, context):
+    def convert_object_to_dict(self, obj):
         data = {
-            'success': True,
-            'processlaunchers': [],
+            'id': obj.pk,
+            'title': obj.title,
         }
-        for process in context['processlauncher_list']:
-            data['processlaunchers'].append({
-                    'id': process.pk,
-                    'title': process.title,
-            })
-        return json.dumps(data)
+        return data
 
 class ProcessLauncherDetailView(JSONResponseMixin, DetailView):
     model = ProcessLauncher
@@ -144,22 +155,18 @@ class ProcessLauncherDetailView(JSONResponseMixin, DetailView):
         }
         return json.dumps(data)
 
-class RunningProcessListView(JSONResponseMixin, ListView):
+class RunningProcessListView(ExtListView):
     model = ProcessInstance
-    def convert_context_to_json(self, context):
+
+    def convert_object_to_dict(self, obj):
         data = {
-            'success': True,
-            'runningprocesses': [],
+            'id': obj.pk,
+            'title': obj.title,
+            'type': obj.process.title,
+            'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%m"),
+            'status': obj.status,
         }
-        for process in context['processinstance_list']:
-            data['runningprocesses'].append({
-                    'id': process.pk,
-                    'title': process.title,
-                    'type': process.process.title,
-                    'creationTime': process.creationTime.strftime("%Y/%m/%d %H:%m"),
-                    'status': process.status,
-            })
-        return json.dumps(data)
+        return data
 
 def StartProcessView(request):
     response = {}
