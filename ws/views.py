@@ -36,6 +36,18 @@ class JSONResponseMixin(object):
         # -- can be serialized as JSON.
         return json.dumps(context)
 
+class ExtPaginationMixin(object):
+    """ A Paginator integration with ExtJS request params.
+        Ext sends pagination info like this: page=1&start=0&limit=25
+    """
+    def get_paginate_by(self, queryset):
+        limit = self.request.GET.get('limit', self.paginate_by)
+        try:
+            limit = int(limit)
+        except ValueError:
+            limit = None
+        return limit
+
 def JSONLogin(request):
     success = False
     message = ""
@@ -54,8 +66,7 @@ def JSONLogin(request):
     return HttpResponse(json.dumps({'success':success, 'message': message}),
                         mimetype="application/json")
 
-#page=1&start=0&limit=25
-class TaskListView(JSONResponseMixin, ListView):
+class TaskListView(JSONResponseMixin, ExtPaginationMixin, ListView):
     model = WorkItem
 
     @method_decorator(login_required)
@@ -63,7 +74,12 @@ class TaskListView(JSONResponseMixin, ListView):
         return super(TaskListView, self).dispatch(*args, **kwargs)
 
     def convert_context_to_json(self, context):
+        if context['paginator'] is not None:
+            total = context['paginator'].count
+        else:
+            total = len(context['object_list'])
         data = {'success': True,
+                'total': total,
                 'tasks':[]
         }
         for work in context['workitem_list']:

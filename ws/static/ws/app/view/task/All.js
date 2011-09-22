@@ -10,6 +10,7 @@ Ext.define('WS.view.task.All', {
             xtype: 'grid',
             store: 'Tasks',
             columns: [
+                Ext.create('Ext.grid.RowNumberer'),
                 {header: 'Task',  dataIndex: 'task',  flex: 1},
                 {header: 'User',  dataIndex: 'user',  flex: 1},
                 {header: 'Process', dataIndex: 'process', flex: 1},
@@ -30,6 +31,12 @@ Ext.define('WS.view.task.All', {
                     }]
                 },
             ],
+            dockedItems: [{
+                xtype: 'pagingtoolbar',
+                store: 'Tasks',
+                dock: 'bottom',
+                displayInfo: true,
+            }],
         }];
         this.callParent(arguments);
     },
@@ -54,5 +61,4 @@ Ext.define('WS.view.task.All', {
         var grid = this.down('gridpanel');
         grid.store.load();
     },
-
 });
