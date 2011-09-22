@@ -1,13 +1,14 @@
 from django.conf.urls.defaults import patterns, url
 from django.views.generic import TemplateView
 from ws.views import (ProcessListView, ProcessLauncherListView,
-                      ProcessLauncherDetailView, RunningProcessListView)
+                      ProcessLauncherDetailView, RunningProcessListView,
+                      TaskListView)
 
 urlpatterns = patterns('ws.views',
     (r'^$', TemplateView.as_view(template_name='ws/main.html')),
     #(r'^$', ProtectedTemplateView.as_view(template_name='ws/main.html')),
     (r'^login$', 'JSONLogin'),
-    (r'^tasks.json$', 'TaskListView'),
+    (r'^tasks.json$', TaskListView.as_view()),
     (r'^processes.json$', ProcessListView.as_view()),
     (r'^runningprocesses.json$', RunningProcessListView.as_view()),
     (r'^processlaunchers.json$', ProcessLauncherListView.as_view()),
