@@ -54,26 +54,34 @@ def JSONLogin(request):
     return HttpResponse(json.dumps({'success':success, 'message': message}),
                         mimetype="application/json")
 
-@login_required
-def TaskListView(request):
-    workitems = WorkItem.objects.list_safe(user=request.user, status=None,
-                                           notstatus=None)
-    data = {'success': True,
-            'tasks':[]
-    }
-    for work in workitems:
-        data['tasks'].append({
-            'id': work.pk,
-            'task': work.activity.title,
-            'user': work.user.username,
-            'process': work.instance.title,
-            'process_type': work.activity.process.title,
-            'priority': work.priority,
-            'date': work.date.strftime("%Y/%m/%d %H:%m"),
-            'status': work.status
-        })
-    return HttpResponse(json.dumps(data),
-                        mimetype="application/json")
+#page=1&start=0&limit=25
+class TaskListView(JSONResponseMixin, ListView):
+    model = WorkItem
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TaskListView, self).dispatch(*args, **kwargs)
+
+    def convert_context_to_json(self, context):
+        data = {'success': True,
+                'tasks':[]
+        }
+        for work in context['workitem_list']:
+            if work.user:
+                user = work.user.username
+            else:
+                user = "unknown"
+            data['tasks'].append({
+                'id': work.pk,
+                'task': work.activity.title,
+                'user': user,
+                'process': work.instance.title,
+                'process_type': work.activity.process.title,
+                'priority': work.priority,
+                'date': work.date.strftime("%Y/%m/%d %H:%m"),
+                'status': work.status
+            })
+        return json.dumps(data)
 
 class ProcessListView(JSONResponseMixin, ListView):
     model = Process
