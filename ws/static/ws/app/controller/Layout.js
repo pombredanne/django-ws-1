@@ -5,6 +5,7 @@ Ext.define('WS.controller.Layout', {
         'layout.DashboardColumn',
         'layout.Dashboard',
         'layout.DashboardDropZone',
+        'layout.DashboardSidebar',
         'layout.Menubar',
         'layout.Header',
         'layout.Main',
@@ -26,8 +27,14 @@ Ext.define('WS.controller.Layout', {
             'menubar menuitem[action=runningProcesses]': {
                 click: this.runningProcesses
             },
+            'menubar button[action=dashboard]': {
+                click: this.loadDashboard
+            },
             'menubar button[action=preferences]': {
                 click: this.preferences
+            },
+            'dashboardsidebar button[action=viewAllTasks]': {
+                click: this.viewAllTasks
             },
         });
         this.on('new_widget', this.new_widget);
@@ -95,9 +102,20 @@ Ext.define('WS.controller.Layout', {
     },
 
     preferences: function(button) {
-        var view = Ext.create('Ext.panel.Panel', {
+        var view = Ext.create('WS.view.layout.Portlet', {
             html: "Kaixo!"
         });
         this.fireEvent('new_widget',view);
+    },
+
+    loadDashboard: function(button) {
+        var view = Ext.create('WS.view.layout.Dashboard'),
+            side = Ext.create('WS.view.layout.DashboardSidebar');
+        var center = Ext.ComponentManager.get('app-center'),
+            sidebar = Ext.ComponentManager.get('app-sidebar');
+        center.removeAll();
+        center.add(view);
+        sidebar.removeAll();
+        sidebar.add(side);
     },
 });

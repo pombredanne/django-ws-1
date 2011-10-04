@@ -37,6 +37,9 @@ Ext.define('WS.view.layout.Menubar', {
                     }]
                 }
             },{
+                text: 'Dashboard',
+                action: 'dashboard'
+            },{
                 text: 'Preferences',
                 action: 'preferences'
             },

@@ -5,6 +5,7 @@ Ext.define('WS.view.layout.Dashboard', {
     //    'Ext.layout.component.Body'
     //],
 
+    id: 'dashboard',
     cls: 'x-dashboard',
     defaultType: 'dashboardcolumn',
     //componentLayout: 'body',

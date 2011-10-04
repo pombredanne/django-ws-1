@@ -8,29 +8,41 @@ Ext.define('WS.view.layout.Main', {
         type : 'border',
         padding: '0 5 5 5' // pad the layout from the window edges
     },
-
-    initComponent : function() {
-
-        this.items = [{
-                xtype: 'header',
-                region: 'north'
-            },{
-                id: 'dashboard',
-                xtype: 'dashboard',
-                region: 'center',
-                split: true,
-            },{
-                region: 'west',
-                html: 'aquivalasidebar',
-                collapsible: true,
-                split: true,
-            },{
-                xtype: 'statusbar',
-                region: 'south',
-            }];
-
-        this.callParent(arguments);
-    }
+    items: [{
+            xtype: 'header',
+            region: 'north'
+        },{
+            id: 'app-center',
+            region: 'center',
+            items: [{
+                html: 'erdialdea',
+            }],
+        },{
+            id: 'app-sidebar',
+            region: 'west',
+            preventHeader: true,
+            collapsible: true,
+            collapseMode: 'mini',
+            split: true,
+            items: [{
+                html: 'sidebar',
+            }],
+        /*
+        },{
+            id: 'dashboard',
+            xtype: 'dashboard',
+            region: 'center',
+            split: true,
+        },{
+            region: 'west',
+            html: 'aquivalasidebar',
+            collapsible: true,
+            split: true,
+        */
+        },{
+            xtype: 'statusbar',
+            region: 'south',
+    }],
 
 });
 
