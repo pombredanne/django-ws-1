@@ -26,7 +26,7 @@ Ext.define('WS.controller.Tasks', {
             var that = this;
             this.getTasksStore().load( function(records, operation, success) {
                 if (success) {
-                    console.log("Tasks loaded: "+operation.resultSet.count)
+                    //console.log("Tasks loaded: "+operation.resultSet.count)
                 } else {
                     portlet.setTitle(portlet.title+' (unauthorized)');
                     var authController = that.getController('Auth');
@@ -37,7 +37,7 @@ Ext.define('WS.controller.Tasks', {
     },
 
     editTask: function(grid, record) {
-        console.log('Double clicked on ' + record.get('task'));
+        //console.log('Double clicked on ' + record.get('task'));
         var view = Ext.widget('taskview');
         view.down('form').loadRecord(record);
         var layoutController = this.getController('Layout');
@@ -45,7 +45,7 @@ Ext.define('WS.controller.Tasks', {
     },
 
     updateTask: function(button) {
-        console.log('clicked the Save button');
+        //console.log('clicked the Save button');
         var panel  = button.up('panel'),
             form   = panel.down('form'),
             record = form.getRecord(),

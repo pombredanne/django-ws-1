@@ -37,7 +37,7 @@ Ext.define('WS.controller.Process', {
             if (success) {
                 // Add process types as process starter radio fields
                 var container = Ext.getCmp('processescontainer');
-                console.log("Processes loaded: "+operation.resultSet.count)
+                //console.log("Processes loaded: "+operation.resultSet.count)
                 store.each(function(record){
                     this.add({
                         xtype: 'radiofield',
@@ -63,7 +63,7 @@ Ext.define('WS.controller.Process', {
             var that = this;
             this.getRunningProcessesStore().load( function(records, operation, success) {
                 if (success) {
-                    console.log("Running processes loaded: "+operation.resultSet.count)
+                    //console.log("Running processes loaded: "+operation.resultSet.count)
                 } else {
                     portlet.setTitle(portlet.title+' (unauthorized)');
                     var authController = that.getController('Auth');
@@ -108,7 +108,7 @@ Ext.define('WS.controller.Process', {
             view = Ext.create('WS.view.process.New'),
             layoutController = this.getController('Layout');
         record.start(values, function(runningprocess) {
-            console.log("Started process id: "+runningprocess.data.id);
+            //console.log("Started process id: "+runningprocess.data.id);
         });
         view.update(record.data);
         layoutController.fireEvent('new_widget',view);

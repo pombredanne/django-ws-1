@@ -4,23 +4,27 @@ Ext.define('WS.view.process.Running', {
     autoScroll: true,
     title: 'Running processes',
     refreshable: true,
-    items: [{
-        xtype: 'grid',
-        store: 'RunningProcesses',
-        columns: [
-            Ext.create('Ext.grid.RowNumberer'),
-            {header: 'Process', dataIndex: 'title', flex: 1},
-            {header: 'Type', dataIndex: 'type', flex: 1},
-            {header: 'Created', dataIndex: 'creationTime', flex: 1},
-            {header: 'Status', dataIndex: 'status', flex: 1},
-        ],
-        dockedItems: [{
-            xtype: 'pagingtoolbar',
+
+    initComponent: function() {
+        this.items = [{
+            xtype: 'grid',
             store: 'RunningProcesses',
-            dock: 'bottom',
-            displayInfo: true,
-        }],
-    }],
+            columns: [
+                Ext.create('Ext.grid.RowNumberer'),
+                {header: 'Process', dataIndex: 'title', flex: 1},
+                {header: 'Type', dataIndex: 'type', flex: 1},
+                {header: 'Created', dataIndex: 'creationTime', flex: 1},
+                {header: 'Status', dataIndex: 'status', flex: 1},
+            ],
+            dockedItems: [{
+                xtype: 'pagingtoolbar',
+                store: 'RunningProcesses',
+                dock: 'bottom',
+                displayInfo: true,
+            }],
+        }];
+        this.callParent(arguments);
+    },
 
     doRefresh: function() {
         var grid = this.down('gridpanel');
