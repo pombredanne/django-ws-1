@@ -36,15 +36,39 @@ Ext.define('WS.view.layout.Menubar', {
                         text: 'All processes',
                     }]
                 }
-            },{
-                text: 'Dashboard',
-                action: 'dashboard'
-            },{
+            },'-',{
+                xtype: 'buttongroup',
+                itemId: 'viewChooser',
+                defaults: {
+                    text: null,
+                    enableToggle: true,
+                    toggleGroup: 'viewChooser',
+                },
+                items: [{
+                    action: 'dashboard',
+                    iconCls: 'dashboard',
+                    tooltip: 'dashboard',
+                },{
+                    action: 'tasks',
+                    iconCls: 'tasks',
+                    tooltip: 'tasks',
+                },{
+                    action: 'processes',
+                    iconCls: 'processes',
+                    tooltip: 'processes',
+                },{
+                    action: 'messages',
+                    iconCls: 'messages',
+                    tooltip: 'messages',
+                },{
+                    action: 'administration',
+                    iconCls: 'administration',
+                    tooltip: 'administration',
+                }],
+            },'->',{
                 text: 'Preferences',
                 action: 'preferences'
-            },
-            '->', //Begin with right aligned elements
-            {
+            },{
                 text: 'Logout',
                 action: 'logout'
             }];

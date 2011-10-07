@@ -33,3 +33,27 @@
 .x-field-help .x-panel-body:hover {
     color: #000;
 }
+
+#app-sidebar .x-btn {
+    display: block;
+}
+
+.x-btn-icon .dashboard {
+    background: url('images/dashboard.png');
+}
+
+.x-btn-icon .tasks {
+    background: url('images/tasks.png');
+}
+
+.x-btn-icon .processes {
+    background: url('images/processes.png');
+}
+
+.x-btn-icon .messages {
+    background: url('images/messages.png');
+}
+
+.x-btn-icon .administration {
+    background: url('images/administration.png');
+}

@@ -27,11 +27,8 @@ Ext.define('WS.controller.Layout', {
             'menubar menuitem[action=runningProcesses]': {
                 click: this.runningProcesses
             },
-            'menubar button[action=dashboard]': {
-                click: this.loadDashboard
-            },
-            'menubar button[action=preferences]': {
-                click: this.preferences
+            '#viewChooser button': {
+                toggle: this.changeView,
             },
             'dashboardsidebar button[action=viewAllTasks]': {
                 click: this.viewAllTasks
@@ -101,21 +98,24 @@ Ext.define('WS.controller.Layout', {
         this.fireEvent('new_widget',view);
     },
 
-    preferences: function(button) {
-        var view = Ext.create('WS.view.layout.Portlet', {
-            html: "Kaixo!"
-        });
-        this.fireEvent('new_widget',view);
-    },
-
-    loadDashboard: function(button) {
-        var view = Ext.create('WS.view.layout.Dashboard'),
-            side = Ext.create('WS.view.layout.DashboardSidebar');
-        var center = Ext.ComponentManager.get('app-center'),
-            sidebar = Ext.ComponentManager.get('app-sidebar');
-        center.removeAll();
-        center.add(view);
-        sidebar.removeAll();
-        sidebar.add(side);
+    changeView: function(button, pressed) {
+        if (pressed) {
+            var center = Ext.ComponentManager.get('app-center'),
+                sidebar = Ext.ComponentManager.get('app-sidebar');
+            center.removeAll();
+            sidebar.removeAll();
+            var view, side;
+            switch(button.action) {
+                case 'dashboard':
+                    var view = Ext.create('WS.view.layout.Dashboard'),
+                        side = Ext.create('WS.view.layout.DashboardSidebar');
+                    break;
+                default:
+                    var view = Ext.create("Ext.panel.Panel", {html: "TODO"}),
+                        side = Ext.create("Ext.panel.Panel", {html: "TODO"});
+            }
+            center.add(view);
+            sidebar.add(side);
+        };
     },
 });

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="172.38362"
+   height="160.51247"
+   id="svg4993"
+   version="1.1"
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="engrenages.svg"
+   inkscape:export-filename="/home/shagi/devel/bugs/mam/wsbpm/src/django-ws/ws/static/ws/images/svg/engrenages.png"
+   inkscape:export-xdpi="8.3500004"
+   inkscape:export-ydpi="8.3500004">
+  <title
+     id="title5041">engrenages</title>
+  <defs
+     id="defs4995" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="1166.0285"
+     inkscape:cy="108.82765"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1018"
+     inkscape:window-height="454"
+     inkscape:window-x="256"
+     inkscape:window-y="140"
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata4998">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>engrenages</dc:title>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+        <dc:date>2011-02-05</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>lmproulx</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-138.97146,-480.67737)">
+    <g
+       id="g3077"
+       transform="matrix(1.2373929,0,0,1.2373929,75.593431,-465.7833)">
+      <g
+         id="g3073">
+        <path
+           inkscape:export-ydpi="300"
+           inkscape:export-xdpi="300"
+           inkscape:export-filename="/Volumes/LOUIS/Arborescence /isotype/action.png"
+           sodipodi:nodetypes="ccccccccccccccccccccccc"
+           id="path7760-8"
+           d="m 108.66418,765.69105 -12.264604,11.62823 c -1.579737,-0.0313 -3.170933,0.0828 -4.686005,0.34712 l -11.024928,-11.57039 -15.18199,11.28113 4.570301,17.81839 -15.967129,-0.23141 -2.082669,20.36387 17.529131,5.32238 -4.628153,16.66135 13.248088,10.35549 13.104857,-10.1587 3.845755,0.43958 8.446376,11.74394 20.01677,-8.67779 -1.50415,-15.33075 c 0.89005,-1.02488 1.7024,-2.10133 2.42978,-3.23971 l 14.05801,-1.562 0.58678,-22.97547 -13.4299,-3.1736 c -0.7262,-1.40948 -1.58402,-2.77484 -2.54549,-4.04963 l 3.81823,-15.67787 -18.33906,-9.31416 z"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.61630142;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           inkscape:connector-curvature="0" />
+        <path
+           style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.80815077;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           d="m 119.45006,807.90199 c 1.11588,20.14441 -30.168251,30.0249 -40.697151,12.62838 -11.646748,-14.50169 3.923526,-39.06937 22.031041,-33.91785 10.02286,1.68099 19.46011,10.5611 18.66611,21.28947 z"
+           id="path7762-9"
+           inkscape:export-filename="/Volumes/LOUIS/Arborescence /isotype/action.png"
+           inkscape:export-xdpi="300"
+           inkscape:export-ydpi="300"
+           inkscape:connector-curvature="0" />
+      </g>
+      <g
+         transform="matrix(0.8023421,-0.00124372,0.00124372,0.8023421,24.722016,165.66007)"
+         id="g3069">
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2.01447678;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           d="m 173.82583,823.76991 -12.26461,11.62823 c -1.57973,-0.0313 -3.17093,0.0828 -4.686,0.34712 l -11.02493,-11.57039 -15.18199,11.28113 4.5703,17.81839 -15.96713,-0.23141 -2.08267,20.36387 17.52913,5.32238 -4.62815,16.66135 13.24809,10.35549 13.10486,-10.1587 3.84575,0.43958 8.44638,11.74394 20.01677,-8.67779 -1.50415,-15.33075 c 0.89005,-1.02488 1.7024,-2.10133 2.42978,-3.23971 l 14.05801,-1.562 0.58678,-22.97547 -13.4299,-3.1736 c -0.7262,-1.40948 -1.58402,-2.77484 -2.54549,-4.04963 l 3.81823,-15.67787 -18.33906,-9.31416 z"
+           id="path3065"
+           sodipodi:nodetypes="ccccccccccccccccccccccc"
+           inkscape:export-filename="/Volumes/LOUIS/Arborescence /isotype/action.png"
+           inkscape:export-xdpi="300"
+           inkscape:export-ydpi="300" />
+        <path
+           inkscape:connector-curvature="0"
+           inkscape:export-ydpi="300"
+           inkscape:export-xdpi="300"
+           inkscape:export-filename="/Volumes/LOUIS/Arborescence /isotype/action.png"
+           id="path3067"
+           d="m 184.61171,865.98085 c 1.11588,20.14441 -30.16825,30.0249 -40.69715,12.62838 -11.64675,-14.50169 3.92352,-39.06937 22.03104,-33.91785 10.02286,1.68099 19.46011,10.5611 18.66611,21.28947 z"
+           style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.00723839;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+      </g>
+    </g>
+  </g>
+</svg>
