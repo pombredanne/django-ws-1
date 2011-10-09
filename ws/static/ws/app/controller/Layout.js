@@ -110,6 +110,10 @@ Ext.define('WS.controller.Layout', {
                     var view = Ext.create('WS.view.layout.Dashboard'),
                         side = Ext.create('WS.view.layout.DashboardSidebar');
                     break;
+                case 'tasks':
+                    var view = Ext.create('WS.view.task.Main'),
+                        side = Ext.create('WS.view.task.MainSidebar');
+                    break;
                 default:
                     var view = Ext.create("Ext.panel.Panel", {html: "TODO"}),
                         side = Ext.create("Ext.panel.Panel", {html: "TODO"});
