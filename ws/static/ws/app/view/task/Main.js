@@ -18,18 +18,6 @@ Ext.define('WS.view.task.Main', {
                 {header: 'Priority', dataIndex: 'priority', flex: 1},
                 {header: 'Date', dataIndex: 'date', flex: 1},
                 {header: 'Status', dataIndex: 'status', flex: 1, renderer: this.statusRenderer},
-                {xtype:'actioncolumn', 
-                    width: 70,
-                    items: [{
-                        icon: '/static/ws/images/activate.png',  // Use a URL in the icon config
-                        tooltip: 'Activate',
-                        handler: this.activateTask
-                    },{
-                        icon: '/static/ws/images/accept.png',  // Use a URL in the icon config
-                        tooltip: 'Complete',
-                        handler: this.completeTask
-                    }]
-                },
             ],
             dockedItems: [{
                 xtype: 'pagingtoolbar',

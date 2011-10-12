@@ -11,6 +11,8 @@ Ext.define('WS.controller.Process', {
     views: [
         'process.Starter',
         'process.Running',
+        'process.Main',
+        'process.MainSidebar',
     ],
 
     init: function() {

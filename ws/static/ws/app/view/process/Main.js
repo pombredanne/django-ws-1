@@ -1,11 +1,9 @@
-Ext.define('WS.view.process.Running', {
-    extend: 'WS.view.layout.Portlet',
-    alias: 'widget.runningprocesses',
+Ext.define('WS.view.process.Main', {
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.processmain',
     autoScroll: true,
     title: 'Running processes',
     refreshable: true,
-    fullscreen: true,
-    fullscreenTarget: 'processes',
 
     initComponent: function() {
         this.items = [{

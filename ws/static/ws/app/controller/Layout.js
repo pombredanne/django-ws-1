@@ -33,6 +33,9 @@ Ext.define('WS.controller.Layout', {
             'dashboardsidebar button[action=viewAllTasks]': {
                 click: this.viewAllTasks
             },
+            'portlet tool[action=fullscreen]': {
+                click: this.goToFullscreen
+            }
         });
         this.on('new_widget', this.new_widget);
     },
@@ -114,6 +117,10 @@ Ext.define('WS.controller.Layout', {
                     var view = Ext.create('WS.view.task.Main'),
                         side = Ext.create('WS.view.task.MainSidebar');
                     break;
+                case 'processes':
+                    var view = Ext.create('WS.view.process.Main'),
+                        side = Ext.create('WS.view.process.MainSidebar');
+                    break;
                 default:
                     var view = Ext.create("Ext.panel.Panel", {html: "TODO"}),
                         side = Ext.create("Ext.panel.Panel", {html: "TODO"});
@@ -121,5 +128,12 @@ Ext.define('WS.controller.Layout', {
             center.add(view);
             sidebar.add(side);
         };
+    },
+    goToFullscreen: function(tool) {
+        var portlet = tool.up('portlet'),
+            button = {
+                action: portlet.fullscreenTarget,
+            }
+        this.changeView(button,true);
     },
 });

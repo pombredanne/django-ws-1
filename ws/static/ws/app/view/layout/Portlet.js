@@ -18,12 +18,13 @@ Ext.define('WS.view.layout.Portlet', {
     initComponent : function() {
         var that = this;
         this.callParent(arguments);
+        var tools = [];
         if (this.refreshable == true) {
-            this.tools = [{
+            tools = tools.concat([{
                 type: 'refresh',
                 qtip: 'refresh this portlet',
                 handler: this.setRefresh,
-            }];
+            }]);
             this.refreshPanel = Ext.create('Ext.toolbar.Toolbar', {
                 items: ['->',{
                     xtype: 'label',
@@ -49,7 +50,15 @@ Ext.define('WS.view.layout.Portlet', {
                     text: 'enabled',
                 }],
             });
-        }
+        };
+        if (this.fullscreen == true) {
+            tools = tools.concat([{
+                type: 'next',
+                qtip: 'View in fullscreen',
+                action: 'fullscreen',
+            }]);
+        };
+        this.tools = tools;
     },
 
     setRefresh: function(event, toolEl, panel) {

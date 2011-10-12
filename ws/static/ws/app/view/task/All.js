@@ -4,6 +4,8 @@ Ext.define('WS.view.task.All', {
     autoScroll: true,
     title: 'Tasks',
     refreshable: true,
+    fullscreen: true,
+    fullscreenTarget: 'tasks',
 
     initComponent: function() {
         this.items = [{
