@@ -31,7 +31,6 @@ Ext.define('WS.controller.Auth', {
     },
 
     login: function(button) {
-        console.log('clicked the login button');
         var panel = button.up('panel'),
             form = panel.down('form');
         form.submit({
@@ -59,7 +58,12 @@ Ext.define('WS.controller.Auth', {
     },
 
     logout: function(button) {
-        console.log('clicked the logout button');
+        Ext.Ajax.request({
+            url: '/ws/logout',
+            success: function(response) {
+                console.log('logged out');
+            },
+        });
     },
 
     auth_required: function (){

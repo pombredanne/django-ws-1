@@ -3,7 +3,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, ListView, DetailView
 from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.utils import simplejson as json
 from django.http import HttpResponse
 
@@ -94,6 +94,11 @@ def JSONLogin(request):
         message = 'login must be done with a POST request.'
     request.session.set_test_cookie()
     return HttpResponse(json.dumps({'success':success, 'message': message}),
+                        mimetype="application/json")
+
+def JSONLogout(request):
+    logout(request)
+    return HttpResponse(json.dumps({'success':True, 'message': 'Logged out'}),
                         mimetype="application/json")
 
 class TaskListView(ExtListView):
