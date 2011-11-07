@@ -17,16 +17,3 @@ class add(BPMTask):
     form = AddForm
     def run(self, workflow_task, a, b):
         return a + b
-
-class QueryForm(forms.BPMTaskForm):
-    cuestion = forms.CharField(max_length=256,
-                               label="Query")
-    choices = forms.TextField(label="Choices")
-    answer = forms.CharField(max_length=256,
-                             label="Answer")
-
-class query(BPMTask):
-    form = QueryForm
-
-    def run(self, workflow_task, cuestion, choices, answer):
-        return answer
