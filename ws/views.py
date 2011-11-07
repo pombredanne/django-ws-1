@@ -7,15 +7,13 @@ from django.contrib.auth import login, logout
 from django.utils import simplejson as json
 from django.http import HttpResponse
 
-from goflow.runtime.models import WorkItem, ProcessInstance
-from goflow.workflow.models import Process
-
-from ws.models import ProcessLauncher
+from ws.models import Task, Process, Workflow
 
 class ProtectedTemplateView(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(ProtectedTemplateView, self).dispatch(*args, **kwargs)
+
 
 class JSONResponseMixin(object):
     """ Inherit this before a generic view to send context in json format.
@@ -35,6 +33,7 @@ class JSONResponseMixin(object):
         # objects -- such as Django model instances or querysets
         # -- can be serialized as JSON.
         return json.dumps(context)
+
 
 class ExtListView(JSONResponseMixin, ListView):
     """
@@ -78,6 +77,7 @@ class ExtListView(JSONResponseMixin, ListView):
             'name': unicode(obj),
         }
 
+
 def JSONLogin(request):
     success = False
     message = ""
@@ -96,34 +96,25 @@ def JSONLogin(request):
     return HttpResponse(json.dumps({'success':success, 'message': message}),
                         mimetype="application/json")
 
+
 def JSONLogout(request):
     logout(request)
     return HttpResponse(json.dumps({'success':True, 'message': 'Logged out'}),
                         mimetype="application/json")
 
-class TaskListView(ExtListView):
-    model = WorkItem
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(TaskListView, self).dispatch(*args, **kwargs)
+class WorkflowListView(ExtListView):
+    model = Workflow
 
     def convert_object_to_dict(self, obj):
-        if obj.user:
-            user = obj.user.username
-        else:
-            user = "unknown"
         data = {
             'id': obj.pk,
-            'task': obj.activity.title,
-            'user': user,
-            'process': obj.instance.title,
-            'process_type': obj.activity.process.title,
-            'priority': obj.priority,
-            'date': obj.date.strftime("%Y/%m/%d %H:%m"),
-            'status': obj.status
+            'name': obj.title,
+            #'description': obj.description,
+            #'enabled': obj.enabled,
         }
         return data
+
 
 class ProcessListView(ExtListView):
     model = Process
@@ -131,22 +122,41 @@ class ProcessListView(ExtListView):
     def convert_object_to_dict(self, obj):
         data = {
             'id': obj.pk,
-            'title': obj.title,
-            'description': obj.description,
-            'enabled': obj.enabled,
+            #'title': obj.title,
+            'type': obj.workflow.name,
+            #'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%m"),
+            #'status': obj.status,
         }
         return data
 
-class ProcessLauncherListView(ExtListView):
-    model = ProcessLauncher
+
+class TaskListView(ExtListView):
+    model = Task
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TaskListView, self).dispatch(*args, **kwargs)
 
     def convert_object_to_dict(self, obj):
+        #if obj.user:
+        #    user = obj.user.username
+        #else:
+        #    user = "unknown"
         data = {
-            'id': obj.pk,
-            'title': obj.title,
+            'pk': obj.pk,
+            'task': obj.node.name,
+            #'user': user,
+            'process': obj.process.pk,
+            'workflow': obj.process.workflow.name,
+            #'priority': obj.priority,
+            #'date': obj.date.strftime("%Y/%m/%d %H:%m"),
+            'state': obj.state,
+            'result': obj.result
         }
         return data
 
+
+"""
 class ProcessLauncherDetailView(JSONResponseMixin, DetailView):
     model = ProcessLauncher
 
@@ -159,44 +169,4 @@ class ProcessLauncherDetailView(JSONResponseMixin, DetailView):
             'fields': fields
         }
         return json.dumps(data)
-
-class RunningProcessListView(ExtListView):
-    model = ProcessInstance
-
-    def convert_object_to_dict(self, obj):
-        data = {
-            'id': obj.pk,
-            'title': obj.title,
-            'type': obj.process.title,
-            'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%m"),
-            'status': obj.status,
-        }
-        return data
-
-def StartProcessView(request):
-    response = {}
-    processlauncher_id = request.POST.get('process', None)
-    response['success'] = True
-    if processlauncher_id is None:
-        response['success'] = False
-    else:
-        pl = ProcessLauncher.objects.get(pk=processlauncher_id)
-        process_model = pl.content_type.model_class()
-        class Form(ModelForm):
-            class Meta:
-                model = process_model
-        form = Form(request.POST)
-        item = None
-        try:
-            item = form.save()
-        except ValueError:
-            response['success'] = False
-            return json.dumps(response)
-        # The content is ready, let's start the process
-        ProcessInstance.objects.start(
-            process_name=pl.workflow.title,
-            user=request.user,
-            item=item
-        )
-    return HttpResponse(json.dumps(response),
-                        mimetype="application/json")
+"""
