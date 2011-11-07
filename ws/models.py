@@ -1,7 +1,6 @@
 from django.db import models
-
-from . import get_operations
-
+from celery.execute import send_task
+import jsonfield
 
 conditions = {'XOR': 0, 'AND': 1}
 states = {'disabled': 0, 'enabled': 1, 'started': 2,
@@ -30,11 +29,24 @@ class Node(models.Model):
     join = models.PositiveSmallIntegerField(choices=conditions.items())
     split = models.PositiveSmallIntegerField(choices=conditions.items())
 
-    operation = models.CharField(choices=get_operations(), max_length=200)
-    arguments = models.TextField(editable=False)
+    task = models.CharField(max_length=256) #ws.tasks.add
+    params = jsonfield.JSONField()
+    info_required = models.BooleanField(editable=False)
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        form = self.celery_task.form(self.params)
+        self.info_required = not form.is_valid()
+        super(Task, self).save(*args, **kwargs)
+
+    @property
+    def celery_task(self):
+        path = self.task.split('.')
+        module = __import__('.'.join(path[:-1]), fromlist=path[-1])
+        task = getattr(module, path[-1])
+        return task
 
 
 class Transition(models.Model):
@@ -91,6 +103,17 @@ class Task(models.Model):
     def __unicode__(self):
         return '{0} [{1}] in {2}'.format(
                 self.node, self.pk, self.process)
+
+    def launch(self):
+        # instead of calling task with send_task import task and use
+        # apply_async; this way celery respects CELERY_ALWAYS_EAGER, so it
+        # can be tested :-) This could change in future versions of celery.
+        #result = send_task(self.task, args=(self.pk,), kwargs=params)
+        result = self.node.celery_task.apply_async(
+                args=(self.pk,),
+                kwargs=self.node.params)
+        return result
+
 
     def valid_transitions(self):
         return self.process.valid_transitions().filter(
