@@ -41,12 +41,44 @@
         }
     }, 
     {
+        "pk": 3, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": true, 
+            "join": 1, 
+            "name": "sumar 2 y algo", 
+            "workflow": 1, 
+            "params": {
+                "a": 2
+            }, 
+            "split": 1, 
+            "task_name": "ws.tasks.add"
+        }
+    },
+    {
         "pk": 1, 
         "model": "ws.transition", 
         "fields": {
             "condition": "", 
             "parent": 1, 
             "child": 2
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "ws.process", 
+        "fields": {
+            "workflow": 1
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "ws.task", 
+        "fields": {
+            "node": 1, 
+            "process": 1, 
+            "state": 2, 
+            "result": ""
         }
     }
 ]
