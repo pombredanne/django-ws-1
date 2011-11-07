@@ -3,8 +3,9 @@ from celery.execute import send_task
 import jsonfield
 
 conditions = {'XOR': 0, 'AND': 1}
-states = {'disabled': 0, 'enabled': 1, 'started': 2,
-        'succeded': 3, 'cancelled': 4, 'failed': 5}
+states = {'STARTED': 2, 'SUCCESS': 3, 'REVOKED': 4, 'FAILURE': 5}
+conditions_choices = [(value, key) for key,value in conditions.items()]
+states_choices = [(value, key) for key,value in states.items()]
 
 #FIXME: we've a problem with XOR splits. After a XOR split is done,
 #if the flow fails in some node, it must return to the split to instantiate
@@ -15,8 +16,8 @@ class Workflow(models.Model):
     #and back. We can't do it if we don't make it somewhere possible to be null
     #because of the id assignement :-/
     name = models.CharField(max_length=100)
-    start = models.ForeignKey('Node', related_name='+', null=True)
-    end = models.ForeignKey('Node', related_name='+', null=True)
+    start = models.ForeignKey('Node', related_name='+', null=True, blank=True)
+    end = models.ForeignKey('Node', related_name='+', null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -26,10 +27,10 @@ class Node(models.Model):
     name = models.CharField(max_length=100)
     workflow = models.ForeignKey(Workflow)
 
-    join = models.PositiveSmallIntegerField(choices=conditions.items())
-    split = models.PositiveSmallIntegerField(choices=conditions.items())
+    join = models.PositiveSmallIntegerField(choices=conditions_choices)
+    split = models.PositiveSmallIntegerField(choices=conditions_choices)
 
-    task = models.CharField(max_length=256) #ws.tasks.add
+    task_name = models.CharField(max_length=256) #ws.tasks.add
     params = jsonfield.JSONField()
     info_required = models.BooleanField(editable=False)
 
@@ -39,11 +40,11 @@ class Node(models.Model):
     def save(self, *args, **kwargs):
         form = self.celery_task.form(self.params)
         self.info_required = not form.is_valid()
-        super(Task, self).save(*args, **kwargs)
+        super(Node, self).save(*args, **kwargs)
 
     @property
     def celery_task(self):
-        path = self.task.split('.')
+        path = self.task_name.split('.')
         module = __import__('.'.join(path[:-1]), fromlist=path[-1])
         task = getattr(module, path[-1])
         return task
@@ -71,7 +72,7 @@ class Process(models.Model):
 
     def valid_transitions(self):
         valid = Transition.objects.none()
-        for task in self.task_set.filter(state=states['succeded']):
+        for task in self.task_set.filter(state=states['SUCCESS']):
             valid |= Transition.objects.filter(parent=task.node,
                     condition__in=(task.result, ''))
         return valid
@@ -98,7 +99,7 @@ class Task(models.Model):
 
     result = models.CharField(max_length=100, blank=True)
     state = models.PositiveSmallIntegerField(
-            choices=states.items(), default=0)
+            choices=states_choices, default=2)
 
     def __unicode__(self):
         return '{0} [{1}] in {2}'.format(
@@ -141,8 +142,7 @@ class Task(models.Model):
         for node in self.childs_to_notify():
             task = Task(
                 node=node, 
-                process=self.process,
-                state=states['enabled'])
+                process=self.process)
             task.save()
             tasks |= Task.objects.filter(pk=task.pk)
         return tasks
