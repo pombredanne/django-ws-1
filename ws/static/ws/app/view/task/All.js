@@ -14,12 +14,13 @@ Ext.define('WS.view.task.All', {
             columns: [
                 Ext.create('Ext.grid.RowNumberer'),
                 {header: 'Task',  dataIndex: 'task',  flex: 1},
-                {header: 'User',  dataIndex: 'user',  flex: 1},
+                //{header: 'User',  dataIndex: 'user',  flex: 1},
                 {header: 'Process', dataIndex: 'process', flex: 1},
-                {header: 'Process type', dataIndex: 'process_type', flex: 1},
-                {header: 'Priority', dataIndex: 'priority', flex: 1},
-                {header: 'Date', dataIndex: 'date', flex: 1},
-                {header: 'Status', dataIndex: 'status', flex: 1, renderer: this.statusRenderer},
+                {header: 'Workflow', dataIndex: 'workflow', flex: 1},
+                //{header: 'Priority', dataIndex: 'priority', flex: 1},
+                //{header: 'Date', dataIndex: 'date', flex: 1},
+                {header: 'State', dataIndex: 'state', flex: 1, renderer: this.statusRenderer},
+                {header: 'Result', dataIndex: 'result', flex: 1},
                 {xtype:'actioncolumn', 
                     width: 70,
                     items: [{

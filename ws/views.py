@@ -108,7 +108,7 @@ class WorkflowListView(ExtListView):
 
     def convert_object_to_dict(self, obj):
         data = {
-            'id': obj.pk,
+            'pk': obj.pk,
             'name': obj.title,
             #'description': obj.description,
             #'enabled': obj.enabled,
@@ -121,7 +121,7 @@ class ProcessListView(ExtListView):
 
     def convert_object_to_dict(self, obj):
         data = {
-            'id': obj.pk,
+            'pk': obj.pk,
             #'title': obj.title,
             'type': obj.workflow.name,
             #'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%m"),

@@ -1,6 +1,7 @@
 Ext.define('WS.model.Task', {
     extend: 'Ext.data.Model',
-    fields: ['pk','task', 'user', 'process', 'process_type', 'priority', 'date', 'status'],
+    //fields: ['pk','task', 'user', 'process', 'process_type', 'priority', 'date', 'status'],
+    fields: ['pk','task', 'process', 'workflow', 'state', 'result'],
     proxy: {
         type: 'ajax',
         api: {

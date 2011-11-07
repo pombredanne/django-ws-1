@@ -15,8 +15,8 @@ Ext.define('WS.view.layout.DashboardSidebar', {
         action: 'startProcess',
     },{
         xtype: 'button',
-        text: 'Running Processes',
-        action: 'runningProcesses',
+        text: 'Processes',
+        action: 'processes',
     }],
 });
 

@@ -3,7 +3,7 @@ Ext.define('WS.view.process.MainSidebar', {
     alias: 'widget.processsidebar',
 
     initComponent: function() {
-        processStore = Ext.getStore('RunningProcesses');
+        processStore = Ext.getStore('Processes');
         this.items = [{
             xtype: 'fieldset',
             title: 'Actions',

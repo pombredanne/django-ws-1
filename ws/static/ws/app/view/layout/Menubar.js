@@ -30,8 +30,8 @@ Ext.define('WS.view.layout.Menubar', {
                         text: 'Start new process',
                         action: 'startProcess',
                     },{
-                        text: 'Running processes',
-                        action: 'runningProcesses',
+                        text: 'Processes',
+                        action: 'processes',
                     },{
                         text: 'All processes',
                     }]

@@ -1,16 +1,16 @@
-Ext.define('WS.model.RunningProcess', {
+Ext.define('WS.model.Workflow', {
     extend: 'Ext.data.Model',
-    fields: ['id', 'title', 'type', 'creationTime', 'status'],
+    fields: ['id', 'name'],
 
     proxy: {
         type: 'ajax',
         api: {
-            read: '/ws/runningprocesses.json',
+            read: '/ws/workflows.json',
             update: '/static/ws/data/updateTasks.json'
         },
         reader: {
             type: 'json',
             root: 'rows',
         }
-    },
+    }
 });

@@ -24,11 +24,14 @@ Ext.define('WS.controller.Layout', {
             'menubar menuitem[action=startProcess]': {
                 click: this.startProcess
             },
-            'menubar menuitem[action=runningProcesses]': {
-                click: this.runningProcesses
+            'menubar menuitem[action=processes]': {
+                click: this.processes
             },
             '#viewChooser button': {
                 toggle: this.changeView,
+            },
+            'dashboardsidebar button[action=processes]': {
+                click: this.processes
             },
             'dashboardsidebar button[action=viewAllTasks]': {
                 click: this.viewAllTasks
@@ -51,14 +54,14 @@ Ext.define('WS.controller.Layout', {
                 });
             };
             //Create portlets
-            portlet = Ext.create('WS.view.process.Running');
+            portlet = Ext.create('WS.view.process.Portlet');
             component.items.items[0].add(portlet);
 
             portlet = Ext.create('WS.view.task.All');
             component.items.items[0].add(portlet);
 
-            portlet = Ext.create('WS.view.process.Starter');
-            component.items.items[1].add(portlet);
+            //portlet = Ext.create('WS.view.process.Starter');
+            //component.items.items[1].add(portlet);
 
             portlet = Ext.create('WS.view.layout.Portlet', {
                 html: "kaixo3",
@@ -96,8 +99,9 @@ Ext.define('WS.controller.Layout', {
         this.fireEvent('new_widget',view);
     },
 
-    runningProcesses: function(button) {
-        var view = Ext.create('WS.view.process.Running');
+    processes: function(button) {
+        console.log("process portlet");
+        var view = Ext.create('WS.view.process.Portlet');
         this.fireEvent('new_widget',view);
     },
 
