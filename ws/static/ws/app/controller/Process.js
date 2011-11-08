@@ -13,12 +13,16 @@ Ext.define('WS.controller.Process', {
         'process.Portlet',
         'process.Main',
         'process.MainSidebar',
+        'process.ProcessDetail',
     ],
 
     init: function() {
         this.control({
             'processesportlet': {
                 beforeadd: this.loadProcesses,
+            },
+            'processmain gridpanel': {
+                selectionchange: this.loadProcessDetail,
             },
         });
     },
@@ -36,5 +40,14 @@ Ext.define('WS.controller.Process', {
                 };
             });
         };
+    },
+
+    loadProcessDetail: function(row, selections, options) {
+        var mainpanel = row.view.up('processmain'),
+            detailpanel = mainpanel.down('#processdetail'),
+            detail = Ext.create('WS.view.process.ProcessDetail');
+        detailpanel.removeAll();
+        detailpanel.add(detail);
+
     }
 });
