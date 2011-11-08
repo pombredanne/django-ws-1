@@ -7,7 +7,7 @@ from django.contrib.auth import login, logout
 from django.utils import simplejson as json
 from django.http import HttpResponse
 
-from ws.models import Task, Process, Workflow
+from ws.models import Task, Process, Workflow, Transition
 
 class ProtectedTemplateView(TemplateView):
     @method_decorator(login_required)
@@ -154,6 +154,34 @@ class TaskListView(ExtListView):
             'result': obj.result
         }
         return data
+
+class WorkflowGraphView(DetailView):
+    model = Workflow
+
+    def render_to_response(self, context):
+        import pygraphviz as pgv
+        import tempfile
+        import os
+        graph = pgv.AGraph(strict=False, directed=True)
+        for node in context['workflow'].node_set.all():
+            graph.add_node(node)
+        for transition in Transition.objects.filter(parent__workflow=1):
+            graph.add_edge(transition.parent, transition.child)
+        #return HttpResponse(graph.string()) # .dot file
+        png_file = tempfile.NamedTemporaryFile(delete=False)
+        png_file_name = png_file.name
+        graph.layout()
+        #layout: [neato|dot|twopi|circo|fdp|nop]
+        #graph.draw(png_file, format='svg', prog='dot')
+        #graph.draw(png_file, format='svg', prog='circo')
+        graph.draw(png_file, format='png', prog='dot')
+        png_file = open(png_file_name)
+        image = png_file.read()
+        png_file.close()
+        os.remove(png_file_name)
+        return HttpResponse(image,
+                            content_type='image/png')
+                            #content_type='image/svg+xml')
 
 
 """

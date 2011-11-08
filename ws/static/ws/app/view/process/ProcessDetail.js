@@ -17,8 +17,11 @@ Ext.define('WS.view.process.ProcessDetail', {
         this.title = "Process: "+this.getPk();
         this.items = [{
             region: 'east',
+            split: 'true',
+            width: '40%',
             items: [{
-                html: 'Process graph',
+                xtype: 'image',
+                src: '/ws/workflows/workflow_1.png',
             }],
         },{
             region: 'center',
