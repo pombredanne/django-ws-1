@@ -14,6 +14,7 @@ Ext.define('WS.view.layout.Main', {
         },{
             id: 'app-center',
             region: 'center',
+            layout: 'fit',
             items: [{
                 html: 'erdialdea',
             }],
