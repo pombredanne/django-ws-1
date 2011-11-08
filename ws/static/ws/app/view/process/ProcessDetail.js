@@ -8,8 +8,13 @@ Ext.define('WS.view.process.ProcessDetail', {
         padding: '0 5 5 5'
     },
 
+    config: {
+        pk: undefined,
+        type: undefined,
+    },
+
     initComponent: function() {
-        this.title = 'Process title';
+        this.title = "Process: "+this.getPk();
         this.items = [{
             region: 'east',
             items: [{
@@ -18,7 +23,13 @@ Ext.define('WS.view.process.ProcessDetail', {
         },{
             region: 'center',
             items: [{
-                html: 'Process details',
+                tpl: Ext.create('Ext.Template',[
+                    '<p><b>Process</b>: {pk}</p>',
+                    '<p><b>Type</b>: {type}</p>',
+                    '<p><b>Created</b>: TODO</p>',
+                    '<p><b>Status</b>: TODO</p>',
+                ]),
+                data: {pk: this.getPk(), type: this.getType()},
             }],
         }];
         this.callParent(arguments);

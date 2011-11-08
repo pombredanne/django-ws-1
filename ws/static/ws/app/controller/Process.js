@@ -43,11 +43,13 @@ Ext.define('WS.controller.Process', {
     },
 
     loadProcessDetail: function(row, selections, options) {
-        var mainpanel = row.view.up('processmain'),
-            detailpanel = mainpanel.down('#processdetail'),
-            detail = Ext.create('WS.view.process.ProcessDetail');
-        detailpanel.removeAll();
-        detailpanel.add(detail);
-
+        if (selections.length) {
+            var mainpanel = row.view.up('processmain'),
+                detailpanel = mainpanel.down('#processdetail'),
+                data = selections[0].data,
+                detail = Ext.create('WS.view.process.ProcessDetail', data);
+            detailpanel.removeAll();
+            detailpanel.add(detail);
+        }
     }
 });
