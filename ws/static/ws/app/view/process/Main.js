@@ -36,6 +36,7 @@ Ext.define('WS.view.process.Main', {
             height: '50%',
             collapsible: true,
             collapseMode: 'mini',
+            preventHeader: true,
             split: true,
             items: [{
                 title: 'Process details',
