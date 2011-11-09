@@ -45,7 +45,7 @@ class ExtListView(JSONResponseMixin, ListView):
         - send 'success' value
         - send listings inside a 'rows' array.
 
-    The convert_object_to_json function should be overwritten to provide
+    The convert_object_to_dict function should be overwritten to provide
     specific information for each row.
     """
     def get_paginate_by(self, queryset):
@@ -122,7 +122,7 @@ class ProcessListView(ExtListView):
     def convert_object_to_dict(self, obj):
         data = {
             'pk': obj.pk,
-            #'title': obj.title,
+            'name': str(obj),
             'type': obj.workflow.name,
             #'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%m"),
             #'status': obj.status,

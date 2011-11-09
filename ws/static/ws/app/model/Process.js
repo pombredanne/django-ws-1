@@ -1,7 +1,7 @@
 Ext.define('WS.model.Process', {
     extend: 'Ext.data.Model',
     //fields: ['id', 'title', 'type', 'creationTime', 'status'],
-    fields: ['pk', 'type'],
+    fields: ['pk', 'name', 'type'],
 
     proxy: {
         type: 'ajax',
