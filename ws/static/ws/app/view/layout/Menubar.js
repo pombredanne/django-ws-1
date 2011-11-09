@@ -14,7 +14,7 @@ Ext.define('WS.view.layout.Menubar', {
                     xtype: 'menu',
                     items: [{
                         text: 'View all tasks',
-                        action: 'viewAllTasks',
+                        action: 'taskPortlet',
                     },{
                         text: 'My tasks',
                         action: 'myTasks',

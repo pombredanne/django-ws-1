@@ -1,6 +1,6 @@
-Ext.define('WS.view.task.All', {
+Ext.define('WS.view.task.Portlet', {
     extend: 'WS.view.layout.Portlet',
-    alias: 'widget.alltasks',
+    alias: 'widget.taskportlet',
     autoScroll: true,
     title: 'Tasks',
     refreshable: true,

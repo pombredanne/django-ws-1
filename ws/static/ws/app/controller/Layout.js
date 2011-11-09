@@ -18,8 +18,8 @@ Ext.define('WS.controller.Layout', {
             'main': {
                 add: this.loadColumns,
             },
-            'menubar menuitem[action=viewAllTasks]': {
-                click: this.viewAllTasks
+            'menubar menuitem[action=taskPortlet]': {
+                click: this.taskPortlet
             },
             'menubar menuitem[action=startProcess]': {
                 click: this.startProcess
@@ -33,8 +33,8 @@ Ext.define('WS.controller.Layout', {
             'dashboardsidebar button[action=processes]': {
                 click: this.processes
             },
-            'dashboardsidebar button[action=viewAllTasks]': {
-                click: this.viewAllTasks
+            'dashboardsidebar button[action=taskPortlet]': {
+                click: this.taskPortlet
             },
             'portlet tool[action=fullscreen]': {
                 click: this.goToFullscreen
@@ -57,7 +57,7 @@ Ext.define('WS.controller.Layout', {
             portlet = Ext.create('WS.view.process.Portlet');
             component.items.items[0].add(portlet);
 
-            portlet = Ext.create('WS.view.task.All');
+            portlet = Ext.create('WS.view.task.Portlet');
             component.items.items[0].add(portlet);
 
             //portlet = Ext.create('WS.view.process.Starter');
@@ -89,8 +89,8 @@ Ext.define('WS.controller.Layout', {
         target_column.add(portlet);
     },
 
-    viewAllTasks: function(button) {
-        var view = Ext.create('WS.view.task.All');
+    taskPortlet: function(button) {
+        var view = Ext.create('WS.view.task.Portlet');
         this.fireEvent('new_widget',view);
     },
 

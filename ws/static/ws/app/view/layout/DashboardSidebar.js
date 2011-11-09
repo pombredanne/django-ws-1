@@ -3,8 +3,8 @@ Ext.define('WS.view.layout.DashboardSidebar', {
     alias: 'widget.dashboardsidebar',
     items: [{
         xtype: 'button',
-        text: 'All tasks',
-        action: 'viewAllTasks',
+        text: 'Tasks',
+        action: 'taskPortlet',
     },{
         xtype: 'button',
         text: 'My tasks',
