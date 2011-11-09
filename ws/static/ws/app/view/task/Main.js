@@ -22,6 +22,7 @@ Ext.define('WS.view.task.Main', {
                 {header: 'Date',  xtype: 'templatecolumn', tpl:'TODO', flex: 1},
                 {header: 'State', dataIndex: 'state', flex: 1, renderer: this.statusRenderer},
                 {header: 'Result', dataIndex: 'result', flex: 1},
+                {header: 'Info required', dataIndex: 'info_required', flex: 1},
             ],
             dockedItems: [{
                 xtype: 'pagingtoolbar',

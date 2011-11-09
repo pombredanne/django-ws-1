@@ -151,7 +151,8 @@ class TaskListView(ExtListView):
             #'priority': obj.priority,
             #'date': obj.date.strftime("%Y/%m/%d %H:%m"),
             'state': obj.state,
-            'result': obj.result
+            'result': obj.result,
+            'info_required': obj.node.info_required,
         }
         return data
 

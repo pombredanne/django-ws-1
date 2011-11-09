@@ -30,13 +30,13 @@ Ext.define('WS.view.task.MainSidebar', {
                 xtype: 'combobox',
                 fieldLabel: 'Column',
                 store: [
-                    ['task','Title'],
+                    ['task','Name'],
                     ['user','User'],
                     ['process','Process'],
-                    ['process_type','Process type'],
+                    ['workflow','Process type'],
                     ['priority','Priority'],
                     ['date','Date'],
-                    ['status','Status'],
+                    ['state','State'],
                 ],
                 typeAhead: 'true',
                 },{

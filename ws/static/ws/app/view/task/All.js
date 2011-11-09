@@ -21,6 +21,7 @@ Ext.define('WS.view.task.All', {
                 //{header: 'Date', dataIndex: 'date', flex: 1},
                 {header: 'State', dataIndex: 'state', flex: 1, renderer: this.statusRenderer},
                 {header: 'Result', dataIndex: 'result', flex: 1},
+                {header: 'Info required', dataIndex: 'info_required', flex: 1},
                 {xtype:'actioncolumn', 
                     width: 70,
                     items: [{
