@@ -1,12 +1,9 @@
 Ext.define('WS.view.process.ProcessDetail', {
-    extend: 'Ext.panel.Panel',
+    extend: 'Ext.tab.Panel',
     alias: 'widget.processdetail',
     autoScroll: true,
     height: 500,
-    layout: {
-        type: 'border',
-        padding: '0 5 5 5'
-    },
+    layout: 'fit',
 
     config: {
         pk: undefined,
@@ -14,17 +11,8 @@ Ext.define('WS.view.process.ProcessDetail', {
     },
 
     initComponent: function() {
-        this.title = "Process: "+this.getPk();
         this.items = [{
-            region: 'east',
-            split: 'true',
-            width: '40%',
-            items: [{
-                xtype: 'image',
-                src: '/ws/workflows/workflow_1.png',
-            }],
-        },{
-            region: 'center',
+            title: 'Overview',
             items: [{
                 tpl: Ext.create('Ext.Template',[
                     '<p><b>Process</b>: {pk}</p>',
@@ -33,6 +21,14 @@ Ext.define('WS.view.process.ProcessDetail', {
                     '<p><b>Status</b>: TODO</p>',
                 ]),
                 data: {pk: this.getPk(), type: this.getType()},
+            }],
+        },{
+            title: 'Tasks',
+        },{
+            title: 'Graph',
+            items: [{
+                xtype: 'image',
+                src: '/ws/workflows/workflow_1.png',
             }],
         }];
         this.callParent(arguments);
