@@ -11,7 +11,22 @@ Ext.define('WS.view.process.ProcessDetail', {
     },
 
     initComponent: function() {
+        this.store = Ext.create('WS.store.Tasks', {
+            autoLoad: true,
+            filters: [{
+                property: 'process',
+                value: this.getPk(),
+            }],
+        });
+
         this.items = [{
+            title: 'Tasks',
+            items: [{
+                xtype: 'taskgrid',
+                store: this.store,
+                layout: 'fit',
+            }],
+        },{
             title: 'Overview',
             items: [{
                 tpl: Ext.create('Ext.Template',[
@@ -22,8 +37,6 @@ Ext.define('WS.view.process.ProcessDetail', {
                 ]),
                 data: {pk: this.getPk(), type: this.getType()},
             }],
-        },{
-            title: 'Tasks',
         },{
             title: 'Graph',
             items: [{
