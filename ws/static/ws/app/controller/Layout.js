@@ -109,7 +109,9 @@ Ext.define('WS.controller.Layout', {
         if (pressed) {
             var center = Ext.ComponentManager.get('app-center'),
                 sidebar = Ext.ComponentManager.get('app-sidebar');
+            center.setLoading(true);
             center.removeAll();
+            sidebar.setLoading(true);
             sidebar.removeAll();
             var view, side;
             switch(button.action) {
@@ -130,7 +132,9 @@ Ext.define('WS.controller.Layout', {
                         side = Ext.create("Ext.panel.Panel", {html: "TODO"});
             }
             center.add(view);
+            center.setLoading(false);
             sidebar.add(side);
+            sidebar.setLoading(false);
         };
     },
     goToFullscreen: function(tool) {
