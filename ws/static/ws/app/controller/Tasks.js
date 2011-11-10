@@ -10,9 +10,6 @@ Ext.define('WS.controller.Tasks', {
 
     init: function() {
         this.control({
-            'taskportlet': {
-                beforeadd: this.loadTasks,
-            },
             'taskportlet gridpanel': {
                 itemdblclick: this.editTask
             },
@@ -20,21 +17,6 @@ Ext.define('WS.controller.Tasks', {
                 click: this.updateTask
             }
         });
-    },
-
-    loadTasks: function(grid, component) {
-        if (component.xtype == 'grid') {
-            var that = this;
-            this.getTasksStore().load( function(records, operation, success) {
-                if (success) {
-                    //console.log("Tasks loaded: "+operation.resultSet.count)
-                } else {
-                    portlet.setTitle(portlet.title+' (unauthorized)');
-                    var authController = that.getController('Auth');
-                    authController.fireEvent('auth_required');
-                };
-            });
-        };
     },
 
     editTask: function(grid, record) {

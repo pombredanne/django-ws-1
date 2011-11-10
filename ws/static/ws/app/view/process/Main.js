@@ -3,33 +3,19 @@ Ext.define('WS.view.process.Main', {
     alias: 'widget.processmain',
     autoScroll: true,
     title: 'Processes',
-    refreshable: true,
     layout: {
         type: 'border',
         padding: 0
     },
 
     initComponent: function() {
+        this.store = Ext.create('WS.store.Processes', {
+            autoLoad: true,
+        });
         this.items = [{
-            xtype: 'grid',
+            xtype: 'processgrid',
             region: 'center',
-            layout: 'fit',
-            store: 'Processes',
-            columns: [
-                Ext.create('Ext.grid.RowNumberer'),
-                {header: 'Process', dataIndex: 'name', flex: 1},
-                {header: 'Type', dataIndex: 'type', flex: 1},
-                //{header: 'Created', dataIndex: 'creationTime', flex: 1},
-                {header: 'Created',  xtype: 'templatecolumn', tpl:'TODO', flex: 1},
-                //{header: 'Status', dataIndex: 'status', flex: 1},
-                {header: 'Status',  xtype: 'templatecolumn', tpl:'TODO', flex: 1},
-            ],
-            dockedItems: [{
-                xtype: 'pagingtoolbar',
-                store: 'Processes',
-                dock: 'bottom',
-                displayInfo: true,
-            }],
+            store: this.store,
         },{
             id: 'processdetail',
             region: 'south',
@@ -44,10 +30,5 @@ Ext.define('WS.view.process.Main', {
             }],
         }];
         this.callParent(arguments);
-    },
-
-    doRefresh: function() {
-        var grid = this.down('gridpanel');
-        grid.store.load();
     },
 });

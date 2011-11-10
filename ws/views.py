@@ -137,7 +137,8 @@ class ProcessListView(ExtListView):
         data = {
             'pk': obj.pk,
             'name': unicode(obj),
-            'type': obj.workflow.name,
+            'workflow': obj.workflow.name,
+            'workflow_pk': obj.workflow.pk,
             #'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%m"),
             #'status': obj.status,
         }

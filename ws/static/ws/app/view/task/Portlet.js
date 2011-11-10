@@ -8,7 +8,9 @@ Ext.define('WS.view.task.Portlet', {
     fullscreenTarget: 'tasks',
 
     initComponent: function() {
-        this.store = Ext.create('WS.store.Tasks');
+        this.store = Ext.create('WS.store.Tasks', {
+            autoLoad: true,
+        });
         this.items = [{
             xtype: 'taskgrid',
             store: this.store,
