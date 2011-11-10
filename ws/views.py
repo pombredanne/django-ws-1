@@ -48,6 +48,10 @@ class ExtListView(JSONResponseMixin, ListView):
     The convert_object_to_dict function should be overwritten to provide
     specific information for each row.
     """
+
+    #Default pagination
+    paginate_by = 20
+
     def get_paginate_by(self, queryset):
         limit = self.request.GET.get('limit', self.paginate_by)
         try:
@@ -55,6 +59,16 @@ class ExtListView(JSONResponseMixin, ListView):
         except ValueError:
             limit = None
         return limit
+
+    def get_queryset(self):
+        query = super(ExtListView, self).get_queryset()
+
+        ext_filters = self.request.GET.get('filter',None)
+        if ext_filters:
+            for ext_filter in json.loads(ext_filters):
+                params = {ext_filter['property']: ext_filter['value']}
+                query = query.filter(**params)
+        return query
 
     def convert_context_to_json(self, context):
         if context['paginator'] is not None:
@@ -122,7 +136,7 @@ class ProcessListView(ExtListView):
     def convert_object_to_dict(self, obj):
         data = {
             'pk': obj.pk,
-            'name': str(obj),
+            'name': unicode(obj),
             'type': obj.workflow.name,
             #'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%m"),
             #'status': obj.status,
@@ -155,6 +169,7 @@ class TaskListView(ExtListView):
             'info_required': obj.node.info_required,
         }
         return data
+
 
 class WorkflowGraphView(DetailView):
     model = Workflow

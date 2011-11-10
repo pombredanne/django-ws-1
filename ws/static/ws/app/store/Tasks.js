@@ -3,4 +3,5 @@ Ext.define('WS.store.Tasks', {
     model: 'WS.model.Task',
     autoLoad: false,
     pageSize: 10,
+    remoteFilter: true,
 });
