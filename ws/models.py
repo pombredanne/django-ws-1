@@ -5,17 +5,7 @@ from django.utils.importlib import import_module
 from celery.execute import send_task
 import jsonfield
 
-task_state = Signal()
-start_transition = Signal()
-
-conditions = {'XOR': 0, 'AND': 1}
-states = {'STARTED': 2, 'SUCCESS': 3, 'REVOKED': 4, 'FAILURE': 5}
-conditions_choices = [(value, key) for key,value in conditions.items()]
-states_choices = [(value, key) for key,value in states.items()]
-
-#FIXME: we've a problem with XOR splits. After a XOR split is done,
-#if the flow fails in some node, it must return to the split to instantiate
-#the other side.
+from ws.signals import notifier, r_conditions, r_states
 
 class Workflow(models.Model):
     #FIXME: Here we have a problem: a circular foreignkey, from process to activity
@@ -33,11 +23,11 @@ class Node(models.Model):
     name = models.CharField(max_length=100)
     workflow = models.ForeignKey(Workflow)
 
-    join = models.PositiveSmallIntegerField(choices=conditions_choices)
-    split = models.PositiveSmallIntegerField(choices=conditions_choices)
+    join = models.PositiveSmallIntegerField(choices=r_conditions.items())
+    split = models.PositiveSmallIntegerField(choices=r_conditions.items())
     completed = {}
 
-    task_name = models.CharField(max_length=256, blank=True) #ws.tasks.add
+    task_name = models.CharField(max_length=256) #ws.tasks.add
     params = jsonfield.JSONField(null=True)
     info_required = models.BooleanField(editable=False)
 
@@ -45,15 +35,12 @@ class Node(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if self.celery_task:
-            form = self.celery_task.form(self.params)
-            self.info_required = not form.is_valid()
+        form = self.celery_task.form(self.params)
+        self.info_required = not form.is_valid()
         super(Node, self).save(*args, **kwargs)
 
     @property
     def celery_task(self):
-        if not self.task_name:
-            return None
         module, _, task = self.task_name.rpartition('.')
         module = import_module(module)
         return getattr(module, task)
@@ -90,7 +77,7 @@ class Task(models.Model):
 
     result = models.CharField(max_length=100, blank=True)
     state = models.PositiveSmallIntegerField(
-            choices=states_choices, default=2)
+            choices=r_states.items(), default=2)
 
     def __unicode__(self):
         return '{0} [{1}] in {2}'.format(
@@ -101,69 +88,12 @@ class Task(models.Model):
         # apply_async; this way celery respects CELERY_ALWAYS_EAGER, so it
         # can be tested :-) This could change in future versions of celery.
         #result = send_task(self.task, args=(self.pk,), kwargs=params)
-        self.state = states['STARTED']
-        self.save()
         result = self.node.celery_task.apply_async(
-                args=(self.pk,),
-                kwargs=self.node.params)
+                args=(self.pk,), kwargs=self.node.params)
         return result
 
-    def finish(self, state, result=''):
-        if type(state) is str or type(state) is unicode:
-            state = states[state]
+    def update(self, state, result=''):
         self.state = state
         self.result = result
         self.save()
-        task_state.send_robust(sender=self, state=self.state)
-
-
-class Notification(object):
-    def notify_childs(self):
-        transitions = self.node.child_transition_set.filter(
-                condition__in=('', self.task.result))
-
-        if self.task.node.split is conditions['XOR']:
-            transitions = transitions[:1]
-
-        for transition in transitions.iterator():
-            start_transition.send_robust(
-                    sender=transition, process=self.task.process)
-
-    def notify_xor_parent(self):
-        xor = None
-        while not xor:
-            parents = self.node.parent_transition_set.filter(
-                    split=conditions['XOR'])
-            transitions = Transition.objects.filter(parent__in=parents,
-                    child__task_set__isnull=True)
-            if transitions:
-                xor = transitions[0]
-        start_transition.send_robust(sender=xor, process=self.task.process)
-
-    def __call__(self, sender, **kwargs):
-        self.state = kwargs.pop('state')
-        self.task = sender
-        self.node = self.task.node
-
-        if self.state is states['SUCCESS']:
-            self.notify_childs()
-
-        elif self.state in (states['FAILURE'], states['REVOKED']):
-            self.notify_xor_parent()
-task_state.connect(Notification(), weak=False)
-
-
-@receiver(start_transition)
-def start(sender, **kwargs):
-    transition = sender
-    process = kwargs.pop('process')
-
-    if process not in transition.child.completed:
-        transition.child.completed[process] = set()
-    transition.child.completed[process].add(transition)
-
-    completed = len(transition.child.completed[process])
-    if (transition.child.join is conditions['XOR'] and completed >= 1) or\
-            (transition.child.join is conditions['AND'] and completed is\
-            transition.child.parent_transition_set.count()):
-                process.start_node(transition.child)
+        notifier.send(sender=self)

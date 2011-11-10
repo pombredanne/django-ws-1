@@ -1,7 +1,8 @@
 from django.utils import unittest
 
 from ws.models import Workflow, Node, Transition
-from ws.models import Process, Task, conditions, states
+from ws.models import Process, Task
+from ws.signals import states, conditions
 
 AND = conditions['AND']
 XOR = conditions['XOR']
@@ -78,21 +79,6 @@ class SplitTest(WorkflowSetup):
         self.separation_two = Transition.objects.create(
                 child=self.two, parent=self.separation)
 
-    def test_xor(self):
-        self.separation.split = XOR; self.separation.save()
-        childs = self.task_separation.childs_to_notify()
-
-        #self.one has XOR join, so it must be the best guess
-        self.assertTrue(tuple(childs.iterator()) == (self.one,))
-
-    def test_and(self):
-        self.separation.split = AND; self.separation.save()
-        childs = self.task_separation.childs_to_notify()
-
-        self.assertTrue(tuple(childs.iterator()) == (self.one, self.two))
-
-
-class SplitInstantiationTest(SplitTest):
     def test_xor(self):
         self.separation.split = XOR; self.separation.save()
         self.task_separation.finish('SUCCESS')

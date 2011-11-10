@@ -1,5 +1,6 @@
 from django.test import TestCase
-from ws.models import Task, Node, states
+from ws.models import Task, Node
+from ws.signals import states
 from ws.tasks import add
 
 class CeleryIntegrationTestCase(TestCase):
