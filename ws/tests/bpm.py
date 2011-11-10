@@ -1,7 +1,7 @@
 from django.utils import unittest
 
-from .models import Workflow, Node, Transition
-from .models import Process, Task, conditions, states
+from ws.models import Workflow, Node, Transition
+from ws.models import Process, Task, conditions, states
 
 AND = conditions['AND']
 XOR = conditions['XOR']
@@ -41,33 +41,15 @@ class JoinTest(WorkflowSetup):
 
     def test_xor(self):
         self.joint.join = XOR; self.joint.save()
-
-        self.assertFalse(self.joint in self.process.valid_nodes())
-        self.task_one.state=states['succeded']; self.task_one.save()
-        self.assertTrue(self.joint in self.process.valid_nodes())
-
-    def test_and(self):
-        self.joint.join = AND; self.joint.save()
-
-        self.assertFalse(self.joint in self.process.valid_nodes())
-        self.task_one.state=states['succeded']; self.task_one.save()
-        self.assertFalse(self.joint in self.process.valid_nodes())
-        self.task_two.state=states['succeded']; self.task_two.save()
-        self.assertTrue(self.joint in self.process.valid_nodes())
-
-
-class JoinInstantiationTest(JoinTest):
-    def test_xor(self):
-        self.joint.join = XOR; self.joint.save()
-        self.task_one.finish('succeded')
+        self.task_one.finish('SUCCESS')
         self.assertTrue(Task.objects.filter(node=self.joint))
 
     def test_and(self):
         self.joint.join = AND; self.joint.save()
         self.assertFalse(Task.objects.filter(node=self.joint))
-        self.task_one.finish('succeded')
+        self.task_one.finish('SUCCESS')
         self.assertFalse(Task.objects.filter(node=self.joint))
-        self.task_two.finish('succeded')
+        self.task_two.finish('SUCCESS')
         self.assertTrue(Task.objects.filter(node=self.joint))
 
 
@@ -88,7 +70,7 @@ class SplitTest(WorkflowSetup):
                 workflow=self.workflow, join=XOR, split=XOR)
         self.task_separation = Task.objects.create(
                 node=self.separation, process=self.process,
-                state=states['succeded'])
+                state=states['SUCCESS'])
 
         #Transition between separation point and the others
         self.separation_one = Transition.objects.create(
@@ -113,13 +95,13 @@ class SplitTest(WorkflowSetup):
 class SplitInstantiationTest(SplitTest):
     def test_xor(self):
         self.separation.split = XOR; self.separation.save()
-        self.task_separation.finish('succeded')
+        self.task_separation.finish('SUCCESS')
         self.assertTrue(Task.objects.filter(node=self.one))
         self.assertFalse(Task.objects.filter(node=self.two))
 
     def test_and(self):
         self.separation.split = AND; self.separation.save()
-        self.task_separation.finish('succeded')
+        self.task_separation.finish('SUCCESS')
         self.assertTrue(Task.objects.filter(node=self.one))
         self.assertTrue(Task.objects.filter(node=self.two))
 
@@ -147,7 +129,7 @@ class ConditionTest(WorkflowSetup):
     def test_condition(self):
         self.assertFalse(self.destination in \
                 self.task_source.childs_to_notify())
-        self.task_source.finish('succeded', 'OK')
+        self.task_source.finish('SUCCESS', 'OK')
         self.assertTrue(self.destination in \
                 self.task_source.childs_to_notify())
 
@@ -183,10 +165,10 @@ class LoopTest(WorkflowSetup):
                 node=self.first, process=self.process)
 
     def test_loop(self):
-        self.task_middle = self.task_first.finish('succeded')[0]
-        self.task_first = self.task_middle.finish('succeded', 'Fail')[0]
-        self.task_middle = self.task_first.finish('succeded')[0]
-        self.task_last = self.task_middle.finish('succeded', 'OK')[0]
+        self.task_middle = self.task_first.finish('SUCCESS')[0]
+        self.task_first = self.task_middle.finish('SUCCESS', 'Fail')[0]
+        self.task_middle = self.task_first.finish('SUCCESS')[0]
+        self.task_last = self.task_middle.finish('SUCCESS', 'OK')[0]
 
 
 

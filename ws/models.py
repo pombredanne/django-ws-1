@@ -1,6 +1,12 @@
 from django.db import models
+from django.dispatch import Signal, receiver
+from django.utils.importlib import import_module
+
 from celery.execute import send_task
 import jsonfield
+
+task_state = Signal()
+start_transition = Signal()
 
 conditions = {'XOR': 0, 'AND': 1}
 states = {'STARTED': 2, 'SUCCESS': 3, 'REVOKED': 4, 'FAILURE': 5}
@@ -29,25 +35,28 @@ class Node(models.Model):
 
     join = models.PositiveSmallIntegerField(choices=conditions_choices)
     split = models.PositiveSmallIntegerField(choices=conditions_choices)
+    completed = {}
 
-    task_name = models.CharField(max_length=256) #ws.tasks.add
-    params = jsonfield.JSONField()
+    task_name = models.CharField(max_length=256, blank=True) #ws.tasks.add
+    params = jsonfield.JSONField(null=True)
     info_required = models.BooleanField(editable=False)
 
     def __unicode__(self):
         return self.name
 
     def save(self, *args, **kwargs):
-        form = self.celery_task.form(self.params)
-        self.info_required = not form.is_valid()
+        if self.celery_task:
+            form = self.celery_task.form(self.params)
+            self.info_required = not form.is_valid()
         super(Node, self).save(*args, **kwargs)
 
     @property
     def celery_task(self):
-        path = self.task_name.split('.')
-        module = __import__('.'.join(path[:-1]), fromlist=path[-1])
-        task = getattr(module, path[-1])
-        return task
+        if not self.task_name:
+            return None
+        module, _, task = self.task_name.rpartition('.')
+        module = import_module(module)
+        return getattr(module, task)
 
 
 class Transition(models.Model):
@@ -63,35 +72,17 @@ class Transition(models.Model):
 class Process(models.Model):
     workflow = models.ForeignKey(Workflow)
 
-    def latest_tasks(self):
-        tasks = Task.objects.none()
-        for node in Node.objects.filter(workflow=self.workflow):
-            tasks |= Task.objects.filter(process=self, 
-                    node=node).order_by('-pk')[:1]
-        return tasks
-
-    def valid_transitions(self):
-        valid = Transition.objects.none()
-        for task in self.task_set.filter(state=states['SUCCESS']):
-            valid |= Transition.objects.filter(parent=task.node,
-                    condition__in=(task.result, ''))
-        return valid
-
-    def valid_nodes(self):
-        transitions = self.valid_transitions()
-        nodes = Node.objects.filter(workflow=self.workflow)
-        valid = nodes.filter(join=conditions['XOR'],
-                parent_transition_set__in=transitions)
-
-        for node in nodes.filter(join=conditions['AND']).iterator():
-            if node.parent_transition_set.count() is \
-                    transitions.filter(child=node).count():
-                        valid |= nodes.filter(pk=node.pk)
-        return valid
-
     def __unicode__(self):
         return '{0} [{1}]'.format(self.workflow.name, self.pk)
     
+    def start(self):
+        self.start_node(self.workflow.first)
+
+    def start_node(self, node):
+        task = Task(node=node, process=self)
+        task.save()
+        task.launch()
+
 
 class Task(models.Model):
     node = models.ForeignKey(Node)
@@ -110,27 +101,12 @@ class Task(models.Model):
         # apply_async; this way celery respects CELERY_ALWAYS_EAGER, so it
         # can be tested :-) This could change in future versions of celery.
         #result = send_task(self.task, args=(self.pk,), kwargs=params)
+        self.state = states['STARTED']
+        self.save()
         result = self.node.celery_task.apply_async(
                 args=(self.pk,),
                 kwargs=self.node.params)
         return result
-
-
-    def valid_transitions(self):
-        return self.process.valid_transitions().filter(
-                parent=self.node, condition__in=(self.result, ''))
-
-    def valid_nodes(self):
-        return self.process.valid_nodes().filter(
-                parent_transition_set__in=self.valid_transitions(),
-                parent_transition_set__parent=self.node)
-
-    def childs_to_notify(self):
-        childs = self.valid_nodes()
-        if self.node.split is conditions['XOR']:
-            #TODO: insert XOR decition logic here
-            childs = childs[:1]
-        return childs
 
     def finish(self, state, result=''):
         if type(state) is str or type(state) is unicode:
@@ -138,11 +114,56 @@ class Task(models.Model):
         self.state = state
         self.result = result
         self.save()
-        tasks = Task.objects.none()
-        for node in self.childs_to_notify():
-            task = Task(
-                node=node, 
-                process=self.process)
-            task.save()
-            tasks |= Task.objects.filter(pk=task.pk)
-        return tasks
+        task_state.send_robust(sender=self, state=self.state)
+
+
+class Notification(object):
+    def notify_childs(self):
+        transitions = self.node.child_transition_set.filter(
+                condition__in=('', self.task.result))
+
+        if self.task.node.split is conditions['XOR']:
+            transitions = transitions[:1]
+
+        for transition in transitions.iterator():
+            start_transition.send_robust(
+                    sender=transition, process=self.task.process)
+
+    def notify_xor_parent(self):
+        xor = None
+        while not xor:
+            parents = self.node.parent_transition_set.filter(
+                    split=conditions['XOR'])
+            transitions = Transition.objects.filter(parent__in=parents,
+                    child__task_set__isnull=True)
+            if transitions:
+                xor = transitions[0]
+        start_transition.send_robust(sender=xor, process=self.task.process)
+
+    def __call__(self, sender, **kwargs):
+        self.state = kwargs.pop('state')
+        self.task = sender
+        self.node = self.task.node
+
+        if self.state is states['SUCCESS']:
+            self.notify_childs()
+
+        elif self.state in (states['FAILURE'], states['REVOKED']):
+            self.notify_xor_parent()
+task_state.connect(Notification(), weak=False)
+
+
+@receiver(start_transition)
+def start(sender, **kwargs):
+    transition = sender
+    process = kwargs.pop('process')
+
+    if process not in transition.child.completed:
+        transition.child.completed[process] = set()
+    transition.child.completed[process].add(transition)
+
+    completed = len(transition.child.completed[process])
+    if (transition.child.join is conditions['XOR'] and completed >= 1) or\
+            (transition.child.join is conditions['AND'] and completed is\
+            transition.child.parent_transition_set.count()):
+                process.start_node(transition.child)
