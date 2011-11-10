@@ -8,9 +8,11 @@ Ext.define('WS.view.task.Portlet', {
     fullscreenTarget: 'tasks',
 
     initComponent: function() {
+        this.store = Ext.create('WS.store.Tasks');
         this.items = [{
             xtype: 'grid',
-            store: 'Tasks',
+            //store: 'Tasks',
+            store: this.store,
             columns: [
                 Ext.create('Ext.grid.RowNumberer'),
                 {header: 'Task',  dataIndex: 'task',  flex: 1},
@@ -37,7 +39,8 @@ Ext.define('WS.view.task.Portlet', {
             ],
             dockedItems: [{
                 xtype: 'pagingtoolbar',
-                store: 'Tasks',
+                //store: 'Tasks',
+                store: this.store,
                 dock: 'bottom',
                 displayInfo: true,
             }],
