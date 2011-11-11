@@ -48,13 +48,18 @@ class Node(models.Model):
 
 
 class Transition(models.Model):
+    class Meta:
+        unique_together = [('parent', 'child')]
     parent = models.ForeignKey(Node, related_name='child_transition_set')
     child = models.ForeignKey(Node, related_name='parent_transition_set')
     condition = models.CharField(max_length=100, blank=True)
 
     def __unicode__(self):
-        return '{0} --[{1}]--> {2}'.format(
-                self.parent.name, self.condition, self.child.name)
+        condition = self.condition
+        if condition:
+            condition = '[' + condition + ']'
+        return '{0} --{1}--> {2}'.format(
+                self.parent.name, condition, self.child.name)
 
 
 class Process(models.Model):
