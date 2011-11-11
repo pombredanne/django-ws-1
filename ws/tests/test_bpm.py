@@ -1,98 +1,46 @@
-from django.utils import unittest
+from django.test import TestCase
 
 from ws.models import Workflow, Node, Transition
 from ws.models import Process, Task
-from ws.signals import states, conditions
-
-AND = conditions['AND']
-XOR = conditions['XOR']
 
 
-class WorkflowSetup(unittest.TestCase):
+class SplitJoinTest(TestCase):
+    '''     
+           |----One----|
+    Split--|           |--Join
+           |----Two----|
+    '''
+    fixtures = ['split_join_test']
+
+    def assertTasks(self, *names):
+        ok = Node.objects.filter(task_set__isnull=False)
+        ok = ok.filter(name__in=names)
+        self.assertEqual(ok.count(), len(names))
+
     def setUp(self):
-        #Create the process and his instance
-        self.workflow = Workflow.objects.create(name='workflow')
-        self.process = Process.objects.create(workflow=self.workflow)
+        self.process = Process.objects.get(pk=1)
 
-class JoinTest(WorkflowSetup):
-    def setUp(self):
-        super(JoinTest, self).setUp()
+    def test_xor_to_xor(self):
+        self.process.start()
+        self.assertTasks('Split', 'One', 'Join')
 
-        #Create some activity and his instance
-        self.one = Node.objects.create(
-                workflow=self.workflow, join=XOR, split=XOR)
-        self.task_one = Task.objects.create(
-                node=self.one, process=self.process)
+    def test_and_to_and(self):
+        Node.objects.filter(name='Split').update(split='AND')
+        Node.objects.filter(name='Join').update(join='AND')
+        self.process.start()
+        self.assertTasks('Split', 'One', 'Two', 'Join')
 
-        #Create some other activity and his instance
-        self.two = Node.objects.create(
-                workflow=self.workflow, join=XOR, split=XOR)
-        self.task_two = Task.objects.create(
-                node=self.two, process=self.process)
+    def test_and_to_xor(self):
+        Node.objects.filter(name='Split').update(split='AND')
+        self.process.start()
+        self.assertTasks('Split', 'One', 'Join')
 
-        #Convergence poit, instance must be created depending on the situation
-        self.joint = Node.objects.create(
-                workflow=self.workflow, split=XOR, join=XOR)
+    def test_xor_to_and(self): #Impossible
+        Node.objects.filter(name='Join').update(join='AND')
+        self.process.start()
+        self.assertTasks('Split', 'One')
 
-        #Transition between instances and convergence point
-        self.one_joint = Transition.objects.create(
-                parent=self.one, child=self.joint)
-        self.two_joint = Transition.objects.create(
-                parent=self.two, child=self.joint)
-
-    def test_xor(self):
-        self.joint.join = XOR; self.joint.save()
-        self.task_one.finish('SUCCESS')
-        self.assertTrue(Task.objects.filter(node=self.joint))
-
-    def test_and(self):
-        self.joint.join = AND; self.joint.save()
-        self.assertFalse(Task.objects.filter(node=self.joint))
-        self.task_one.finish('SUCCESS')
-        self.assertFalse(Task.objects.filter(node=self.joint))
-        self.task_two.finish('SUCCESS')
-        self.assertTrue(Task.objects.filter(node=self.joint))
-
-
-class SplitTest(WorkflowSetup):
-    def setUp(self):
-        super(SplitTest, self).setUp()
-
-        #Create some activity
-        self.one = Node.objects.create(
-                workflow=self.workflow, join=XOR, split=XOR)
-
-        #Create some other activity
-        self.two = Node.objects.create(
-                workflow=self.workflow, join=AND, split=XOR)
-
-        #Separation poit and his instance
-        self.separation = Node.objects.create(
-                workflow=self.workflow, join=XOR, split=XOR)
-        self.task_separation = Task.objects.create(
-                node=self.separation, process=self.process,
-                state=states['SUCCESS'])
-
-        #Transition between separation point and the others
-        self.separation_one = Transition.objects.create(
-                child=self.one, parent=self.separation)
-        self.separation_two = Transition.objects.create(
-                child=self.two, parent=self.separation)
-
-    def test_xor(self):
-        self.separation.split = XOR; self.separation.save()
-        self.task_separation.finish('SUCCESS')
-        self.assertTrue(Task.objects.filter(node=self.one))
-        self.assertFalse(Task.objects.filter(node=self.two))
-
-    def test_and(self):
-        self.separation.split = AND; self.separation.save()
-        self.task_separation.finish('SUCCESS')
-        self.assertTrue(Task.objects.filter(node=self.one))
-        self.assertTrue(Task.objects.filter(node=self.two))
-
-
-class ConditionTest(WorkflowSetup):
+class ConditionTest(TestCase):
     def setUp(self):
         super(ConditionTest, self).setUp()
         
@@ -120,7 +68,7 @@ class ConditionTest(WorkflowSetup):
                 self.task_source.childs_to_notify())
 
 
-class LoopTest(WorkflowSetup):
+class LoopTest(TestCase):
     '''
       _____________
      |           Fail

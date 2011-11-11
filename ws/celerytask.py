@@ -12,4 +12,4 @@ class BPMTask(Task):
         super(BPMTask, self).after_return(status, retval, task_id, args,
                                           kwargs, einfo)
         bpm_task = TaskModel.objects.get(pk = args[0])
-        bpm_task.finish(status, retval)
+        bpm_task.update(status, retval)

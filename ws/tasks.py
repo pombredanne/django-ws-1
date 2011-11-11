@@ -17,3 +17,9 @@ class add(BPMTask):
     form = AddForm
     def run(self, workflow_task, a, b):
         return a + b
+
+
+class dummy(BPMTask):
+    form = forms.BPMTaskForm
+    def run(self, workflow_task):
+        return ''

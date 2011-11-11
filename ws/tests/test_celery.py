@@ -1,6 +1,5 @@
 from django.test import TestCase
 from ws.models import Task, Node
-from ws.signals import states
 from ws.tasks import add
 
 class CeleryIntegrationTestCase(TestCase):
@@ -21,7 +20,7 @@ class CeleryIntegrationTestCase(TestCase):
         result = task.launch()
         result.get()
         task = Task.objects.get(pk=1) #reload, since task changed in database
-        self.assertEqual(states['SUCCESS'], task.state)
+        self.assertEqual('SUCCESS', task.state)
         self.assertEqual(u'2', task.result)
 
     def testAddTask(self):

@@ -5,7 +5,8 @@ from django.utils.importlib import import_module
 from celery.execute import send_task
 import jsonfield
 
-from ws.signals import notifier, r_conditions, r_states
+from ws.signals import notifier
+from ws import STATES, CONDITIONS
 
 class Workflow(models.Model):
     #FIXME: Here we have a problem: a circular foreignkey, from process to activity
@@ -23,12 +24,12 @@ class Node(models.Model):
     name = models.CharField(max_length=100)
     workflow = models.ForeignKey(Workflow)
 
-    join = models.PositiveSmallIntegerField(choices=r_conditions.items())
-    split = models.PositiveSmallIntegerField(choices=r_conditions.items())
+    join = models.CharField(max_length=3, choices=CONDITIONS.items())
+    split = models.CharField(max_length=3, choices=CONDITIONS.items())
     completed = {}
 
     task_name = models.CharField(max_length=256) #ws.tasks.add
-    params = jsonfield.JSONField(null=True)
+    params = jsonfield.JSONField(null=True, blank=True)
     info_required = models.BooleanField(editable=False)
 
     def __unicode__(self):
@@ -63,7 +64,7 @@ class Process(models.Model):
         return '{0} [{1}]'.format(self.workflow.name, self.pk)
     
     def start(self):
-        self.start_node(self.workflow.first)
+        self.start_node(self.workflow.start)
 
     def start_node(self, node):
         task = Task(node=node, process=self)
@@ -72,16 +73,15 @@ class Process(models.Model):
 
 
 class Task(models.Model):
-    node = models.ForeignKey(Node)
+    node = models.ForeignKey(Node, related_name='task_set')
     process = models.ForeignKey(Process)
 
     result = models.CharField(max_length=100, blank=True)
-    state = models.PositiveSmallIntegerField(
-            choices=r_states.items(), default=2)
+    state = models.CharField(max_length=8, 
+            choices=STATES.items(), default='RECEIVED')
 
     def __unicode__(self):
-        return '{0} [{1}] in {2}'.format(
-                self.node, self.pk, self.process)
+        return '{0} [{1}]'.format(self.node, self.pk)
 
     def launch(self):
         # instead of calling task with send_task import task and use

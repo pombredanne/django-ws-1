@@ -1,0 +1,106 @@
+[
+    {
+        "pk": 1,
+        "model": "ws.workflow",
+        "fields": {
+            "start": 1,
+            "end": 4,
+            "name": "SplitJoinTest"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "ws.node",
+        "fields": {
+            "info_required": true,
+            "join": "XOR",
+            "name": "Split",
+            "workflow": 1,
+            "params": null,
+            "split": "XOR",
+            "task_name": "ws.tasks.dummy"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "ws.node",
+        "fields": {
+            "info_required": true,
+            "join": "XOR",
+            "name": "One",
+            "workflow": 1,
+            "params": null,
+            "split": "XOR",
+            "task_name": "ws.tasks.dummy"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "ws.node",
+        "fields": {
+            "info_required": true,
+            "join": "XOR",
+            "name": "Two",
+            "workflow": 1,
+            "params": null,
+            "split": "XOR",
+            "task_name": "ws.tasks.dummy"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "ws.node",
+        "fields": {
+            "info_required": true,
+            "join": "XOR",
+            "name": "Join",
+            "workflow": 1,
+            "params": null,
+            "split": "XOR",
+            "task_name": "ws.tasks.dummy"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "ws.transition",
+        "fields": {
+            "condition": "",
+            "parent": 1,
+            "child": 2
+        }
+    },
+    {
+        "pk": 2,
+        "model": "ws.transition",
+        "fields": {
+            "condition": "",
+            "parent": 1,
+            "child": 3
+        }
+    },
+    {
+        "pk": 3,
+        "model": "ws.transition",
+        "fields": {
+            "condition": "",
+            "parent": 2,
+            "child": 4
+        }
+    },
+    {
+        "pk": 4,
+        "model": "ws.transition",
+        "fields": {
+            "condition": "",
+            "parent": 3,
+            "child": 4
+        }
+    },
+    {
+        "pk": 1,
+        "model": "ws.process",
+        "fields": {
+            "workflow": 1
+        }
+    }
+]
