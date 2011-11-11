@@ -180,10 +180,16 @@ class WorkflowGraphView(DetailView):
         import tempfile
         import os
         graph = pgv.AGraph(strict=False, directed=True)
-        for node in context['workflow'].node_set.all():
+        nodes = context['workflow'].node_set.all()
+        for node in nodes:
             graph.add_node(node)
-        for transition in Transition.objects.filter(parent__workflow=1):
-            graph.add_edge(transition.parent, transition.child)
+        for transition in Transition.objects.filter(parent__in=nodes):
+            if transition.condition:
+                label = str("[%s]" % transition.condition)
+                graph.add_edge(transition.parent, transition.child,
+                        label=label)
+            else:
+                graph.add_edge(transition.parent, transition.child)
         #return HttpResponse(graph.string()) # .dot file
         png_file = tempfile.NamedTemporaryFile(delete=False)
         png_file_name = png_file.name
