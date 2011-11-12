@@ -8,6 +8,7 @@ import jsonfield
 from ws.signals import notifier
 from ws import STATES, CONDITIONS
 
+
 class Workflow(models.Model):
     #FIXME: Here we have a problem: a circular foreignkey, from process to activity
     #and back. We can't do it if we don't make it somewhere possible to be null
