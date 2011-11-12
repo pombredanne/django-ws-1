@@ -123,7 +123,7 @@ class WorkflowListView(ExtListView):
     def convert_object_to_dict(self, obj):
         data = {
             'pk': obj.pk,
-            'name': obj.title,
+            'name': obj.name,
             #'description': obj.description,
             #'enabled': obj.enabled,
         }
