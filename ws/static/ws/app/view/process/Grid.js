@@ -13,8 +13,8 @@ Ext.define('WS.view.process.Grid', {
             Ext.create('Ext.grid.RowNumberer'),
             {header: 'Process', dataIndex: 'name', flex: 1},
             {header: 'Type', dataIndex: 'workflow', flex: 1},
-            //{header: 'Created', dataIndex: 'creationTime', flex: 1},
-            {header: 'Created',  xtype: 'templatecolumn', tpl:'TODO', flex: 1},
+            {header: 'Started', dataIndex: 'start_date', flex: 1},
+            {header: 'Ended', dataIndex: 'end_date', flex: 1},
             //{header: 'Status', dataIndex: 'status', flex: 1},
             {header: 'Status',  xtype: 'templatecolumn', tpl:'TODO', flex: 1},
         ];
