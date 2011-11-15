@@ -21,7 +21,7 @@ Ext.define('WS.controller.Process', {
 
     init: function() {
         this.control({
-            'processmain gridpanel': {
+            'processmain processgrid': {
                 selectionchange: this.loadProcessDetail,
             },
             'processsidebar button[action=newprocess]': {
