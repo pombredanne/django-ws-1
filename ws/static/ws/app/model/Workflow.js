@@ -1,6 +1,6 @@
 Ext.define('WS.model.Workflow', {
     extend: 'Ext.data.Model',
-    fields: ['id', 'name'],
+    fields: ['pk', 'name'],
 
     proxy: {
         type: 'ajax',
