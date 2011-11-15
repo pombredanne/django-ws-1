@@ -144,6 +144,33 @@ class ProcessListView(ExtListView):
         }
         return data
 
+def CreateProcess(request):
+    success = False
+    message = ""
+    if request.method == 'POST':
+        workflow_id = request.POST.get('workflow', None)
+        autostart = request.POST.get('autostart', 'off')
+        if workflow_id is None:
+            message = 'Workflow id required'
+        else:
+            process = Process(workflow_id=workflow_id)
+            try:
+                process.save()
+                success = True
+            except:
+                message = 'Invalid workflow_id'
+            if autostart == 'on':
+                try:
+                    process.start()
+                except:
+                    success = False
+                    message = "Process created, but auto start failed"
+    else:
+        message = 'Data must be send in a POST request'
+
+    return HttpResponse(json.dumps({'success': success,
+                                    'message': message}),
+                        mimetype="application/json")
 
 class TaskListView(ExtListView):
     model = Task
