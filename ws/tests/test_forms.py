@@ -1,5 +1,5 @@
 from django.test import TestCase
-from ws import forms
+from ws.celery import forms
 
 class FormsTestCase(TestCase):
 

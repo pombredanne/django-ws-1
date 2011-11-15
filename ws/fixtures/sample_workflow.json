@@ -59,6 +59,7 @@
         "pk": 1, 
         "model": "ws.transition", 
         "fields": {
+            "workflow": 1, 
             "condition": "", 
             "parent": 1, 
             "child": 2
@@ -68,7 +69,11 @@
         "pk": 1, 
         "model": "ws.process", 
         "fields": {
-            "workflow": 1
+            "workflow": 1,
+            "name": "sample process",
+            "start_date": null,
+            "end_date": null
+
         }
     },
     {
@@ -78,7 +83,9 @@
             "node": 1, 
             "process": 1, 
             "state": 2, 
-            "result": ""
+            "result": "",
+            "start_date": null,
+            "end_date": null
         }
     }
 ]
