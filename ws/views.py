@@ -218,10 +218,16 @@ class WorkflowGraphView(DetailView):
         import pygraphviz as pgv
         import tempfile
         import os
+        import random
         graph = pgv.AGraph(strict=False, directed=True)
         nodes = context['workflow'].node_set.all()
+        role_colors = {}
         for node in nodes:
-            graph.add_node(node)
+            if not role_colors.has_key(node.role.name):
+                role_colors[node.role.name] = "#%s%s%s" % tuple([random.choice('1234567890abcdef')*2 for x in range(3)])
+            graph.add_node(node, color=role_colors[node.role.name])
+        for role, color in role_colors.items():
+            graph.add_node(role, color=color, shape='note')
         for transition in Transition.objects.filter(parent__in=nodes):
             if transition.condition:
                 label = str("[%s]" % transition.condition)
