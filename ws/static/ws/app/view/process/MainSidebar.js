@@ -11,6 +11,9 @@ Ext.define('WS.view.process.MainSidebar', {
                 xtype: 'button',
             },
             items: [{
+                text: 'New',
+                action: 'newprocess',
+            },{
                 text: 'Stop',
                 action: 'stopprocess',
             },{

@@ -36,6 +36,9 @@ Ext.define('WS.controller.Layout', {
             'dashboardsidebar button[action=taskPortlet]': {
                 click: this.taskPortlet
             },
+            'dashboardsidebar button[action=startProcess]': {
+                click: this.startProcess
+            },
             'portlet tool[action=fullscreen]': {
                 click: this.goToFullscreen
             }
@@ -95,7 +98,7 @@ Ext.define('WS.controller.Layout', {
     },
 
     startProcess: function(button) {
-        var view = Ext.create('WS.view.process.Starter');
+        var view = Ext.create('WS.view.process.PortletNew');
         this.fireEvent('new_widget',view);
     },
 

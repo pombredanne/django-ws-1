@@ -12,9 +12,11 @@ Ext.define('WS.controller.Process', {
         'process.Grid',
         'process.Starter',
         'process.Portlet',
+        'process.PortletNew',
         'process.Main',
         'process.MainSidebar',
         'process.ProcessDetail',
+        'process.NewForm',
     ],
 
     init: function() {
@@ -22,6 +24,12 @@ Ext.define('WS.controller.Process', {
             'processmain gridpanel': {
                 selectionchange: this.loadProcessDetail,
             },
+            'processsidebar button[action=newprocess]': {
+                click: this.newProcess
+            },
+            'processnewform button[action=create]': {
+                click: this.createProcess
+            }
         });
     },
 
@@ -39,5 +47,39 @@ Ext.define('WS.controller.Process', {
                 detail.reloadData(data);
             }
         }
+    },
+
+    newProcess: function(button) {
+        console.log('New process');
+        var win = Ext.create('Ext.window.Window', {
+                    title: 'New process',
+                    closable: true,
+                    items: {
+                        xtype: 'processnewform',
+                    },
+                });
+        win.show();
+    },
+
+    createProcess: function(button) {
+        var panel = button.up('form'),
+            form = panel.getForm(),
+            values = form.getValues(),
+            win = panel.up('window');
+        if (form.isValid()) {
+            console.log("valid form");
+            form.submit({
+                url: '/ws/process/new.json',
+                success: function(form, action) {
+                    Ext.Msg.alert("process form send");
+                },
+                failure: function(form, action) {
+                    Ext.Msg.alert("error sending process form");
+                },
+            });
+        }
+        //if (win) {
+        //    win.close()
+        //}
     }
 });
