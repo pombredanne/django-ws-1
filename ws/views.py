@@ -198,7 +198,8 @@ class TaskListView(ExtListView):
         data = {
             'pk': obj.pk,
             'task': obj.node.name,
-            #'user': user,
+            'user': obj.user.username,
+            'user_pk': obj.user.pk,
             'process': obj.process.pk,
             'workflow': obj.process.workflow.name,
             #'priority': obj.priority,

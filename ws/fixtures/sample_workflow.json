@@ -1,4 +1,115 @@
 [
+  {
+    "pk": 1, 
+    "model": "auth.group", 
+    "fields": {
+      "name": "bosses", 
+      "permissions": [
+        [
+          "add_process", 
+          "ws", 
+          "process"
+        ], 
+        [
+          "change_process", 
+          "ws", 
+          "process"
+        ], 
+        [
+          "delete_process", 
+          "ws", 
+          "process"
+        ], 
+        [
+          "add_task", 
+          "ws", 
+          "task"
+        ], 
+        [
+          "change_task", 
+          "ws", 
+          "task"
+        ], 
+        [
+          "delete_task", 
+          "ws", 
+          "task"
+        ]
+      ]
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "auth.group", 
+    "fields": {
+      "name": "workers", 
+      "permissions": [
+        [
+          "change_task", 
+          "ws", 
+          "task"
+        ]
+      ]
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "admin", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": true, 
+      "is_staff": true, 
+      "last_login": "2011-11-15 17:43:17", 
+      "groups": [], 
+      "user_permissions": [], 
+      "password": "sha1$cb458$6dd5e28a2415907b93d934e2573530d2e39c3f92", 
+      "email": "admin@example.net", 
+      "date_joined": "2011-11-15 17:41:09"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "pringao", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2011-11-15 21:06:00", 
+      "groups": [
+        2
+      ], 
+      "user_permissions": [], 
+      "password": "sha1$e0afd$4f444d7efdcf51447aad4a78db2df5d8ca7040fb", 
+      "email": "", 
+      "date_joined": "2011-11-15 21:06:00"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "auth.user", 
+    "fields": {
+      "username": "mandamas", 
+      "first_name": "", 
+      "last_name": "", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "last_login": "2011-11-15 21:06:27", 
+      "groups": [
+        1
+      ], 
+      "user_permissions": [], 
+      "password": "sha1$0ef28$417d9a18f9a2fdb31c75c6ffb9372846d5df659e", 
+      "email": "", 
+      "date_joined": "2011-11-15 21:06:27"
+    }
+  },
     {
         "pk": 1, 
         "model": "ws.workflow", 
@@ -16,6 +127,7 @@
             "join": 1, 
             "name": "sumar 1 y 1", 
             "workflow": 1, 
+            "role": 1,
             "params": {
                 "a": 1, 
                 "b": 1
@@ -32,6 +144,7 @@
             "join": 1, 
             "name": "sumar 2 y 2", 
             "workflow": 1, 
+            "role": 2,
             "params": {
                 "a": 2, 
                 "b": 2
@@ -48,6 +161,7 @@
             "join": 1, 
             "name": "sumar 2 y algo", 
             "workflow": 1, 
+            "role": 2,
             "params": {
                 "a": 2
             }, 
@@ -82,6 +196,7 @@
         "fields": {
             "node": 1, 
             "process": 1, 
+            "user": 3,
             "state": 2, 
             "result": "",
             "start_date": null,

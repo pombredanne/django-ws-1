@@ -2,6 +2,8 @@ from datetime import datetime
 from django.db import models
 from django.utils.importlib import import_module
 
+from django.contrib.auth.models import Group, User
+
 from jsonfield import JSONField
 
 from ws.signals import notifier
@@ -31,6 +33,8 @@ class Node(models.Model):
     task_name = models.CharField(max_length=256) #ws.tasks.add
     params = JSONField(null=True, blank=True)
     info_required = models.BooleanField(editable=False)
+
+    role = models.ForeignKey(Group)
 
     def __unicode__(self):
         return self.name
@@ -81,7 +85,8 @@ class Process(models.Model):
         self.save()
 
     def start_node(self, node):
-        task = Task(node=node, process=self)
+        user = node.role.user_set.all()[0] #TODO: select valid user
+        task = Task(node=node, process=self, user=user)
         task.save()
         task.launch()
 
@@ -95,6 +100,8 @@ class Task(models.Model):
     result = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=8, 
             choices=STATES.items(), default='RECEIVED')
+
+    user = models.ForeignKey(User)
 
     def __unicode__(self):
         return '{0} [{1}]'.format(self.node, self.pk)

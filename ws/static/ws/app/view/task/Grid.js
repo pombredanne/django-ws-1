@@ -10,7 +10,7 @@ Ext.define('WS.view.task.Grid', {
         this.columns = [
             Ext.create('Ext.grid.RowNumberer'),
             {header: 'Task',  dataIndex: 'task',  flex: 1},
-            //{header: 'User',  dataIndex: 'user',  flex: 1},
+            {header: 'User',  dataIndex: 'user',  flex: 1},
             {header: 'Process', dataIndex: 'process', flex: 1},
             {header: 'Workflow', dataIndex: 'workflow', flex: 1},
             //{header: 'Priority', dataIndex: 'priority', flex: 1},
