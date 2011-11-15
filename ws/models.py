@@ -63,7 +63,7 @@ class Transition(models.Model):
         condition = self.condition
         if condition:
             condition = '[' + condition + ']'
-        return '{0} --{1}--> {2}'.format(
+        return u'{0} --{1}--> {2}'.format(
                 self.parent.name, condition, self.child.name)
 
 
@@ -77,7 +77,7 @@ class Process(models.Model):
         if self.name:
             return self.name
         else:
-            return '{0} [{1}]'.format(self.workflow.name, self.pk)
+            return u'{0} [{1}]'.format(self.workflow.name, self.pk)
 
     def start(self):
         self.start_node(self.workflow.start)
@@ -104,7 +104,7 @@ class Task(models.Model):
     user = models.ForeignKey(User)
 
     def __unicode__(self):
-        return '{0} [{1}]'.format(self.node, self.pk)
+        return u'{0} [{1}]'.format(self.node, self.pk)
 
     def launch(self):
         # instead of calling task with send_task import task and use
