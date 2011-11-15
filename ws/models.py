@@ -1,9 +1,8 @@
+from datetime import datetime
 from django.db import models
-from django.dispatch import Signal, receiver
 from django.utils.importlib import import_module
 
-from celery.execute import send_task
-import jsonfield
+from jsonfield import JSONField
 
 from ws.signals import notifier
 from ws import STATES, CONDITIONS
@@ -30,7 +29,7 @@ class Node(models.Model):
     completed = {}
 
     task_name = models.CharField(max_length=256) #ws.tasks.add
-    params = jsonfield.JSONField(null=True, blank=True)
+    params = JSONField(null=True, blank=True)
     info_required = models.BooleanField(editable=False)
 
     def __unicode__(self):
@@ -51,6 +50,7 @@ class Node(models.Model):
 class Transition(models.Model):
     class Meta:
         unique_together = [('parent', 'child')]
+    workflow = models.ForeignKey(Workflow)
     parent = models.ForeignKey(Node, related_name='child_transition_set')
     child = models.ForeignKey(Node, related_name='parent_transition_set')
     condition = models.CharField(max_length=100, blank=True)
@@ -65,12 +65,20 @@ class Transition(models.Model):
 
 class Process(models.Model):
     workflow = models.ForeignKey(Workflow)
-
-    def __unicode__(self):
-        return '{0} [{1}]'.format(self.workflow.name, self.pk)
+    name = models.CharField(max_length=100, blank=True)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
     
+    def __unicode__(self):
+        if self.name:
+            return self.name
+        else:
+            return '{0} [{1}]'.format(self.workflow.name, self.pk)
+
     def start(self):
         self.start_node(self.workflow.start)
+        self.start_date = datetime.now()
+        self.save()
 
     def start_node(self, node):
         task = Task(node=node, process=self)
@@ -81,6 +89,8 @@ class Process(models.Model):
 class Task(models.Model):
     node = models.ForeignKey(Node, related_name='task_set')
     process = models.ForeignKey(Process)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
 
     result = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=8, 
