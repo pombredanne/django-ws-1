@@ -1,5 +1,5 @@
-from ws.celerytask import BPMTask
-from ws import forms
+from ws.celery.tasks import BPMTask
+from ws.celery import forms
 
 class AddForm(forms.BPMTaskForm):
     a = forms.IntegerField(label="First number",
