@@ -163,7 +163,8 @@ def CreateProcess(request):
         if workflow_id is None:
             message = 'Workflow id required'
         else:
-            process = Process(workflow_id=workflow_id)
+            name = request.POST.get('name', None)
+            process = Process(workflow_id=workflow_id, name=name)
             try:
                 process.save()
                 success = True

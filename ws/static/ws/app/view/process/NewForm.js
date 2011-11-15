@@ -11,6 +11,10 @@ Ext.define('WS.view.process.NewForm', {
         allowBlank: false,
         typeAhead: true,
     }, {
+        xtype: 'textfield',
+        fieldLabel: 'Process name',
+        name: 'name',
+    }, {
         xtype: 'checkboxfield',
         fieldLabel: 'Start proccess automatically',
         name: 'autostart',
