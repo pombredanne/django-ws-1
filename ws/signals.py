@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.dispatch import Signal, receiver
 
 notifier = Signal()
@@ -21,6 +22,12 @@ class Notifier(object):
         self.failure()
 
     def success(self):
+        workflow = self.node.workflow
+        if workflow.start == self.node:
+            process = self.task.process
+            process.end_date = datetime.now()
+            process.save()
+            
         transitions = self.node.child_transition_set.filter(
                 condition__in=('', self.task.result))
 
