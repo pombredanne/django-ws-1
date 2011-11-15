@@ -40,32 +40,13 @@ class SplitJoinTest(TestCase):
         self.process.start()
         self.assertTasks('Split', 'One')
 
-class ConditionTest(TestCase):
-    def setUp(self):
-        super(ConditionTest, self).setUp()
-        
-        #Create the source activity and his instance
-        self.source = Node.objects.create(
-                workflow=self.workflow, join=XOR, split=XOR)
-        self.task_source = Task.objects.create(
-                node=self.source, process=self.process)
-
-        #Create the destination activity
-        self.destination = Node.objects.create(
-                workflow=self.workflow, join=XOR, split=XOR)
-
-        #Create the transition with a condition
-        self.source_destination = Transition.objects.create(
-                parent=self.source, child=self.destination,
-                condition='OK')
-
-
     def test_condition(self):
-        self.assertFalse(self.destination in \
-                self.task_source.childs_to_notify())
-        self.task_source.finish('SUCCESS', 'OK')
-        self.assertTrue(self.destination in \
-                self.task_source.childs_to_notify())
+        Node.objects.filter(name='Split').update(task_name='ws.tasks.add',
+                params={u"a": 2, u"b": 4})
+        Transition.objects.filter(parent__name='Split', child__name='One').update(
+                condition='6')
+        self.process.start()
+        self.assertTasks('Split', 'One', 'Join')
 
 
 class LoopTest(TestCase):
