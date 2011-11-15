@@ -135,11 +135,11 @@ class ProcessListView(ExtListView):
 
     def convert_object_to_dict(self, obj):
         if obj.start_date:
-            start_date = obj.start_date.strftime("%Y/%m/%d %H:%m")
+            start_date = obj.start_date.strftime("%Y/%m/%d %H:%M")
         else:
             start_date = None
         if obj.end_date:
-            end_date = obj.end_date.strftime("%Y/%m/%d %H:%m")
+            end_date = obj.end_date.strftime("%Y/%m/%d %H:%M")
         else:
             end_date = None
         data = {
@@ -149,7 +149,7 @@ class ProcessListView(ExtListView):
             'workflow_pk': obj.workflow.pk,
             'start_date': start_date,
             'end_date': end_date,
-            #'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%m"),
+            #'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%M"),
             #'status': obj.status,
         }
         return data
