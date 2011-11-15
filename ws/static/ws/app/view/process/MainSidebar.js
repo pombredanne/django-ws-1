@@ -6,14 +6,21 @@ Ext.define('WS.view.process.MainSidebar', {
         processStore = Ext.getStore('Processes');
         this.items = [{
             xtype: 'fieldset',
-            title: 'Actions',
+            title: 'General actions',
             defaults: {
                 xtype: 'button',
             },
             items: [{
                 text: 'New',
                 action: 'newprocess',
-            },{
+            }],
+        },{
+            xtype: 'fieldset',
+            title: 'Process actions',
+            defaults: {
+                xtype: 'button',
+            },
+            items: [{
                 text: 'Stop',
                 action: 'stopprocess',
             },{
