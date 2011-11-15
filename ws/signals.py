@@ -3,7 +3,7 @@ from django.dispatch import Signal, receiver
 notifier = Signal()
 starter = Signal()
 
-class Notifier:
+class Notifier(object):
     def __init__(self, sender, **kwargs):
         self.task = sender
         self.node = self.task.node
@@ -53,7 +53,7 @@ class Notifier:
 notifier.connect(Notifier)
 
 
-class Starter:
+class Starter(object):
     def __init__(self, sender, process, **kwargs):
         node = sender
 
