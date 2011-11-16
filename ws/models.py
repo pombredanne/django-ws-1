@@ -40,7 +40,8 @@ class Node(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        form = self.celery_task.form(self.params)
+        params = self.params or '' #send some data to the form even when the task does not need it
+        form = self.celery_task.form(params)
         self.info_required = not form.is_valid()
         super(Node, self).save(*args, **kwargs)
 

@@ -1,5 +1,6 @@
 from django.test import TestCase
 from ws.celery import forms
+from ws.models import Node
 
 class FormsTestCase(TestCase):
 
@@ -50,3 +51,32 @@ class FormsTestCase(TestCase):
         testform = TestForm()
         fields = testform.get_fields()
         self.assertEqual(len(fields), 2)
+
+class TaskFormsTestCase(TestCase):
+    fixtures = ['sample_workflow']
+
+    def testInfoRequired(self):
+        #Node1: this task needs two arguments, give two
+        node1 = Node(name="test node 1",
+                     workflow_id=1,
+                     role_id=1,
+                     task_name='ws.tasks.add',
+                     params='{"a":1,"b":1}')
+        node1.save()
+        #Node2: this task needs two arguments, give one
+        node2 = Node(name="test node 1",
+                     workflow_id=1,
+                     role_id=1,
+                     task_name='ws.tasks.add',
+                     params='{"a":1}')
+        node2.save()
+        #Node3: this task needs no arguments
+        node3 = Node(name="test node 1",
+                     workflow_id=1,
+                     role_id=1,
+                     task_name='ws.tasks.dummy',
+                     params='')
+        node3.save()
+        self.assertEqual(node1.info_required, False)
+        self.assertEqual(node2.info_required, True)
+        self.assertEqual(node3.info_required, False)
