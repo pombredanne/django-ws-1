@@ -1,6 +1,6 @@
 from django.test import TestCase
 from ws.models import Task, Node
-from ws.tasks import add
+from ws.tasks import add, dummy
 
 class CeleryIntegrationTestCase(TestCase):
     fixtures = ['sample_workflow']
@@ -27,4 +27,10 @@ class CeleryIntegrationTestCase(TestCase):
         task_pk = 1
         result = add.delay(task_pk,8,8)
         self.assertEqual(result.get(), 16)
+        self.assertTrue(result.successful())
+
+    def testDummyTask(self):
+        task_pk = 2
+        result = dummy.delay(task_pk)
+        self.assertEqual(result.get(), '')
         self.assertTrue(result.successful())

@@ -1,115 +1,90 @@
 [
-  {
-    "pk": 1, 
-    "model": "auth.group", 
-    "fields": {
-      "name": "bosses", 
-      "permissions": [
-        [
-          "add_process", 
-          "ws", 
-          "process"
-        ], 
-        [
-          "change_process", 
-          "ws", 
-          "process"
-        ], 
-        [
-          "delete_process", 
-          "ws", 
-          "process"
-        ], 
-        [
-          "add_task", 
-          "ws", 
-          "task"
-        ], 
-        [
-          "change_task", 
-          "ws", 
-          "task"
-        ], 
-        [
-          "delete_task", 
-          "ws", 
-          "task"
-        ]
-      ]
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "auth.group", 
-    "fields": {
-      "name": "workers", 
-      "permissions": [
-        [
-          "change_task", 
-          "ws", 
-          "task"
-        ]
-      ]
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "auth.user", 
-    "fields": {
-      "username": "admin", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": true, 
-      "is_staff": true, 
-      "last_login": "2011-11-15 17:43:17", 
-      "groups": [], 
-      "user_permissions": [], 
-      "password": "sha1$cb458$6dd5e28a2415907b93d934e2573530d2e39c3f92", 
-      "email": "admin@example.net", 
-      "date_joined": "2011-11-15 17:41:09"
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "auth.user", 
-    "fields": {
-      "username": "pringao", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2011-11-15 21:06:00", 
-      "groups": [
-        2
-      ], 
-      "user_permissions": [], 
-      "password": "sha1$e0afd$4f444d7efdcf51447aad4a78db2df5d8ca7040fb", 
-      "email": "", 
-      "date_joined": "2011-11-15 21:06:00"
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "auth.user", 
-    "fields": {
-      "username": "mandamas", 
-      "first_name": "", 
-      "last_name": "", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "last_login": "2011-11-15 21:06:27", 
-      "groups": [
-        1
-      ], 
-      "user_permissions": [], 
-      "password": "sha1$0ef28$417d9a18f9a2fdb31c75c6ffb9372846d5df659e", 
-      "email": "", 
-      "date_joined": "2011-11-15 21:06:27"
-    }
-  },
+    {
+        "pk": 1, 
+        "model": "auth.group", 
+        "fields": {
+            "name": "bosses", 
+            "permissions": [
+                [
+                    "add_process", 
+                    "ws", 
+                    "process"
+                ] 
+            ]
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "auth.group", 
+        "fields": {
+            "name": "workers", 
+            "permissions": [
+                [
+                    "change_task", 
+                    "ws", 
+                    "task"
+                ]
+            ]
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "admin", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": true, 
+            "is_staff": true, 
+            "last_login": "2011-11-15 17:43:17", 
+            "groups": [], 
+            "user_permissions": [], 
+            "password": "sha1$cb458$6dd5e28a2415907b93d934e2573530d2e39c3f92", 
+            "email": "admin@example.net", 
+            "date_joined": "2011-11-15 17:41:09"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "pringao", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": false, 
+            "is_staff": false, 
+            "last_login": "2011-11-15 21:06:00", 
+            "groups": [
+                2
+            ], 
+            "user_permissions": [], 
+            "password": "sha1$e0afd$4f444d7efdcf51447aad4a78db2df5d8ca7040fb", 
+            "email": "", 
+            "date_joined": "2011-11-15 21:06:00"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "mandamas", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": false, 
+            "is_staff": false, 
+            "last_login": "2011-11-15 21:06:27", 
+            "groups": [
+                1
+            ], 
+            "user_permissions": [], 
+            "password": "sha1$0ef28$417d9a18f9a2fdb31c75c6ffb9372846d5df659e", 
+            "email": "", 
+            "date_joined": "2011-11-15 21:06:27"
+        }
+    },
     {
         "pk": 1, 
         "model": "ws.workflow", 
@@ -170,6 +145,48 @@
         }
     },
     {
+        "pk": 4, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": true, 
+            "join": "AND", 
+            "name": "Decidir enmarronamiento", 
+            "workflow": 2, 
+            "params": null, 
+            "split": "AND", 
+            "task_name": "ws.tasks.dummy", 
+            "role": 1
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": true, 
+            "join": "AND", 
+            "name": "Comerse el marron", 
+            "workflow": 2, 
+            "params": null, 
+            "split": "AND", 
+            "task_name": "ws.tasks.dummy", 
+            "role": 2
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": true, 
+            "join": "AND", 
+            "name": "Dar palmaditas en la espalda", 
+            "workflow": 2, 
+            "params": null, 
+            "split": "AND", 
+            "task_name": "ws.tasks.dummy", 
+            "role": 1
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "ws.transition", 
         "fields": {
@@ -180,6 +197,26 @@
         }
     },
     {
+        "pk": 2, 
+        "model": "ws.transition", 
+        "fields": {
+            "child": 5, 
+            "condition": "", 
+            "parent": 4, 
+            "workflow": 2
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "ws.transition", 
+        "fields": {
+            "child": 6, 
+            "condition": "", 
+            "parent": 5, 
+            "workflow": 2
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "ws.process", 
         "fields": {
@@ -187,7 +224,16 @@
             "name": "sample process",
             "start_date": null,
             "end_date": null
-
+        }
+    },
+    {
+        "pk": 2, 
+        "model": "ws.process", 
+        "fields": {
+            "workflow": 2,
+            "name": "sample process with dummy task",
+            "start_date": null,
+            "end_date": null
         }
     },
     {
@@ -196,6 +242,19 @@
         "fields": {
             "node": 1, 
             "process": 1, 
+            "user": 3,
+            "state": 2, 
+            "result": "",
+            "start_date": null,
+            "end_date": null
+        }
+    },
+    {
+        "pk": 2, 
+        "model": "ws.task", 
+        "fields": {
+            "node": 1, 
+            "process": 2, 
             "user": 3,
             "state": 2, 
             "result": "",

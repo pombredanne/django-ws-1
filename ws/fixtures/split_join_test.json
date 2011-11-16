@@ -1,5 +1,39 @@
 [
     {
+        "pk": 1, 
+        "model": "auth.group", 
+        "fields": {
+            "name": "bosses", 
+            "permissions": [
+                [
+                    "add_process", 
+                    "ws", 
+                    "process"
+                ] 
+            ]
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "auth.user", 
+        "fields": {
+            "username": "mandamas", 
+            "first_name": "", 
+            "last_name": "", 
+            "is_active": true, 
+            "is_superuser": false, 
+            "is_staff": false, 
+            "last_login": "2011-11-15 21:06:27", 
+            "groups": [
+                1
+            ], 
+            "user_permissions": [], 
+            "password": "sha1$0ef28$417d9a18f9a2fdb31c75c6ffb9372846d5df659e", 
+            "email": "", 
+            "date_joined": "2011-11-15 21:06:27"
+        }
+    },
+    {
         "pk": 1,
         "model": "ws.workflow",
         "fields": {
@@ -16,6 +50,7 @@
             "join": "XOR",
             "name": "Split",
             "workflow": 1,
+            "role": 1,
             "params": null,
             "split": "XOR",
             "task_name": "ws.tasks.dummy"
@@ -29,6 +64,7 @@
             "join": "XOR",
             "name": "One",
             "workflow": 1,
+            "role": 1,
             "params": null,
             "split": "XOR",
             "task_name": "ws.tasks.dummy"
@@ -42,6 +78,7 @@
             "join": "XOR",
             "name": "Two",
             "workflow": 1,
+            "role": 1,
             "params": null,
             "split": "XOR",
             "task_name": "ws.tasks.dummy"
@@ -55,6 +92,7 @@
             "join": "XOR",
             "name": "Join",
             "workflow": 1,
+            "role": 1,
             "params": null,
             "split": "XOR",
             "task_name": "ws.tasks.dummy"
