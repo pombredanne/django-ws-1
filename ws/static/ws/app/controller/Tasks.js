@@ -6,10 +6,14 @@ Ext.define('WS.controller.Tasks', {
         'task.Portlet',
         'task.Grid',
         'task.View',
+        'task.TaskDetail',
     ],
 
     init: function() {
         this.control({
+            'tasksmain taskgrid': {
+                selectionchange: this.loadTaskDetail,
+            },
             'taskportlet gridpanel': {
                 itemdblclick: this.editTask
             },
@@ -17,6 +21,22 @@ Ext.define('WS.controller.Tasks', {
                 click: this.updateTask
             }
         });
+    },
+
+    loadTaskDetail: function(row, selections, options) {
+        if (selections.length) {
+            var mainpanel = row.view.up('tasksmain'),
+                data = selections[0].data,
+                detail = mainpanel.down('taskdetail');
+            if (!detail) {
+                detail = Ext.create('WS.view.task.TaskDetail', data);
+                var detailpanel = mainpanel.down('#taskdetail');
+                detailpanel.removeAll();
+                detailpanel.add(detail);
+            } else {
+                detail.reloadData(data);
+            }
+        }
     },
 
     editTask: function(grid, record) {

@@ -203,6 +203,7 @@ class TaskListView(ExtListView):
             'process': unicode(obj.process),
             'process_pk': obj.process.pk,
             'workflow': obj.process.workflow.name,
+            'workflow_pk': obj.process.workflow.pk,
             #'priority': obj.priority,
             #'date': obj.date.strftime("%Y/%m/%d %H:%m"),
             'state': obj.state,
