@@ -154,6 +154,7 @@ class ProcessListView(ExtListView):
         }
         return data
 
+
 def CreateProcess(request):
     success = False
     message = ""
@@ -182,6 +183,7 @@ def CreateProcess(request):
     return HttpResponse(json.dumps({'success': success,
                                     'message': message}),
                         mimetype="application/json")
+
 
 class TaskListView(ExtListView):
     model = Task
@@ -233,10 +235,14 @@ class WorkflowGraphView(DetailView):
         for transition in Transition.objects.filter(parent__in=nodes):
             if transition.condition:
                 label = str("[%s]" % transition.condition)
-                graph.add_edge(transition.parent, transition.child,
-                        label=label)
             else:
-                graph.add_edge(transition.parent, transition.child)
+                label = ''
+            graph.add_edge(transition.parent, transition.child,
+                           label=label,
+                           #headlabel=str(transition.parent.split),
+                           taillabel=str(transition.parent.split),
+                           headlabel=str(transition.child.join),
+                           labelfontsize='8')
         #return HttpResponse(graph.string()) # .dot file
         png_file = tempfile.NamedTemporaryFile(delete=False)
         png_file_name = png_file.name
