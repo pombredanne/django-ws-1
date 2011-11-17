@@ -14,6 +14,9 @@ Ext.define('WS.controller.Tasks', {
             'tasksmain taskgrid': {
                 selectionchange: this.loadTaskDetail,
             },
+            'taskdetail form button[action=send]': {
+                click: this.sendTaskForm
+            },
             'taskportlet gridpanel': {
                 itemdblclick: this.editTask
             },
@@ -28,14 +31,37 @@ Ext.define('WS.controller.Tasks', {
             var mainpanel = row.view.up('tasksmain'),
                 data = selections[0].data,
                 detail = mainpanel.down('taskdetail');
-            if (!detail) {
-                detail = Ext.create('WS.view.task.TaskDetail', data);
-                var detailpanel = mainpanel.down('#taskdetail');
-                detailpanel.removeAll();
-                detailpanel.add(detail);
-            } else {
-                detail.reloadData(data);
-            }
+            Ext.Ajax.request({
+                url: '/ws/task/'+data['pk']+'/form.json',
+                success: function(response) {
+                    data['form_fields'] = Ext.JSON.decode(response.responseText);
+                    if (!detail) {
+                        detail = Ext.create('WS.view.task.TaskDetail', data);
+                        var detailpanel = mainpanel.down('#taskdetail');
+                        detailpanel.removeAll();
+                        detailpanel.add(detail);
+                    } else {
+                        detail.reloadData(data);
+                    }
+                }
+            });
+        }
+    },
+
+    sendTaskForm: function(button) {
+        var panel = button.up('form'),
+            form = panel.getForm(),
+            detail = panel.up('taskdetail');
+        if (form.isValid()) {
+            form.submit({
+                url: '/ws/task/'+detail.pk+'/start.json',
+                success: function(form, action) {
+                    Ext.Msg.alert("task form send");
+                },
+                failure: function(form, action) {
+                    Ext.Msg.alert("error sending task form");
+                },
+            });
         }
     },
 

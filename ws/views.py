@@ -6,6 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.utils import simplejson as json
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 from ws.models import Task, Process, Workflow, Transition
 
@@ -259,6 +260,23 @@ class WorkflowGraphView(DetailView):
                             content_type='image/png')
                             #content_type='image/svg+xml')
 
+
+class TaskFormView(DetailView):
+    model = Task
+
+    def render_to_response(self, context):
+        form = context['task'].node.celery_task.form()
+        fields = form.get_fields()
+        return HttpResponse(json.dumps(fields),
+                            mimetype="application/json")
+
+
+def TaskStartView(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    result = task.launch(request.POST)
+    success = result is not None
+    return HttpResponse(json.dumps({"success":success}),
+                        mimetype="application/json")
 
 """
 class ProcessLauncherDetailView(JSONResponseMixin, DetailView):

@@ -89,7 +89,8 @@ class Process(models.Model):
         user = node.role.user_set.all()[0] #TODO: select valid user
         task = Task(node=node, process=self, user=user)
         task.save()
-        task.launch()
+        if not node.info_required:
+            task.launch()
 
 
 class Task(models.Model):
@@ -107,13 +108,19 @@ class Task(models.Model):
     def __unicode__(self):
         return u'{0} [{1}]'.format(self.node, self.pk)
 
-    def launch(self):
+    def launch(self, extra_params={}):
         # instead of calling task with send_task import task and use
         # apply_async; this way celery respects CELERY_ALWAYS_EAGER, so it
         # can be tested :-) This could change in future versions of celery.
         #result = send_task(self.task, args=(self.pk,), kwargs=params)
-        result = self.node.celery_task.apply_async(
-                args=(self.pk,), kwargs=self.node.params)
+        params = extra_params.copy()
+        params.update(self.node.params)
+        form = self.node.celery_task.form(params)
+        if form.is_valid():
+            result = self.node.celery_task.apply_async(
+                    args=(self.pk,), kwargs=self.node.params)
+        else:
+            result = None
         return result
 
     def update(self, state, result=''):
