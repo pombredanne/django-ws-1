@@ -23,7 +23,7 @@ class Notifier(object):
 
     def success(self):
         workflow = self.node.workflow
-        if workflow.start == self.node:
+        if workflow.end == self.node:
             process = self.task.process
             process.end_date = datetime.now()
             process.save()
