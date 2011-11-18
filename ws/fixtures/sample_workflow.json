@@ -95,20 +95,38 @@
         }
     }, 
     {
+        "pk": 2, 
+        "model": "ws.workflow", 
+        "fields": {
+            "start": 4, 
+            "end": 6, 
+            "name": "User testing workflow"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "ws.workflow", 
+        "fields": {
+            "start": 7, 
+            "end": 10, 
+            "name": "adivina el numero"
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "ws.node", 
         "fields": {
             "info_required": false, 
-            "join": 1, 
+            "join": "AND", 
             "name": "sumar 1 y 1", 
             "workflow": 1, 
-            "role": 1,
             "params": {
                 "a": 1, 
                 "b": 1
             }, 
-            "split": 1, 
-            "task_name": "ws.tasks.add"
+            "split": "AND", 
+            "task_name": "ws.tasks.add", 
+            "role": 1
         }
     }, 
     {
@@ -116,16 +134,16 @@
         "model": "ws.node", 
         "fields": {
             "info_required": false, 
-            "join": 1, 
+            "join": "AND", 
             "name": "sumar 2 y 2", 
             "workflow": 1, 
-            "role": 2,
             "params": {
                 "a": 2, 
                 "b": 2
             }, 
-            "split": 1, 
-            "task_name": "ws.tasks.add"
+            "split": "AND", 
+            "task_name": "ws.tasks.add", 
+            "role": 2
         }
     }, 
     {
@@ -133,17 +151,17 @@
         "model": "ws.node", 
         "fields": {
             "info_required": true, 
-            "join": 1, 
+            "join": "AND", 
             "name": "sumar 2 y algo", 
             "workflow": 1, 
-            "role": 2,
             "params": {
                 "a": 2
             }, 
-            "split": 1, 
-            "task_name": "ws.tasks.add"
+            "split": "AND", 
+            "task_name": "ws.tasks.add", 
+            "role": 2
         }
-    },
+    }, 
     {
         "pk": 4, 
         "model": "ws.node", 
@@ -187,15 +205,73 @@
         }
     }, 
     {
+        "pk": 7, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": true, 
+            "join": "AND", 
+            "name": "dime un numero (b)", 
+            "workflow": 3, 
+            "params": {
+                "a": 2
+            }, 
+            "split": "AND", 
+            "task_name": "ws.tasks.add", 
+            "role": 2
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": false, 
+            "join": "AND", 
+            "name": "has acertado", 
+            "workflow": 3, 
+            "params": null, 
+            "split": "AND", 
+            "task_name": "ws.tasks.dummy", 
+            "role": 1
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": false, 
+            "join": "AND", 
+            "name": "buuu! has perdido", 
+            "workflow": 3, 
+            "params": null, 
+            "split": "AND", 
+            "task_name": "ws.tasks.dummy", 
+            "role": 1
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": false, 
+            "join": "XOR", 
+            "name": "adinivinanza terminada", 
+            "workflow": 3, 
+            "params": null, 
+            "split": "AND", 
+            "task_name": "ws.tasks.dummy", 
+            "role": 1
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "ws.transition", 
         "fields": {
-            "workflow": 1, 
+            "child": 2, 
             "condition": "", 
             "parent": 1, 
-            "child": 2
+            "workflow": 1
         }
-    },
+    }, 
     {
         "pk": 2, 
         "model": "ws.transition", 
@@ -214,6 +290,46 @@
             "condition": "", 
             "parent": 5, 
             "workflow": 2
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "ws.transition", 
+        "fields": {
+            "child": 8, 
+            "condition": "4", 
+            "parent": 7, 
+            "workflow": 3
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "ws.transition", 
+        "fields": {
+            "child": 9, 
+            "condition": "6", 
+            "parent": 7, 
+            "workflow": 3
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "ws.transition", 
+        "fields": {
+            "child": 10, 
+            "condition": "", 
+            "parent": 8, 
+            "workflow": 3
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "ws.transition", 
+        "fields": {
+            "child": 10, 
+            "condition": "", 
+            "parent": 9, 
+            "workflow": 3
         }
     }, 
     {
