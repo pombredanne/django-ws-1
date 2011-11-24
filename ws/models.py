@@ -18,6 +18,8 @@ class Workflow(models.Model):
     #and back. We can't do it if we don't make it somewhere possible to be null
     #because of the id assignement :-/
     name = models.CharField(max_length=100)
+
+    priority = models.PositiveSmallIntegerField(default=9)
     start = models.ForeignKey('Node', related_name='+', null=True, blank=True)
     end = models.ForeignKey('Node', related_name='+', null=True, blank=True)
 
@@ -32,6 +34,7 @@ class Node(models.Model):
     join = models.CharField(max_length=3, choices=CONDITIONS.items())
     split = models.CharField(max_length=3, choices=CONDITIONS.items())
 
+    priority = models.PositiveSmallIntegerField(default=9)
     task_name = models.CharField(max_length=256) #ws.tasks.add
     params = JSONField(null=True, blank=True, default={})
     info_required = models.BooleanField(editable=False)
@@ -72,6 +75,8 @@ class Transition(models.Model):
 class Process(models.Model):
     workflow = models.ForeignKey(Workflow)
     name = models.CharField(max_length=100, blank=True)
+
+    priority = models.PositiveSmallIntegerField(null=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     
@@ -93,13 +98,14 @@ class Process(models.Model):
         if not node.info_required:
             task.launch()
 
-
 class Task(models.Model):
     node = models.ForeignKey(Node, related_name='task_set')
     process = models.ForeignKey(Process)
+
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
 
+    priority = models.PositiveSmallIntegerField(null=True)
     task_id = models.CharField(max_length=36, blank=True)
     result = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=8, 
@@ -115,15 +121,14 @@ class Task(models.Model):
         params.update(extra_params)
         form = self.node.celery_task.form(params)
         if form.is_valid():
-            result = self.node.celery_task.apply_async(
-                    args=(self.pk,), kwargs=form.clean())
+            result = self.apply_async(form.clean())
             self.task_id = result.task_id
             self.save()
         else:
             result = None
         return result
 
-    def stop(self):
+    def revoke(self):
         revoke(self.task_id, terminate=True)
 
     def update(self, state, result=''):
@@ -131,3 +136,15 @@ class Task(models.Model):
         self.result = result
         self.save()
         notifier.send(sender=self)
+
+    def get_priority(self):
+        task = self.priority or self.node.priority
+        process = self.process.priority or self.process.workflow.priority
+        return (task + process) / 2
+
+    def apply_async(self, kwargs):
+        return self.node.celery_task.apply_async(
+                args=(self.pk,), 
+                kwargs=kwargs,
+                priority=self.get_priority(),
+                )

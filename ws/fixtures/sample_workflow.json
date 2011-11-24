@@ -91,7 +91,8 @@
         "fields": {
             "start": 1, 
             "end": 2, 
-            "name": "Sumar 2 y 2"
+            "name": "Sumar 2 y 2",
+            "priority": 9
         }
     }, 
     {
@@ -100,7 +101,8 @@
         "fields": {
             "start": 4, 
             "end": 6, 
-            "name": "User testing workflow"
+            "name": "User testing workflow",
+            "priority": 9
         }
     }, 
     {
@@ -109,7 +111,8 @@
         "fields": {
             "start": 7, 
             "end": 10, 
-            "name": "adivina el numero"
+            "name": "adivina el numero",
+            "priority": 9
         }
     }, 
     {
@@ -126,7 +129,8 @@
             }, 
             "split": "AND", 
             "task_name": "ws.tasks.add", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -143,7 +147,8 @@
             }, 
             "split": "AND", 
             "task_name": "ws.tasks.add", 
-            "role": 2
+            "role": 2,
+            "priority": 9
         }
     }, 
     {
@@ -159,7 +164,8 @@
             }, 
             "split": "AND", 
             "task_name": "ws.tasks.add", 
-            "role": 2
+            "role": 2,
+            "priority": 9
         }
     }, 
     {
@@ -173,7 +179,8 @@
             "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -187,7 +194,8 @@
             "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 2
+            "role": 2,
+            "priority": 9
         }
     }, 
     {
@@ -201,7 +209,8 @@
             "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -217,7 +226,8 @@
             }, 
             "split": "AND", 
             "task_name": "ws.tasks.add", 
-            "role": 2
+            "role": 2,
+            "priority": 9
         }
     }, 
     {
@@ -231,7 +241,8 @@
             "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -245,7 +256,8 @@
             "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -259,7 +271,8 @@
             "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -273,7 +286,8 @@
             "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.endless", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -353,7 +367,8 @@
             "workflow": 1,
             "name": "sample process",
             "start_date": null,
-            "end_date": null
+            "end_date": null,
+            "priority": null
         }
     },
     {
@@ -363,7 +378,8 @@
             "workflow": 2,
             "name": "sample process with dummy task",
             "start_date": null,
-            "end_date": null
+            "end_date": null,
+            "priority": null
         }
     },
     {
@@ -376,7 +392,8 @@
             "state": "RECEIVED", 
             "result": "",
             "start_date": null,
-            "end_date": null
+            "end_date": null,
+            "priority": null
         }
     },
     {
@@ -389,7 +406,8 @@
             "state": "RECEIVED", 
             "result": "",
             "start_date": null,
-            "end_date": null
+            "end_date": null,
+            "priority": null
         }
     },
     {
@@ -402,7 +420,8 @@
             "state": "RECEIVED", 
             "result": "",
             "start_date": null,
-            "end_date": null
+            "end_date": null,
+            "priority": null
         }
     }
 ]
