@@ -46,12 +46,12 @@
         "pk": 1,
         "model": "ws.node",
         "fields": {
-            "info_required": true,
+            "info_required": false,
             "join": "XOR",
             "name": "Split",
             "workflow": 1,
             "role": 1,
-            "params": null,
+            "params": {},
             "split": "XOR",
             "task_name": "ws.tasks.dummy"
         }
@@ -60,12 +60,12 @@
         "pk": 2,
         "model": "ws.node",
         "fields": {
-            "info_required": true,
+            "info_required": false,
             "join": "XOR",
             "name": "One",
             "workflow": 1,
             "role": 1,
-            "params": null,
+            "params": {},
             "split": "XOR",
             "task_name": "ws.tasks.dummy"
         }
@@ -74,12 +74,12 @@
         "pk": 3,
         "model": "ws.node",
         "fields": {
-            "info_required": true,
+            "info_required": false,
             "join": "XOR",
             "name": "Two",
             "workflow": 1,
             "role": 1,
-            "params": null,
+            "params": {},
             "split": "XOR",
             "task_name": "ws.tasks.dummy"
         }
@@ -88,12 +88,12 @@
         "pk": 4,
         "model": "ws.node",
         "fields": {
-            "info_required": true,
+            "info_required": false,
             "join": "XOR",
             "name": "Join",
             "workflow": 1,
             "role": 1,
-            "params": null,
+            "params": {},
             "split": "XOR",
             "task_name": "ws.tasks.dummy"
         }

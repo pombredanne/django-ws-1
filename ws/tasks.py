@@ -23,3 +23,10 @@ class dummy(BPMTask):
     form = forms.BPMTaskForm
     def run(self, workflow_task):
         return ''
+
+
+class endless(BPMTask):
+    form = forms.BPMTaskForm
+    def run(self, workflow_task):
+        while True:
+            pass

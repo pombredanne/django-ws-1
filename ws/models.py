@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from datetime import datetime
 from django.db import models
 from django.utils.importlib import import_module
@@ -5,6 +7,7 @@ from django.utils.importlib import import_module
 from django.contrib.auth.models import Group, User
 
 from jsonfield import JSONField
+from celery.task.control import revoke
 
 from ws.signals import notifier
 from ws import STATES, CONDITIONS
@@ -28,10 +31,9 @@ class Node(models.Model):
 
     join = models.CharField(max_length=3, choices=CONDITIONS.items())
     split = models.CharField(max_length=3, choices=CONDITIONS.items())
-    completed = {}
 
     task_name = models.CharField(max_length=256) #ws.tasks.add
-    params = JSONField(null=True, blank=True)
+    params = JSONField(null=True, blank=True, default={})
     info_required = models.BooleanField(editable=False)
 
     role = models.ForeignKey(Group)
@@ -40,8 +42,7 @@ class Node(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        params = self.params or '' #send some data to the form even when the task does not need it
-        form = self.celery_task.form(params)
+        form = self.celery_task.form(self.params)
         self.info_required = not form.is_valid()
         super(Node, self).save(*args, **kwargs)
 
@@ -99,6 +100,7 @@ class Task(models.Model):
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
 
+    task_id = models.CharField(max_length=36, blank=True)
     result = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=8, 
             choices=STATES.items(), default='RECEIVED')
@@ -108,23 +110,21 @@ class Task(models.Model):
     def __unicode__(self):
         return u'{0} [{1}]'.format(self.node, self.pk)
 
-    def launch(self, extra_params=None):
-        # instead of calling task with send_task import task and use
-        # apply_async; this way celery respects CELERY_ALWAYS_EAGER, so it
-        # can be tested :-) This could change in future versions of celery.
-        #result = send_task(self.task, args=(self.pk,), kwargs=params)
-        if extra_params is None:
-            extra_params = {}
-        node_params = self.node.params or {}
-        params = extra_params.copy()
-        params.update(node_params)
+    def launch(self, extra_params={}):
+        params = self.node.params.copy()
+        params.update(extra_params)
         form = self.node.celery_task.form(params)
         if form.is_valid():
-            result = self.node.celery_task.apply_async(args=(self.pk,),
-                                                       kwargs=form.clean())
+            result = self.node.celery_task.apply_async(
+                    args=(self.pk,), kwargs=form.clean())
+            self.task_id = result.task_id
+            self.save()
         else:
             result = None
         return result
+
+    def stop(self):
+        revoke(self.task_id, terminate=True)
 
     def update(self, state, result=''):
         self.state = state

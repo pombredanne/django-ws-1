@@ -170,7 +170,7 @@
             "join": "AND", 
             "name": "Decidir enmarronamiento", 
             "workflow": 2, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
             "role": 1
@@ -184,7 +184,7 @@
             "join": "AND", 
             "name": "Comerse el marron", 
             "workflow": 2, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
             "role": 2
@@ -198,7 +198,7 @@
             "join": "AND", 
             "name": "Dar palmaditas en la espalda", 
             "workflow": 2, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
             "role": 1
@@ -228,7 +228,7 @@
             "join": "AND", 
             "name": "has acertado", 
             "workflow": 3, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
             "role": 1
@@ -242,7 +242,7 @@
             "join": "AND", 
             "name": "buuu! has perdido", 
             "workflow": 3, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
             "role": 1
@@ -256,9 +256,23 @@
             "join": "XOR", 
             "name": "adinivinanza terminada", 
             "workflow": 3, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
+            "role": 1
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": false, 
+            "join": "XOR", 
+            "name": "this is endless", 
+            "workflow": 1, 
+            "params": {}, 
+            "split": "AND", 
+            "task_name": "ws.tasks.endless", 
             "role": 1
         }
     }, 
@@ -359,7 +373,7 @@
             "node": 1, 
             "process": 1, 
             "user": 3,
-            "state": 2, 
+            "state": "RECEIVED", 
             "result": "",
             "start_date": null,
             "end_date": null
@@ -372,7 +386,20 @@
             "node": 1, 
             "process": 2, 
             "user": 3,
-            "state": 2, 
+            "state": "RECEIVED", 
+            "result": "",
+            "start_date": null,
+            "end_date": null
+        }
+    },
+    {
+        "pk": 3, 
+        "model": "ws.task", 
+        "fields": {
+            "node": 11, 
+            "process": 1, 
+            "user": 3,
+            "state": "RECEIVED", 
             "result": "",
             "start_date": null,
             "end_date": null
