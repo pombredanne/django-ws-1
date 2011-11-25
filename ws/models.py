@@ -3,11 +3,13 @@ from __future__ import absolute_import
 from datetime import datetime
 from django.db import models
 from django.utils.importlib import import_module
+from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import Group, User
 
 from jsonfield import JSONField
 from celery.task.control import revoke
+from guardian.shortcuts import assign
 
 from ws.signals import notifier
 from ws import STATES, CONDITIONS
@@ -80,6 +82,11 @@ class Process(models.Model):
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     
+    class Meta:
+        permissions = (
+                ('execute_process', 'Can execute process'),
+                )
+
     def __unicode__(self):
         if self.name:
             return self.name
@@ -112,6 +119,12 @@ class Task(models.Model):
             choices=STATES.items(), default='RECEIVED')
 
     user = models.ForeignKey(User)
+
+    class Meta:
+        permissions = (
+                ('execute_task', 'Can execute task'),
+                ('view_task', 'Can view task'),
+                )
 
     def __unicode__(self):
         return u'{0} [{1}]'.format(self.node, self.pk)
@@ -148,3 +161,8 @@ class Task(models.Model):
                 kwargs=kwargs,
                 priority=self.get_priority(),
                 )
+
+    def save(self, *args, **kwargs):
+        assign('execute_task', self.node.role, self)
+        assign('view_task', self.user, self)
+        super(Task, self).save(*args, **kwargs)

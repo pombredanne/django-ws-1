@@ -8,6 +8,8 @@ from django.utils import simplejson as json
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
+from guardian.decorators import permission_required
+
 from ws.models import Task, Process, Workflow, Transition
 
 class ProtectedTemplateView(TemplateView):
@@ -156,6 +158,7 @@ class ProcessListView(ExtListView):
         return data
 
 
+@permission_required('ws.execute_process')
 def CreateProcess(request):
     success = False
     message = ""
@@ -192,6 +195,11 @@ class TaskListView(ExtListView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(TaskListView, self).dispatch(*args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super(TaskListView, self).get_queryset()
+        return get_objects_for_user(self.request.user, 
+                'ws.view_task', queryset)
 
     def convert_object_to_dict(self, obj):
         #if obj.user:
@@ -271,6 +279,7 @@ class TaskFormView(DetailView):
                             mimetype="application/json")
 
 
+@permission_required('ws.execute_task', (Task, 'pk', 'pk'))
 def TaskStartView(request, pk):
     task = get_object_or_404(Task, pk=pk)
     result = task.launch(request.POST)
