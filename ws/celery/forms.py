@@ -37,8 +37,25 @@ class IntegerField(Field, forms.IntegerField):
 
 class CharField(Field, forms.CharField):
     def field_extras(self, ext_dict):
+        if type(self.widget) == forms.Textarea:
+            ext_dict['xtype'] = 'textarea'
         for validator in self.validators:
             if type(validator) == validators.MinLengthValidator:
                 ext_dict['minLength'] = validator.limit_value
             elif type(validator) == validators.MaxLengthValidator:
                 ext_dict['maxLength'] = validator.limit_value
+
+class BooleanField(Field, forms.BooleanField):
+    def field_extras(self, ext_dict):
+        ext_dict['xtype'] = 'checkbox'
+        if self.initial:
+            ext_dict['checked'] = self.initial
+
+class ChoiceField(Field, forms.ChoiceField):
+    def field_extras(self, ext_dict):
+        ext_dict['xtype'] = 'combo'
+#       ext_dict['store'] = Ext.data.SimpleStore({
+#       fields: ['code', 'name'],
+#       data: self.choices
+#       })
+
