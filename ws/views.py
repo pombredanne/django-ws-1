@@ -35,8 +35,14 @@ class JSONResponseMixin(object):
         # -- can be serialized as JSON.
         return json.dumps(context)
 
+class LoginRequiredMixin(object):
+    """ Views that inherit this mixin had login required. """
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TaskListView, self).dispatch(*args, **kwargs)
 
-class ExtListView(JSONResponseMixin, ListView):
+
+class ExtListView(LoginRequiredMixin, JSONResponseMixin, ListView):
     """
     List view prepared to send data to a ExtJS application.
     Features:
@@ -192,10 +198,6 @@ def CreateProcess(request):
 
 class TaskListView(ExtListView):
     model = Task
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(TaskListView, self).dispatch(*args, **kwargs)
 
     def convert_object_to_dict(self, obj):
         #if obj.user:
