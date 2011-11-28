@@ -33,6 +33,9 @@ Ext.define('WS.controller.Layout', {
             'dashboardsidebar button[action=processes]': {
                 click: this.processes
             },
+            'dashboardsidebar button[action=myTaskPortlet]': {
+                click: this.myTaskPortlet
+            },
             'dashboardsidebar button[action=taskPortlet]': {
                 click: this.taskPortlet
             },
@@ -94,6 +97,11 @@ Ext.define('WS.controller.Layout', {
 
     taskPortlet: function(button) {
         var view = Ext.create('WS.view.task.Portlet');
+        this.fireEvent('new_widget',view);
+    },
+
+    myTaskPortlet: function(button) {
+        var view = Ext.create('WS.view.task.MyPortlet');
         this.fireEvent('new_widget',view);
     },
 

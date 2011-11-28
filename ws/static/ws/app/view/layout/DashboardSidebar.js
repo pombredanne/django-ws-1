@@ -11,7 +11,7 @@ Ext.define('WS.view.layout.DashboardSidebar', {
         },{
             xtype: 'button',
             text: 'My tasks',
-            action: 'myTasks'
+            action: 'myTaskPortlet'
         },{
             xtype: 'button',
             text: 'Process Starter',
