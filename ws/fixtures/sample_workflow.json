@@ -91,7 +91,8 @@
         "fields": {
             "start": 1, 
             "end": 2, 
-            "name": "Sumar 2 y 2"
+            "name": "Sumar 2 y 2",
+            "priority": 9
         }
     }, 
     {
@@ -100,7 +101,8 @@
         "fields": {
             "start": 4, 
             "end": 6, 
-            "name": "User testing workflow"
+            "name": "User testing workflow",
+            "priority": 9
         }
     }, 
     {
@@ -109,7 +111,8 @@
         "fields": {
             "start": 7, 
             "end": 10, 
-            "name": "adivina el numero"
+            "name": "adivina el numero",
+            "priority": 9
         }
     }, 
     {
@@ -126,7 +129,8 @@
             }, 
             "split": "AND", 
             "task_name": "ws.tasks.add", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -143,7 +147,8 @@
             }, 
             "split": "AND", 
             "task_name": "ws.tasks.add", 
-            "role": 2
+            "role": 2,
+            "priority": 9
         }
     }, 
     {
@@ -159,7 +164,8 @@
             }, 
             "split": "AND", 
             "task_name": "ws.tasks.add", 
-            "role": 2
+            "role": 2,
+            "priority": 9
         }
     }, 
     {
@@ -170,10 +176,11 @@
             "join": "AND", 
             "name": "Decidir enmarronamiento", 
             "workflow": 2, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -184,10 +191,11 @@
             "join": "AND", 
             "name": "Comerse el marron", 
             "workflow": 2, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 2
+            "role": 2,
+            "priority": 9
         }
     }, 
     {
@@ -198,10 +206,11 @@
             "join": "AND", 
             "name": "Dar palmaditas en la espalda", 
             "workflow": 2, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -217,7 +226,8 @@
             }, 
             "split": "AND", 
             "task_name": "ws.tasks.add", 
-            "role": 2
+            "role": 2,
+            "priority": 9
         }
     }, 
     {
@@ -228,10 +238,11 @@
             "join": "AND", 
             "name": "has acertado", 
             "workflow": 3, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -242,10 +253,11 @@
             "join": "AND", 
             "name": "buuu! has perdido", 
             "workflow": 3, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -256,10 +268,26 @@
             "join": "XOR", 
             "name": "adinivinanza terminada", 
             "workflow": 3, 
-            "params": null, 
+            "params": {}, 
             "split": "AND", 
             "task_name": "ws.tasks.dummy", 
-            "role": 1
+            "role": 1,
+            "priority": 9
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "ws.node", 
+        "fields": {
+            "info_required": false, 
+            "join": "XOR", 
+            "name": "this is endless", 
+            "workflow": 1, 
+            "params": {}, 
+            "split": "AND", 
+            "task_name": "ws.tasks.endless", 
+            "role": 1,
+            "priority": 9
         }
     }, 
     {
@@ -339,7 +367,8 @@
             "workflow": 1,
             "name": "sample process",
             "start_date": null,
-            "end_date": null
+            "end_date": null,
+            "priority": null
         }
     },
     {
@@ -349,7 +378,8 @@
             "workflow": 2,
             "name": "sample process with dummy task",
             "start_date": null,
-            "end_date": null
+            "end_date": null,
+            "priority": null
         }
     },
     {
@@ -359,10 +389,11 @@
             "node": 1, 
             "process": 1, 
             "user": 3,
-            "state": 2, 
+            "state": "RECEIVED", 
             "result": "",
             "start_date": null,
-            "end_date": null
+            "end_date": null,
+            "priority": null
         }
     },
     {
@@ -372,10 +403,25 @@
             "node": 1, 
             "process": 2, 
             "user": 3,
-            "state": 2, 
+            "state": "RECEIVED", 
             "result": "",
             "start_date": null,
-            "end_date": null
+            "end_date": null,
+            "priority": null
+        }
+    },
+    {
+        "pk": 3, 
+        "model": "ws.task", 
+        "fields": {
+            "node": 11, 
+            "process": 1, 
+            "user": 3,
+            "state": "RECEIVED", 
+            "result": "",
+            "start_date": null,
+            "end_date": null,
+            "priority": null
         }
     }
 ]

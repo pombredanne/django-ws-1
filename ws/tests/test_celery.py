@@ -34,3 +34,17 @@ class CeleryIntegrationTestCase(TestCase):
         result = dummy.delay(task_pk)
         self.assertEqual(result.get(), '')
         self.assertTrue(result.successful())
+
+    def testStop(self):
+        print
+        print 'ws.CeleryIntegrationTestCase.testStop must'
+        print 'launched with the default test runner'
+        print 'this is not fake async! :-P'
+        task = Task.objects.get(pk=3)
+        result = task.launch()
+        from time import sleep
+        sleep(1)
+        task.revoke()
+
+    def testPriority(self):
+        pass
