@@ -4,6 +4,7 @@ Ext.define('WS.controller.Tasks', {
     models: ['Task'],
     views: [
         'task.Portlet',
+        'task.MyPortlet',
         'task.Grid',
         'task.View',
         'task.TaskDetail',
