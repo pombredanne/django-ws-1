@@ -7,6 +7,7 @@ from django.contrib.auth import login, logout
 from django.utils import simplejson as json
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 from ws.models import Task, Process, Workflow, Transition
 
@@ -283,6 +284,18 @@ def TaskStartView(request, pk):
     success = result is not None
     return HttpResponse(json.dumps({"success":success}),
                         mimetype="application/json")
+
+
+def UserInfoView(request):
+    """ Return information about currently logged user. """
+    if request.user.is_authenticated():
+        data = {'success': True,
+                'username': request.user.username}
+    else:
+        data = {'success': False}
+    return HttpResponse(json.dumps(data),
+                        mimetype='application/json')
+    
 
 """
 class ProcessLauncherDetailView(JSONResponseMixin, DetailView):

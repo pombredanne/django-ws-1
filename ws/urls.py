@@ -9,6 +9,7 @@ urlpatterns = patterns('ws.views',
     #(r'^$', ProtectedTemplateView.as_view(template_name='ws/main.html')),
     (r'^login$', 'JSONLogin'),
     (r'^logout$', 'JSONLogout'),
+    (r'^user.json$', 'UserInfoView'),
 
     (r'^workflows.json$', WorkflowListView.as_view()),
     #(r'^workflows/workflow_(?P<pk>.*).dot$', WorkflowGraphView.as_view()),
