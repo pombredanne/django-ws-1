@@ -4,12 +4,12 @@ from datetime import datetime
 from django.db import models
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
-
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, User
 
 from jsonfield import JSONField
 from celery.task.control import revoke
-from guardian.shortcuts import assign
+from guardian.models import GroupObjectPermission, UserObjectPermission
 
 from ws.signals import notifier
 from ws import STATES, CONDITIONS
@@ -163,6 +163,15 @@ class Task(models.Model):
                 )
 
     def save(self, *args, **kwargs):
-        assign('execute_task', self.node.role, self)
-        assign('view_task', self.user, self)
+        contenttype = ContentType.objects.get_for_model(Task)
+        group = GroupObjectPermission.objects.get(content_type=contenttype, 
+                object_pk=self.pk, permission__codename='execute_task')
+        group.group = self.node.role
+        group.save()
+
+        user = UserObjectPermission.objects.get(content_type=contenttype,
+                object_pk=self.pk, permission__codename='view_task')
+        user.user = self.user
+        user.save()
+
         super(Task, self).save(*args, **kwargs)
