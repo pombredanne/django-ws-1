@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from guardian.decorators import permission_required
+from guardian.shortcuts import get_objects_for_user
 
 from ws.models import Task, Process, Workflow, Transition
 
@@ -41,7 +42,7 @@ class LoginRequiredMixin(object):
     """ Views that inherit this mixin had login required. """
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(TaskListView, self).dispatch(*args, **kwargs)
+        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
 
 class ExtListView(LoginRequiredMixin, JSONResponseMixin, ListView):
