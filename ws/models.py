@@ -11,7 +11,6 @@ from jsonfield import JSONField
 from celery.task.control import revoke
 from guardian.shortcuts import assign
 
-from ws.signals import notifier
 from ws import STATES, CONDITIONS
 
 
@@ -137,8 +136,6 @@ class Task(models.Model):
         form = self.node.celery_task.form(params)
         if form.is_valid():
             result = self.apply_async(form.clean())
-            self.task_id = result.task_id
-            self.save()
         else:
             result = None
         return result
@@ -146,20 +143,14 @@ class Task(models.Model):
     def revoke(self):
         revoke(self.task_id, terminate=True)
 
-    def update(self, state, result=''):
-        self.state = state
-        self.result = result
-        self.save()
-        notifier.send(sender=self)
-
     def get_priority(self):
         task = self.priority or self.node.priority
         process = self.process.priority or self.process.workflow.priority
         return (task + process) / 2
 
     def apply_async(self, kwargs):
+        kwargs['workflow_task'] = self.pk
         return self.node.celery_task.apply_async(
-                args=(self.pk,), 
                 kwargs=kwargs,
                 priority=self.get_priority(),
                 )
