@@ -9,7 +9,7 @@ from django.contrib.auth.models import Group, User
 
 from jsonfield import JSONField
 from celery.task.control import revoke
-from guardian.models import GroupObjectPermission, UserObjectPermission
+from guardian.shortcuts import assign
 
 from ws.signals import notifier
 from ws import STATES, CONDITIONS
@@ -102,6 +102,8 @@ class Process(models.Model):
         user = node.role.user_set.all()[0] #TODO: select valid user
         task = Task(node=node, process=self, user=user)
         task.save()
+        assign('execute_task', user, task),
+        assign('view_task', user, task),
         if not node.info_required:
             task.launch()
 
@@ -161,17 +163,3 @@ class Task(models.Model):
                 kwargs=kwargs,
                 priority=self.get_priority(),
                 )
-
-    def save(self, *args, **kwargs):
-        contenttype = ContentType.objects.get_for_model(Task)
-        group = GroupObjectPermission.objects.get(content_type=contenttype, 
-                object_pk=self.pk, permission__codename='execute_task')
-        group.group = self.node.role
-        group.save()
-
-        user = UserObjectPermission.objects.get(content_type=contenttype,
-                object_pk=self.pk, permission__codename='view_task')
-        user.user = self.user
-        user.save()
-
-        super(Task, self).save(*args, **kwargs)
