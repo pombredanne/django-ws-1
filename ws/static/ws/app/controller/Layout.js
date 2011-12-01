@@ -63,6 +63,7 @@ Ext.define('WS.controller.Layout', {
             flex: 1,
             user: this.application.user
         });
+        this.changeView('dashboard');
     },
 
     unloadMain: function() {
