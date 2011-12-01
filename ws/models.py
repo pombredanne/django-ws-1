@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 from datetime import datetime
 from django.db import models
@@ -9,7 +9,7 @@ from django.contrib.auth.models import Group, User
 
 from jsonfield import JSONField
 from celery.task.control import revoke
-from guardian.shortcuts import assign
+from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 
 from ws import STATES, CONDITIONS
 
@@ -92,17 +92,46 @@ class Process(models.Model):
         else:
             return u'{0} [{1}]'.format(self.workflow.name, self.pk)
 
+    @property
+    def state(self):
+        start = self.task_set.get(node=self.workflow.start)
+        ending = self.task_set.get(node=self.workflow.end)
+        if start.state is 'PENDING':
+            return 'PENDING'
+        elif ending.state is 'PENDING' and self.task_set.filter(
+                state__in=('SENT', 'RECEIVED', 'STARTED', 'RETRY')):
+            return 'STARTED'
+        elif ending.state is 'SUCCESS':
+            return 'SUCCESS'
+        return 'FAILURE'
+
+    @property
+    def percentage(self):
+        percentages = self.task_set.values_list('percentage', flat=True)
+        return sum(percentages) / len(percentages)
+
+    @property
+    def result(self):
+        try:
+            self.task_set.get(node=self.workflow.end).result
+        except Task.DoesNotExist:
+            return ''
+
     def start(self):
         self.start_node(self.workflow.start)
         self.start_date = datetime.now()
         self.save()
 
+    def stop(self):
+        for task in self.task_set.exclude(
+                state__in=('SUCCESS', 'FAILURE', 'REVOKED')):
+            revoke(task.task_id, terminate=True)
+
     def start_node(self, node):
         user = node.role.user_set.all()[0] #TODO: select valid user
         task = Task(node=node, process=self, user=user)
+        task.assign(user)
         task.save()
-        assign('execute_task', user, task),
-        assign('view_task', user, task),
         if not node.info_required:
             task.launch()
 
@@ -115,9 +144,11 @@ class Task(models.Model):
 
     priority = models.PositiveSmallIntegerField(null=True)
     task_id = models.CharField(max_length=36, blank=True)
+
+    percentage = models.PositiveSmallIntegerField(default=0)
     result = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=8, 
-            choices=STATES.items(), default='RECEIVED')
+            choices=STATES.items(), default='PENDING')
 
     user = models.ForeignKey(User)
 
@@ -129,6 +160,12 @@ class Task(models.Model):
 
     def __unicode__(self):
         return u'{0} [{1}]'.format(self.node, self.pk)
+
+    def assign(self, user):
+        for user, perms in get_users_with_perms(self, attach_perms=True):
+            [ remove_perm(perm, user, self) for perm in perms ]
+        assign('execute_task', user, self)
+        assign('view_task', user, self)
 
     def launch(self, extra_params={}):
         params = self.node.params.copy()
@@ -143,14 +180,15 @@ class Task(models.Model):
     def revoke(self):
         revoke(self.task_id, terminate=True)
 
-    def get_priority(self):
+    @property
+    def priority(self):
         task = self.priority or self.node.priority
         process = self.process.priority or self.process.workflow.priority
-        return (task + process) / 2
+        return (task + process) // 2
 
     def apply_async(self, kwargs):
         kwargs['workflow_task'] = self.pk
         return self.node.celery_task.apply_async(
                 kwargs=kwargs,
-                priority=self.get_priority(),
+                priority=self.priority,
                 )

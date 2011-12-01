@@ -59,3 +59,5 @@ class ChoiceField(Field, forms.ChoiceField):
 #       data: self.choices
 #       })
 
+class ModelChoiceField(forms.ModelChoiceField, ChoiceField):
+    pass

@@ -1,3 +1,7 @@
+from __future__ import with_statement
+
+import socket
+
 from django.core.management.base import NoArgsCommand
 
 from celery.events import EventReceiver
@@ -11,5 +15,10 @@ class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         state = CallbackState()
         with establish_connection() as connection:
-            recv = EventReceiver(connection, handlers={'*': state.event})
-            recv.capture(limit=None, timeout=None)
+            while True:
+                recv = EventReceiver(connection, handlers={'*': state.event})
+                try:
+                    recv.capture(limit=None, timeout=None)
+                except (AttributeError, socket.error):
+                    connection = connection.ensure_connection()
+                
