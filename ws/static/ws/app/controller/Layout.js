@@ -5,7 +5,6 @@ Ext.define('WS.controller.Layout', {
         'layout.DashboardColumn',
         'layout.DashboardDropZone',
         'layout.DashboardSidebar',
-        'layout.Header',
         'layout.Main',
         'layout.Menubar',
         'layout.Portlet',
@@ -16,7 +15,7 @@ Ext.define('WS.controller.Layout', {
     init: function() {
         this.addEvents('new_widget');
         this.control({
-            'main': {
+            '#app-center': {
                 add: this.loadColumns,
             },
             'menubar menuitem[action=taskPortlet]': {
@@ -67,12 +66,14 @@ Ext.define('WS.controller.Layout', {
     },
 
     unloadMain: function() {
-        console.log("unload main");
         var wsmain = Ext.getCmp('ws-main');
         wsmain.removeAll();
     },
 
     loadColumns: function(main, component) {
+        console.log("Added: ");
+        console.log(component.alias);
+        console.log(component);
         if (component.alias == 'widget.dashboard') {
             //Create columns
             var i,

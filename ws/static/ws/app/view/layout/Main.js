@@ -12,33 +12,6 @@ Ext.define('WS.view.layout.Main', {
 
     user: undefined,
 
-    /*
-    items: [{
-            xtype: 'header',
-            region: 'north'
-        },{
-            id: 'app-center',
-            region: 'center',
-            layout: 'fit',
-            items: [{
-                html: 'erdialdea',
-            }],
-        },{
-            id: 'app-sidebar',
-            region: 'west',
-            preventHeader: true,
-            collapsible: true,
-            collapseMode: 'mini',
-            split: true,
-            items: [{
-                html: 'sidebar',
-            }],
-        },{
-            xtype: 'statusbar',
-            region: 'south',
-    }],
-    */
-
     initComponent : function() {
         this.items = [{
                 xtype: 'menubar',

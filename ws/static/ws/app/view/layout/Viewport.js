@@ -27,10 +27,4 @@ Ext.define('WS.view.layout.Viewport', {
             height: 20,
     }],
 
-    loadMain: function() {
-        console.log("inside load main");
-        var center = this.down('#app-center');
-        center.add({html:'kaixo'});
-    },
-
 });
