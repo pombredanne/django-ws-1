@@ -1,15 +1,15 @@
 Ext.define('WS.controller.Auth', {
     extend: 'Ext.app.Controller',
     uses: ['Ext.util.Cookies'],
+    models: ['User'],
     views: [
         'auth.Login',
     ],
 
     init: function() {
         //console.log('Initialized Tasks! This happens before the Application launch function is called');
-        this.addEvents('auth_required');
         this.control({
-            'login button[action=login]': {
+            'button[action=login]': {
                 click: this.login
             },
             'button[action=logout]': {
@@ -17,7 +17,15 @@ Ext.define('WS.controller.Auth', {
             }
         });
         Ext.Ajax.on('beforerequest', this.ajax_csrf);
-        this.on('auth_required', this.auth_required);
+
+        this.on({
+            authenticated: this.getUserInfo,
+        })
+
+        this.application.on({
+            auth_required: this.auth_required,
+            scope: this
+        });
     },
 
     ajax_csrf: function(conn, options) {
@@ -31,15 +39,17 @@ Ext.define('WS.controller.Auth', {
     },
 
     login: function(button) {
-        var panel = button.up('panel'),
-            form = panel.down('form');
+        var form = button.up('form');
+        var controller = this;
         form.submit({
+            url:'/ws/login',
             method:'POST', 
-            waitTitle:'Connecting', 
+            waitTitle:'Authenticating', 
             waitMsg:'Sending data...',
             success:function(form, action){ 
-                var win = form.owner.up('window');
-                win.close();
+                controller.login_window.close();
+                // Gather user information
+                controller.getUserInfo();
             },
 
             failure: function(form, action) {
@@ -57,19 +67,50 @@ Ext.define('WS.controller.Auth', {
         });
     },
 
+    getUserInfo: function() {
+        var controller = this;
+        Ext.Ajax.request({
+            url: '/ws/user.json',
+            success: function(response) {
+                data = Ext.JSON.decode(response.responseText)
+                if (data['success'] == true) {
+                    // Store user information in the application
+                    controller.application.user = Ext.create('WS.model.User', {
+                        pk: data['pk'],
+                        username: data['username'],
+                    });
+                    controller.application.fireEvent('authenticated')
+                } else {
+                    controller.application.fireEvent('auth_required');
+                }
+            },
+            failure: function(response) {
+                console.log("error, presume unauthenticated");
+            },
+        });
+    },
+
     logout: function(button) {
+        var controller = this;
         Ext.Ajax.request({
             url: '/ws/logout',
             success: function(response) {
-                console.log('logged out');
+                controller.application.fireEvent('auth_required')
             },
         });
     },
 
     auth_required: function (){
-        var loginWindow = Ext.create('widget.login');
-        loginWindow.show();
-    }
+        this.login_window = Ext.create('Ext.window.Window', {
+            title: 'Login',
+            resizable: false,
+            closable: false,
+            items : [{
+                xtype:'authlogin',
+            }],
+        });
+        this.login_window.show();
+    },
 
 });
 

@@ -11,8 +11,14 @@ Ext.application({
     ],
 
     launch: function() {
-        Ext.create('WS.view.layout.Main', {
+        this.addEvents('auth_required', 'authenticated');
+
+        this.viewport = Ext.create('WS.view.layout.Viewport', {
             id: 'viewport',
         });
+
+        var authController = this.getController('Auth');
+        authController.getUserInfo();
     },
+
 });

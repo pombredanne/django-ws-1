@@ -5,9 +5,10 @@ Ext.define('WS.view.layout.Menubar', {
 
     cls: 'x-menu',
 
+    user: undefined,
+
     initComponent : function() {
         // Implement a Container beforeLayout call from the layout to this Container
-
         this.items = [{
                 text: 'Tasks',
                 menu: {
@@ -66,7 +67,7 @@ Ext.define('WS.view.layout.Menubar', {
                     tooltip: 'administration',
                 }],
             },'->',{
-                text: 'Preferences',
+                text: this.user.get('username'),
                 action: 'preferences'
             },{
                 text: 'Logout',

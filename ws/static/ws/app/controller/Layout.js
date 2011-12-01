@@ -1,15 +1,16 @@
 Ext.define('WS.controller.Layout', {
     extend: 'Ext.app.Controller',
     views: [
-        'layout.Portlet',
-        'layout.DashboardColumn',
         'layout.Dashboard',
+        'layout.DashboardColumn',
         'layout.DashboardDropZone',
         'layout.DashboardSidebar',
-        'layout.Menubar',
         'layout.Header',
         'layout.Main',
+        'layout.Menubar',
+        'layout.Portlet',
         'layout.Statusbar',
+        'layout.Viewport',
     ],
 
     init: function() {
@@ -47,6 +48,27 @@ Ext.define('WS.controller.Layout', {
             }
         });
         this.on('new_widget', this.new_widget);
+        this.application.on({
+            authenticated: this.loadMain,
+            auth_required: this.unloadMain,
+            scope: this
+        });
+    },
+
+    loadMain: function() {
+        var wsmain = Ext.getCmp('ws-main');
+        wsmain.removeAll();
+        wsmain.add({
+            xtype: 'main',
+            flex: 1,
+            user: this.application.user
+        });
+    },
+
+    unloadMain: function() {
+        console.log("unload main");
+        var wsmain = Ext.getCmp('ws-main');
+        wsmain.removeAll();
     },
 
     loadColumns: function(main, component) {
@@ -148,6 +170,7 @@ Ext.define('WS.controller.Layout', {
             sidebar.setLoading(false);
         };
     },
+
     goToFullscreen: function(tool) {
         var portlet = tool.up('portlet'),
             button = {
