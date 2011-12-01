@@ -29,7 +29,7 @@ Ext.define('WS.controller.Layout', {
                 click: this.processes
             },
             '#viewChooser button': {
-                toggle: this.changeView,
+                toggle: this.chooseView,
             },
             'dashboardsidebar button[action=processes]': {
                 click: this.processes
@@ -138,44 +138,44 @@ Ext.define('WS.controller.Layout', {
         this.fireEvent('new_widget',view);
     },
 
-    changeView: function(button, pressed) {
+    changeView: function(target) {
+        var center = Ext.ComponentManager.get('app-center'),
+            sidebar = Ext.ComponentManager.get('app-sidebar');
+        center.setLoading(true);
+        center.removeAll();
+        sidebar.setLoading(true);
+        sidebar.removeAll();
+        var view, side;
+        switch(target) {
+            case 'dashboard':
+                var view = Ext.create('WS.view.layout.Dashboard'),
+                    side = Ext.create('WS.view.layout.DashboardSidebar');
+                break;
+            case 'tasks':
+                var view = Ext.create('WS.view.task.Main'),
+                    side = Ext.create('WS.view.task.MainSidebar');
+                break;
+            case 'processes':
+                var view = Ext.create('WS.view.process.Main'),
+                    side = Ext.create('WS.view.process.MainSidebar');
+                break;
+            default:
+                var view = Ext.create("Ext.panel.Panel", {html: "TODO"}),
+                    side = Ext.create("Ext.panel.Panel", {html: "TODO"});
+        }
+        center.add(view);
+        center.setLoading(false);
+        sidebar.add(side);
+        sidebar.setLoading(false);
+    },
+
+    chooseView: function(button, pressed) {
         if (pressed) {
-            var center = Ext.ComponentManager.get('app-center'),
-                sidebar = Ext.ComponentManager.get('app-sidebar');
-            center.setLoading(true);
-            center.removeAll();
-            sidebar.setLoading(true);
-            sidebar.removeAll();
-            var view, side;
-            switch(button.action) {
-                case 'dashboard':
-                    var view = Ext.create('WS.view.layout.Dashboard'),
-                        side = Ext.create('WS.view.layout.DashboardSidebar');
-                    break;
-                case 'tasks':
-                    var view = Ext.create('WS.view.task.Main'),
-                        side = Ext.create('WS.view.task.MainSidebar');
-                    break;
-                case 'processes':
-                    var view = Ext.create('WS.view.process.Main'),
-                        side = Ext.create('WS.view.process.MainSidebar');
-                    break;
-                default:
-                    var view = Ext.create("Ext.panel.Panel", {html: "TODO"}),
-                        side = Ext.create("Ext.panel.Panel", {html: "TODO"});
-            }
-            center.add(view);
-            center.setLoading(false);
-            sidebar.add(side);
-            sidebar.setLoading(false);
+            this.changeView(button.action);
         };
     },
 
     goToFullscreen: function(tool) {
-        var portlet = tool.up('portlet'),
-            button = {
-                action: portlet.fullscreenTarget,
-            }
-        this.changeView(button,true);
+        this.changeView(portlet.fullscreenTarget);
     },
 });
