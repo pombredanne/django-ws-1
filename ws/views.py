@@ -299,7 +299,8 @@ def UserInfoView(request):
     """ Return information about currently logged user. """
     if request.user.is_authenticated():
         data = {'success': True,
-                'username': request.user.username}
+                'username': request.user.username,
+                'pk': request.user.pk}
     else:
         data = {'success': False}
     return HttpResponse(json.dumps(data),
