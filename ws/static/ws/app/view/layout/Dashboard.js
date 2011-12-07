@@ -25,6 +25,27 @@ Ext.define('WS.view.layout.Dashboard', {
         this.on('drop', this.doLayout, this);
     },
 
+    lbar: [{
+        xtype: 'fieldset',
+        title: 'Add portlets',
+        defaults: {
+            xtype: 'button',
+        },
+        items: [{
+            text: 'Tasks',
+            action: 'taskPortlet',
+        },{
+            text: 'My tasks',
+            action: 'myTaskPortlet'
+        },{
+            text: 'Process Starter',
+            action: 'startProcess',
+        },{
+            text: 'Processes',
+            action: 'processes',
+        }],
+    }],
+
     // Set columnWidth, and set first and last column classes to allow exact CSS targeting.
     beforeLayout: function() {
         var items = this.layout.getLayoutItems(),

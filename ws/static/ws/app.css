@@ -34,7 +34,7 @@
     color: #000;
 }
 
-#app-sidebar .x-btn {
+.x-toolbar-vertical .x-btn {
     display: block;
 }
 

@@ -4,7 +4,6 @@ Ext.define('WS.controller.Layout', {
         'layout.Dashboard',
         'layout.DashboardColumn',
         'layout.DashboardDropZone',
-        'layout.DashboardSidebar',
         'layout.Main',
         'layout.Menubar',
         'layout.Portlet',
@@ -30,16 +29,16 @@ Ext.define('WS.controller.Layout', {
             '#viewChooser button': {
                 toggle: this.chooseView,
             },
-            'dashboardsidebar button[action=processes]': {
+            'button[action=processes]': {
                 click: this.processes
             },
-            'dashboardsidebar button[action=myTaskPortlet]': {
+            'button[action=myTaskPortlet]': {
                 click: this.myTaskPortlet
             },
-            'dashboardsidebar button[action=taskPortlet]': {
+            'button[action=taskPortlet]': {
                 click: this.taskPortlet
             },
-            'dashboardsidebar button[action=startProcess]': {
+            'button[action=startProcess]': {
                 click: this.startProcess
             },
             'portlet tool[action=fullscreen]': {
@@ -141,34 +140,25 @@ Ext.define('WS.controller.Layout', {
     },
 
     changeView: function(target) {
-        var center = Ext.ComponentManager.get('app-center'),
-            sidebar = Ext.ComponentManager.get('app-sidebar');
+        var center = Ext.ComponentManager.get('app-center');
         center.setLoading(true);
         center.removeAll();
-        sidebar.setLoading(true);
-        sidebar.removeAll();
-        var view, side;
+        var view;
         switch(target) {
             case 'dashboard':
-                var view = Ext.create('WS.view.layout.Dashboard'),
-                    side = Ext.create('WS.view.layout.DashboardSidebar');
+                var view = Ext.create('WS.view.layout.Dashboard');
                 break;
             case 'tasks':
-                var view = Ext.create('WS.view.task.Main'),
-                    side = Ext.create('WS.view.task.MainSidebar');
+                var view = Ext.create('WS.view.task.Main');
                 break;
             case 'processes':
-                var view = Ext.create('WS.view.process.Main'),
-                    side = Ext.create('WS.view.process.MainSidebar');
+                var view = Ext.create('WS.view.process.Main');
                 break;
             default:
-                var view = Ext.create("Ext.panel.Panel", {html: "TODO"}),
-                    side = Ext.create("Ext.panel.Panel", {html: "TODO"});
+                var view = Ext.create("Ext.panel.Panel", {html: "TODO"});
         }
         center.add(view);
         center.setLoading(false);
-        sidebar.add(side);
-        sidebar.setLoading(false);
     },
 
     chooseView: function(button, pressed) {

@@ -8,6 +8,66 @@ Ext.define('WS.view.process.Main', {
         padding: 0
     },
 
+    lbar: [{
+        xtype: 'fieldset',
+        title: 'General actions',
+        defaults: {
+            xtype: 'button',
+        },
+        items: [{
+            text: 'New',
+            action: 'newprocess',
+        }],
+    },{
+        xtype: 'fieldset',
+        title: 'Process actions',
+        defaults: {
+            xtype: 'button',
+        },
+        items: [{
+            text: 'Stop',
+            action: 'stopprocess',
+        },{
+            text: 'Cancel',
+            action: 'cancelprocess'
+        },{
+            text: 'Copy',
+            action: 'copyprocess',
+        },{
+            text: 'Add information',
+            action: 'addinfotask',
+        }],
+    },{
+        xtype: 'fieldset',
+        title: 'Add Filters',
+        items: [{
+            xtype: 'combobox',
+            fieldLabel: 'Column',
+            store: [
+                ['task','Title'],
+                ['user','User'],
+                ['process','Process'],
+                ['process_type','Process type'],
+                ['priority','Priority'],
+                ['date','Date'],
+                ['status','Status'],
+            ],
+            typeAhead: 'true',
+            },{
+                xtype: 'combobox',
+                fieldLabel: 'Value',
+                displayField: 'task',
+                valueField: 'pk',
+                store: 'Processes',
+                queyModel: 'local',
+                typeAhead: 'true',
+        }],
+    },{
+        xtype: 'fieldset',
+        title: 'Current Filters',
+        html: 'TODO',
+    }],
+
     initComponent: function() {
         this.store = Ext.create('WS.store.Processes', {
             autoLoad: true,

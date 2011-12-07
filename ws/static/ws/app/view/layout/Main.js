@@ -24,16 +24,6 @@ Ext.define('WS.view.layout.Main', {
                 items: [{
                     html: 'erdialdea',
                 }],
-            },{
-                id: 'app-sidebar',
-                region: 'west',
-                preventHeader: true,
-                collapsible: true,
-                collapseMode: 'mini',
-                split: true,
-                items: [{
-                    html: 'sidebar',
-                }],
         }];
         this.callParent(arguments);
     },

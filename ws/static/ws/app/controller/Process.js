@@ -14,7 +14,6 @@ Ext.define('WS.controller.Process', {
         'process.Portlet',
         'process.PortletNew',
         'process.Main',
-        'process.MainSidebar',
         'process.ProcessDetail',
         'process.NewForm',
     ],
@@ -24,7 +23,7 @@ Ext.define('WS.controller.Process', {
             'processmain processgrid': {
                 selectionchange: this.loadProcessDetail,
             },
-            'processsidebar button[action=newprocess]': {
+            'button[action=newprocess]': {
                 click: this.newProcess
             },
             'processnewform button[action=create]': {
