@@ -199,6 +199,30 @@ def CreateProcess(request):
                                     'message': message}),
                         mimetype="application/json")
 
+@permission_required('ws.execute_process')
+def StartProcess(request):
+    success = False
+    message = ""
+    if request.method == 'POST':
+        process_pk = request.POST.get('pk', None)
+        autostart = request.POST.get('autostart', 'off')
+        if process_pk is None:
+            message = 'Process pk required'
+        else:
+            process = Process.objects.get(pk=process_pk)
+            try:
+                process.start()
+                success = True
+                message = 'Process started'
+            except:
+                message = 'Unable to start process'
+    else:
+        message = 'Data must be send in a POST request'
+
+    return HttpResponse(json.dumps({'success': success,
+                                    'message': message}),
+                        mimetype="application/json")
+    
 
 class TaskListView(ExtListView):
     model = Task
@@ -306,7 +330,6 @@ def UserInfoView(request):
     return HttpResponse(json.dumps(data),
                         mimetype='application/json')
     
-
 """
 class ProcessLauncherDetailView(JSONResponseMixin, DetailView):
     model = ProcessLauncher

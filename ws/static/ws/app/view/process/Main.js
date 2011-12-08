@@ -25,6 +25,9 @@ Ext.define('WS.view.process.Main', {
             xtype: 'button',
         },
         items: [{
+            text: 'Start',
+            action: 'startprocess',
+        },{
             text: 'Stop',
             action: 'stopprocess',
         },{
