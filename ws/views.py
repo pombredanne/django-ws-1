@@ -144,15 +144,12 @@ class ProcessListView(ExtListView):
     model = Process
 
     def convert_object_to_dict(self, obj):
-        status = 'PENDING'
         if obj.start_date:
             start_date = obj.start_date.strftime("%Y/%m/%d %H:%M")
-            status = 'STARTED'
         else:
             start_date = None
         if obj.end_date:
             end_date = obj.end_date.strftime("%Y/%m/%d %H:%M")
-            status = 'SUCCESS'
         else:
             end_date = None
         data = {
@@ -162,9 +159,8 @@ class ProcessListView(ExtListView):
             'workflow_pk': obj.workflow.pk,
             'start_date': start_date,
             'end_date': end_date,
-            'status': status,
+            'status': obj.state,
             #'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%M"),
-            #'status': obj.status,
         }
         return data
 
@@ -199,6 +195,7 @@ def CreateProcess(request):
                                     'message': message}),
                         mimetype="application/json")
 
+
 @permission_required('ws.execute_process')
 def StartProcess(request):
     success = False
@@ -214,8 +211,9 @@ def StartProcess(request):
                 process.start()
                 success = True
                 message = 'Process started'
-            except:
-                message = 'Unable to start process'
+            except AssertionError as error:
+                message = error.args and error.args[0] or 'Unknown'
+                message = 'Unable to start process: ' + message
     else:
         message = 'Data must be send in a POST request'
 

@@ -80,6 +80,8 @@ class Process(models.Model):
     priority = models.PositiveSmallIntegerField(null=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
+    state = models.CharField(max_length=8, 
+            choices=STATES.items(), default='PENDING')
     
     class Meta:
         permissions = (
@@ -91,19 +93,6 @@ class Process(models.Model):
             return self.name
         else:
             return u'{0} [{1}]'.format(self.workflow.name, self.pk)
-
-    @property
-    def state(self):
-        start = self.task_set.get(node=self.workflow.start)
-        ending = self.task_set.get(node=self.workflow.end)
-        if start.state is 'PENDING':
-            return 'PENDING'
-        elif ending.state is 'PENDING' and self.task_set.filter(
-                state__in=('SENT', 'RECEIVED', 'STARTED', 'RETRY')):
-            return 'STARTED'
-        elif ending.state is 'SUCCESS':
-            return 'SUCCESS'
-        return 'FAILURE'
 
     @property
     def percentage(self):
@@ -118,22 +107,28 @@ class Process(models.Model):
             return ''
 
     def start(self):
+        assert self.state == 'PENDING', 'Process already started'
         self.start_node(self.workflow.start)
         self.start_date = datetime.now()
+        self.state = 'STARTED'
         self.save()
+
 
     def stop(self):
         for task in self.task_set.exclude(
                 state__in=('SUCCESS', 'FAILURE', 'REVOKED')):
             revoke(task.task_id, terminate=True)
+        self.state = 'FAILURE'
+        self.save()
 
     def start_node(self, node):
         user = node.role.user_set.all()[0] #TODO: select valid user
         task = Task(node=node, process=self, user=user)
-        task.assign(user)
         task.save()
+        task.assign(user)
         if not node.info_required:
             task.launch()
+
 
 class Task(models.Model):
     node = models.ForeignKey(Node, related_name='task_set')

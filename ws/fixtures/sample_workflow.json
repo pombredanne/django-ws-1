@@ -368,7 +368,8 @@
             "name": "sample process",
             "start_date": null,
             "end_date": null,
-            "priority": null
+            "priority": null,
+            "state": "PENDING"
         }
     },
     {
@@ -379,7 +380,8 @@
             "name": "sample process with dummy task",
             "start_date": null,
             "end_date": null,
-            "priority": null
+            "priority": null,
+            "state": "PENDING"
         }
     },
     {
