@@ -29,6 +29,9 @@ Ext.define('WS.controller.Process', {
             'button[action=startprocess]': {
                 click: this.startProcess
             },
+            'button[action=stopprocess]': {
+                click: this.stopProcess
+            },
             'processnewform button[action=create]': {
                 click: this.createProcess
             }
@@ -77,6 +80,25 @@ Ext.define('WS.controller.Process', {
                 success: function(response) {
                     data = Ext.JSON.decode(response.responseText)
                     Ext.Msg.alert('Starting process...', data['message']);
+                },
+            })
+        });
+    },
+
+    stopProcess: function(button) {
+        var main = button.up('processmain'),
+            grid = main.down('processgrid'),
+            sm = grid.getSelectionModel(),
+            selection = sm.getSelection();
+        Ext.Array.each(selection, function(item) {
+            Ext.Ajax.request({
+                url: '/ws/process/stop.json',
+                params: {
+                    pk: item.data.pk,
+                },
+                success: function(response) {
+                    data = Ext.JSON.decode(response.responseText)
+                    Ext.Msg.alert('Stoppint process...', data['message']);
                 },
             })
         });

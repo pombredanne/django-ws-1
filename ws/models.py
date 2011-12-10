@@ -115,6 +115,7 @@ class Process(models.Model):
 
 
     def stop(self):
+        assert self.state == 'STARTED', 'Process not running'
         for task in self.task_set.exclude(
                 state__in=('SUCCESS', 'FAILURE', 'REVOKED')):
             revoke(task.task_id, terminate=True)

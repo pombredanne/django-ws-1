@@ -31,12 +31,6 @@ Ext.define('WS.view.process.Main', {
             text: 'Stop',
             action: 'stopprocess',
         },{
-            text: 'Cancel',
-            action: 'cancelprocess'
-        },{
-            text: 'Copy',
-            action: 'copyprocess',
-        },{
             text: 'Add information',
             action: 'addinfotask',
         }],

@@ -202,18 +202,42 @@ def StartProcess(request):
     message = ""
     if request.method == 'POST':
         process_pk = request.POST.get('pk', None)
-        autostart = request.POST.get('autostart', 'off')
         if process_pk is None:
             message = 'Process pk required'
         else:
-            process = Process.objects.get(pk=process_pk)
+            process = get_object_or_404(Process, pk=process_pk)
             try:
                 process.start()
                 success = True
                 message = 'Process started'
             except AssertionError as error:
-                message = error.args and error.args[0] or 'Unknown'
+                message = error.args and error.args[0] or 'Unknown error'
                 message = 'Unable to start process: ' + message
+    else:
+        message = 'Data must be send in a POST request'
+
+    return HttpResponse(json.dumps({'success': success,
+                                    'message': message}),
+                        mimetype="application/json")
+
+
+@permission_required('ws.execute_process')
+def StopProcess(request):
+    success = False
+    message = ""
+    if request.method == 'POST':
+        process_pk = request.POST.get('pk', None)
+        if process_pk is None:
+            message = 'Process pk required'
+        else:
+            process = get_object_or_404(Process, pk=process_pk)
+            try:
+                process.stop()
+                success = True
+                message = 'Process stopped'
+            except AssertionError as error:
+                message = error.args and error.args[0] or 'Unknown error'
+                message = 'Unable to stop process: ' + message
     else:
         message = 'Data must be send in a POST request'
 
