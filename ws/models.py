@@ -130,8 +130,8 @@ class Process(models.Model):
     def start_node(self, node):
         user = node.role.user_set.all()[0] #TODO: select valid user
         task = Task(node=node, process=self, user=user)
-        task.assign(user)
         task.save()
+        task.assign(user)
         if not node.info_required:
             task.launch()
 
@@ -181,7 +181,7 @@ class Task(models.Model):
         revoke(self.task_id, terminate=True)
 
     @property
-    def priority(self):
+    def average_priority(self):
         task = self.priority or self.node.priority
         process = self.process.priority or self.process.workflow.priority
         return (task + process) // 2
@@ -190,5 +190,5 @@ class Task(models.Model):
         kwargs['workflow_task'] = self.pk
         return self.node.celery_task.apply_async(
                 kwargs=kwargs,
-                priority=self.priority,
+                priority=self.average_priority,
                 )
