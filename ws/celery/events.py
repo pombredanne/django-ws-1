@@ -8,7 +8,7 @@ from celery.utils.term import colored
 from celery.log import get_default_logger
 from celery.messaging import establish_connection
 
-logger = get_default_logger(name='event_dispatcher')
+logger = get_default_logger()
 c = colored()
 
 class CallbackTask(Task):
