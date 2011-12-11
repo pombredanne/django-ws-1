@@ -1,34 +1,40 @@
 from datetime import datetime
 
-from django.db import transaction
-
 from celery.task import task
 from celery.task.sets import subtask
 from celery.log import get_default_logger
 
 logger = get_default_logger(name='event_dispatcher')
 
+from ws.celery.events import dispatch
 from ws.models import Task, Node, Process, Transition
 
 
-@task
+@task(ignore_result=True, priority=1, mandatory=True)
+def dispatcher():
+    try:
+        dispatch()
+    except Exception, exc:
+        dispatcher.retry(exc=exc)
+
+@task(ignore_result=True)
 def task_sent(task_pk, task_id):
     Task.objects.filter(pk=task_pk).update(task_id=task_id, state='SENT')
 
 
-@task
+@task(ignore_result=True)
 def task_received(task_id):
     Task.objects.filter(task_id=task_id).update(state='RECEIVED')
 
 
-@task
+@task(ignore_result=True)
 def task_started(task_id, timestamp):
     start_date = datetime.fromtimestamp(timestamp)
     Task.objects.filter(task_id=task_id).update(
             start_date=start_date, state='STARTED')
 
 
-@task
+@task(ignore_result=True)
 def task_succeeded(task_id, result, timestamp):
     task = Task.objects.filter(task_id=task_id)
     task.update(result=result, state='SUCCESS',
@@ -51,7 +57,7 @@ def task_succeeded(task_id, result, timestamp):
                 node=transition.child.pk, process=task.process.pk)
 
 
-@task
+@task(ignore_result=True)
 def task_failed(task_id, exception, traceback, timestamp):
     task = Task.objects.filter(task_id=task_id)
     task.update(state='FAILED', end_date=datetime.fromtimestamp(timestamp))
@@ -68,19 +74,19 @@ def task_failed(task_id, exception, traceback, timestamp):
             node=xor.child, process=task.process)
 
 
-@task
+@task(ignore_result=True)
 def task_revoked(task_id):
     Task.objects.filter(task_id=task_id).update(state='REVOKED')
 
 
-@task
+@task(ignore_result=True)
 def task_retried(task_id):
     end_date = datetime.fromtimestamp(timestamp)
     Task.objects.filter(task_id=task_id).update(
             state='RETRIED', end_date=end_date)
 
 
-@task
+@task(ignore_result=True)
 def start(node, process):
     node = Node.objects.get(pk=node)
     process = Process.objects.get(pk=process)

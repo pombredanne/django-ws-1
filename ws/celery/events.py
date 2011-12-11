@@ -141,5 +141,3 @@ def dispatch():
                 recv.capture()
             except (AttributeError, socket.error):
                 connection = connection.ensure_connection()
-            except KeyboardInterrupt:
-                break

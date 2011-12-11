@@ -12,4 +12,3 @@ def get_registered_tasks():
     current_loader.import_default_modules()
     return [ key for key, value in task_registry.items()\
             if hasattr(value, 'form') ]
-
