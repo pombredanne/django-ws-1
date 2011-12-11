@@ -1,6 +1,8 @@
 from __future__ import absolute_import, division
 
 from datetime import datetime
+from time import sleep
+
 from django.db import models
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
@@ -135,7 +137,19 @@ class Process(models.Model):
         if not node.info_required:
             task.launch()
 
+
+class TaskManager(models.Manager):
+    def lock_update(self, *args, **kwargs):
+        if hasattr(models.Manager, 'select_for_update'):
+            self.select_for_update().update(*args, **kwargs)
+        else:
+            self.update(*args, **kwargs)
+            sleep(2)
+
+            
 class Task(models.Model):
+    objects = TaskManager()
+
     node = models.ForeignKey(Node, related_name='task_set')
     process = models.ForeignKey(Process)
 

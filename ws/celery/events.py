@@ -1,11 +1,14 @@
+import socket
 from django.utils import simplejson as json
 
 from celery.execute import send_task
+from celery.events import EventReceiver, Queue, event_exchange
 from celery.events.state import State, Task
 from celery.utils.term import colored
 from celery.log import get_default_logger
+from celery.messaging import establish_connection
 
-logger = get_default_logger(name='event_receiver')
+logger = get_default_logger(name='event_dispatcher')
 c = colored()
 
 class CallbackTask(Task):
@@ -121,4 +124,22 @@ class CallbackState(State):
                 (fields.has_key('name') and\
                 fields['name'].startswith('ws.tasks')):
             super(CallbackState, self).task_event(type, fields)
-        
+
+
+class DurableEventReceiver(EventReceiver):
+    def __init__(self, *args, **kwargs):
+        super(DurableEventReceiver, self).__init__(*args, **kwargs)
+        self.queue = Queue('celeryev.dispatcher', durable=True,
+                exchange=event_exchange, routing_key=self.routing_key)
+
+def dispatch():
+    state = CallbackState()
+    with establish_connection() as connection:
+        while True:
+            recv = DurableEventReceiver(connection, handlers={'*': state.event})
+            try:
+                recv.capture()
+            except (AttributeError, socket.error):
+                connection = connection.ensure_connection()
+            except KeyboardInterrupt:
+                break

@@ -1,7 +1,12 @@
 from datetime import datetime
 
+from django.db import transaction
+
 from celery.task import task
 from celery.task.sets import subtask
+from celery.log import get_default_logger
+
+logger = get_default_logger(name='event_dispatcher')
 
 from ws.models import Task, Node, Process, Transition
 
@@ -25,11 +30,11 @@ def task_started(task_id, timestamp):
 
 @task
 def task_succeeded(task_id, result, timestamp):
-    task = Task.objects.get(task_id=task_id)
-    task.result = result
-    task.state = 'SUCCESS'
-    task.end_date = datetime.fromtimestamp(timestamp)
-    task.save()
+    task = Task.objects.filter(task_id=task_id)
+    task.update(result=result, state='SUCCESS',
+            end_date=datetime.fromtimestamp(timestamp))
+    task = task[0]
+    print task.process.task_set.filter(state='SUCCESS')
 
     workflow = task.node.workflow
     if workflow.end == task.node:
@@ -48,10 +53,9 @@ def task_succeeded(task_id, result, timestamp):
 
 @task
 def task_failed(task_id, exception, traceback, timestamp):
-    task = Task.objects.get(task_id=task_id)
-    task.state = 'FAILED'
-    task.end_date = datetime.fromtimestamp(timestamp)
-    task.save()
+    task = Task.objects.filter(task_id=task_id)
+    task.update(state='FAILED', end_date=datetime.fromtimestamp(timestamp))
+    task = task[0]
 
     xor = None
     while not xor:
@@ -82,7 +86,8 @@ def start(node, process):
     process = Process.objects.get(pk=process)
 
     completed = 0
-    tasks = process.task_set.filter(state='SUCCESS')
+    tasks = process.task_set.select_related().filter(state='SUCCESS')
+    print tasks
     for transition in node.parent_transition_set.iterator():
         if tasks.filter(node=transition.parent,  result__in=(
             '', transition.condition)):

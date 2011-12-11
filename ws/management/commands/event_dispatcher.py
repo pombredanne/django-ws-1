@@ -1,14 +1,11 @@
 from __future__ import with_statement
 from optparse import make_option
-import socket
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from celery.events import EventReceiver
-from celery.messaging import establish_connection
 from celery.log import setup_logger
 
-from ws.celery.events import CallbackState
+from ws.celery.events import dispatch
 
 class Command(BaseCommand):
     help = 'Listen to task events and execute tasks accordingly'
@@ -22,16 +19,6 @@ class Command(BaseCommand):
 
 
     def handle(self, **options):
-        setup_logger(name='event_receiver', 
+        setup_logger(name='event_dispatcher', 
                 loglevel=options['loglevel'], logfile=options['logfile'])
-        state = CallbackState()
-        with establish_connection() as connection:
-            while True:
-                recv = EventReceiver(connection, handlers={'*': state.event})
-                try:
-                    recv.capture()
-                except (AttributeError, socket.error):
-                    connection = connection.ensure_connection()
-                except KeyboardInterrupt:
-                    break
-                
+        dispatch()
