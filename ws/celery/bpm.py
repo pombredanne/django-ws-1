@@ -19,24 +19,26 @@ def dispatcher():
 
 @task(ignore_result=True)
 def task_sent(task_pk, task_id):
-    Task.objects.filter(pk=task_pk).update(task_id=task_id, state='SENT')
+    Task.objects.select_for_update().filter(pk=task_pk).update(
+            task_id=task_id, state='SENT')
 
 
 @task(ignore_result=True)
 def task_received(task_id):
-    Task.objects.filter(task_id=task_id).update(state='RECEIVED')
+    Task.objects.select_for_update().filter(task_id=task_id).update(
+            state='RECEIVED')
 
 
 @task(ignore_result=True)
 def task_started(task_id, timestamp):
     start_date = datetime.fromtimestamp(timestamp)
-    Task.objects.filter(task_id=task_id).update(
+    Task.objects.select_for_update().filter(task_id=task_id).update(
             start_date=start_date, state='STARTED')
 
 
 @task(ignore_result=True)
 def task_succeeded(task_id, result, timestamp):
-    task = Task.objects.filter(task_id=task_id)
+    task = Task.objects.select_for_update().filter(task_id=task_id)
     task.update(result=result, state='SUCCESS',
             end_date=datetime.fromtimestamp(timestamp))
     task = task[0]
@@ -59,7 +61,7 @@ def task_succeeded(task_id, result, timestamp):
 
 @task(ignore_result=True)
 def task_failed(task_id, exception, traceback, timestamp):
-    task = Task.objects.filter(task_id=task_id)
+    task = Task.objects.select_for_update().filter(task_id=task_id)
     task.update(state='FAILED', end_date=datetime.fromtimestamp(timestamp))
     task = task[0]
 
@@ -76,13 +78,14 @@ def task_failed(task_id, exception, traceback, timestamp):
 
 @task(ignore_result=True)
 def task_revoked(task_id):
-    Task.objects.filter(task_id=task_id).update(state='REVOKED')
+    Task.objects.select_for_update().filter(task_id=task_id).update(
+            state='REVOKED')
 
 
 @task(ignore_result=True)
 def task_retried(task_id):
     end_date = datetime.fromtimestamp(timestamp)
-    Task.objects.filter(task_id=task_id).update(
+    Task.objects.select_for_update().filter(task_id=task_id).update(
             state='RETRIED', end_date=end_date)
 
 

@@ -4,6 +4,7 @@ from datetime import datetime
 from time import sleep
 
 from django.db import models
+from django.db.models.query import QuerySet
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -138,15 +139,27 @@ class Process(models.Model):
             task.launch()
 
 
-class TaskManager(models.Manager):
-    def lock_update(self, *args, **kwargs):
-        if hasattr(models.Manager, 'select_for_update'):
-            self.select_for_update().update(*args, **kwargs)
-        else:
-            self.update(*args, **kwargs)
-            sleep(2)
+class TaskQuerySet(QuerySet):
+    supports_locking = hasattr(QuerySet, 'select_for_update')
 
+    def select_for_update(self, *args, **kwargs):
+        if not self.supports_locking:
+            return self.all()
+        return super(TaskQuerySet, self).select_for_update(*args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        q = super(TaskQuerySet, self).update(*args, **kwargs)
+        if not self.supports_locking:
+            sleep(1)
+        return q
+
+
+class TaskManager(models.Manager):
+    def select_for_update(self, *args, **kwargs):
+        return TaskQuerySet(self.model, using=self._db).select_for_update(
+                *args, **kwargs)
             
+
 class Task(models.Model):
     objects = TaskManager()
 
