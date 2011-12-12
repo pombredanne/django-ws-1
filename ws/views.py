@@ -327,7 +327,8 @@ class TaskFormView(DetailView):
 
     def render_to_response(self, context):
         form = context['task'].node.celery_task.form()
-        fields = form.get_fields()
+        params = context['task'].node.params
+        fields = form.get_fields(params)
         return HttpResponse(json.dumps(fields),
                             mimetype="application/json")
 
@@ -335,7 +336,10 @@ class TaskFormView(DetailView):
 @permission_required('ws.execute_task', (Task, 'pk', 'pk'))
 def TaskStartView(request, pk):
     task = get_object_or_404(Task, pk=pk)
-    result = task.launch(request.POST)
+    # FIXME: Convert QueryDict to dict.  This could result in data lost if
+    # some param is a "select multiple", but this should never happen.
+    extra_params = dict(request.POST.items())
+    result = task.launch(extra_params)
     success = result is not None
     return HttpResponse(json.dumps({"success":success}),
                         mimetype="application/json")

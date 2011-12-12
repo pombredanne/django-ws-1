@@ -2,10 +2,11 @@ from django import forms
 from django.core import validators
 
 class BPMTaskForm(forms.Form):
-    def get_fields(self):
+    def get_fields(self, params={}):
         fields = []
         for key,field in self.fields.items():
-            fields.append(field.to_ext_dict(key))
+            if not params.has_key(key):
+                fields.append(field.to_ext_dict(key))
         return fields
 
 
