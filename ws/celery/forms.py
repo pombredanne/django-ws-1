@@ -53,11 +53,17 @@ class BooleanField(Field, forms.BooleanField):
 
 class ChoiceField(Field, forms.ChoiceField):
     def field_extras(self, ext_dict):
-        ext_dict['xtype'] = 'combo'
-#       ext_dict['store'] = Ext.data.SimpleStore({
-#       fields: ['code', 'name'],
-#       data: self.choices
-#       })
+        fieldname = ext_dict['name']
+        ext_dict['xtype'] = 'fieldcontainer'
+        ext_dict['name'] = 'fieldcontainer-'+fieldname
+        ext_dict['defaultType'] = 'radiofield'
+        ext_dict['items'] = []
+        for item in self.choices:
+            ext_dict['items'].append({
+                'boxLabel': item[1],
+                'name': fieldname,
+                'inputValue': item[0],
+            })
 
 class ModelChoiceField(forms.ModelChoiceField, ChoiceField):
     pass
