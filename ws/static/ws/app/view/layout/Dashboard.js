@@ -42,7 +42,7 @@ Ext.define('WS.view.layout.Dashboard', {
             action: 'startProcess',
         },{
             text: 'Processes',
-            action: 'processes',
+            action: 'processesPortlet',
         }],
     }],
 
