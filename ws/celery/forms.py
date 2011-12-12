@@ -15,8 +15,8 @@ class Field(forms.Field):
             'name': fieldname,
             'xtype': 'textfield', #Default field type
         }
-        if self.label:
-            ext_dict['fieldLabel'] = self.label
+        ext_dict['fieldLabel'] = self.label or fieldname
+
         if self.initial:
             ext_dict['value'] = self.initial
         
