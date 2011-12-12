@@ -1,7 +1,10 @@
 from __future__ import absolute_import, division
 
 from datetime import datetime
+from time import sleep
+
 from django.db import models
+from django.db.models.query import QuerySet
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -113,7 +116,6 @@ class Process(models.Model):
         self.state = 'STARTED'
         self.save()
 
-
     def stop(self):
         assert self.state == 'STARTED', 'Process not running'
         for task in self.task_set.exclude(
@@ -131,7 +133,30 @@ class Process(models.Model):
             task.launch()
 
 
+class TaskQuerySet(QuerySet):
+    supports_locking = hasattr(QuerySet, 'select_for_update')
+
+    def select_for_update(self, *args, **kwargs):
+        if not self.supports_locking:
+            return self.all()
+        return super(TaskQuerySet, self).select_for_update(*args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        q = super(TaskQuerySet, self).update(*args, **kwargs)
+        if not self.supports_locking:
+            sleep(1)
+        return q
+
+
+class TaskManager(models.Manager):
+    def select_for_update(self, *args, **kwargs):
+        return TaskQuerySet(self.model, using=self._db).select_for_update(
+                *args, **kwargs)
+            
+
 class Task(models.Model):
+    objects = TaskManager()
+
     node = models.ForeignKey(Node, related_name='task_set')
     process = models.ForeignKey(Process)
 
@@ -177,7 +202,7 @@ class Task(models.Model):
         revoke(self.task_id, terminate=True)
 
     @property
-    def priority(self):
+    def average_priority(self):
         task = self.priority or self.node.priority
         process = self.process.priority or self.process.workflow.priority
         return (task + process) // 2
@@ -186,5 +211,5 @@ class Task(models.Model):
         kwargs['workflow_task'] = self.pk
         return self.node.celery_task.apply_async(
                 kwargs=kwargs,
-                priority=self.priority,
+                priority=self.average_priority,
                 )
