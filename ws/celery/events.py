@@ -4,9 +4,10 @@ from django.utils import simplejson as json
 from celery.execute import send_task
 from celery.events import EventReceiver, Queue, event_exchange
 from celery.events.state import State, Task
+from celery.messaging import establish_connection
+from celery.utils.encoding import safe_repr
 from celery.utils.term import colored
 from celery.log import get_default_logger
-from celery.messaging import establish_connection
 
 logger = get_default_logger()
 c = colored()
@@ -14,9 +15,14 @@ c = colored()
 class CallbackTask(Task):
     def on_sent(self, timestamp=None, **fields):
         super(CallbackTask, self).on_sent(timestamp, **fields)
-        kwargs = json.loads(self.kwargs.replace("'", '"'))
+        #FIXME: Quick and dirty!!
+        try:
+            task_pk = eval(self.kwargs)['workflow_task']
+        except KeyError:
+            task_pk = eval(self.args)[0]
+        
         send_task('ws.celery.bpm.task_sent', kwargs={
-            'task_pk': kwargs['workflow_task'],
+            'task_pk': task_pk,
             'task_id': self.uuid,
             })
         logger.info('{state}: {task}'.format(
