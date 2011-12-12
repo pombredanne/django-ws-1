@@ -23,13 +23,13 @@ Ext.define('WS.controller.Layout', {
             'menubar menuitem[action=startProcess]': {
                 click: this.startProcess
             },
-            'menubar menuitem[action=processes]': {
+            'menubar menuitem[action=processesPortlet]': {
                 click: this.processes
             },
             '#viewChooser button': {
                 toggle: this.chooseView,
             },
-            'button[action=processes]': {
+            'button[action=processesPortlet]': {
                 click: this.processes
             },
             'button[action=myTaskPortlet]': {
@@ -70,9 +70,6 @@ Ext.define('WS.controller.Layout', {
     },
 
     loadColumns: function(main, component) {
-        console.log("Added: ");
-        console.log(component.alias);
-        console.log(component);
         if (component.alias == 'widget.dashboard') {
             //Create columns
             var i,
@@ -134,7 +131,6 @@ Ext.define('WS.controller.Layout', {
     },
 
     processes: function(button) {
-        console.log("process portlet");
         var view = Ext.create('WS.view.process.Portlet');
         this.fireEvent('new_widget',view);
     },

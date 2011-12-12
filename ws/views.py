@@ -144,15 +144,12 @@ class ProcessListView(ExtListView):
     model = Process
 
     def convert_object_to_dict(self, obj):
-        status = 'PENDING'
         if obj.start_date:
             start_date = obj.start_date.strftime("%Y/%m/%d %H:%M")
-            status = 'STARTED'
         else:
             start_date = None
         if obj.end_date:
             end_date = obj.end_date.strftime("%Y/%m/%d %H:%M")
-            status = 'SUCCESS'
         else:
             end_date = None
         data = {
@@ -162,9 +159,8 @@ class ProcessListView(ExtListView):
             'workflow_pk': obj.workflow.pk,
             'start_date': start_date,
             'end_date': end_date,
-            'status': status,
+            'status': obj.state,
             #'creationTime': obj.creationTime.strftime("%Y/%m/%d %H:%M"),
-            #'status': obj.status,
         }
         return data
 
@@ -199,23 +195,49 @@ def CreateProcess(request):
                                     'message': message}),
                         mimetype="application/json")
 
+
 @permission_required('ws.execute_process')
 def StartProcess(request):
     success = False
     message = ""
     if request.method == 'POST':
         process_pk = request.POST.get('pk', None)
-        autostart = request.POST.get('autostart', 'off')
         if process_pk is None:
             message = 'Process pk required'
         else:
-            process = Process.objects.get(pk=process_pk)
+            process = get_object_or_404(Process, pk=process_pk)
             try:
                 process.start()
                 success = True
                 message = 'Process started'
-            except:
-                message = 'Unable to start process'
+            except AssertionError as error:
+                message = error.args and error.args[0] or 'Unknown error'
+                message = 'Unable to start process: ' + message
+    else:
+        message = 'Data must be send in a POST request'
+
+    return HttpResponse(json.dumps({'success': success,
+                                    'message': message}),
+                        mimetype="application/json")
+
+
+@permission_required('ws.execute_process')
+def StopProcess(request):
+    success = False
+    message = ""
+    if request.method == 'POST':
+        process_pk = request.POST.get('pk', None)
+        if process_pk is None:
+            message = 'Process pk required'
+        else:
+            process = get_object_or_404(Process, pk=process_pk)
+            try:
+                process.stop()
+                success = True
+                message = 'Process stopped'
+            except AssertionError as error:
+                message = error.args and error.args[0] or 'Unknown error'
+                message = 'Unable to stop process: ' + message
     else:
         message = 'Data must be send in a POST request'
 
@@ -305,7 +327,8 @@ class TaskFormView(DetailView):
 
     def render_to_response(self, context):
         form = context['task'].node.celery_task.form()
-        fields = form.get_fields()
+        params = context['task'].node.params
+        fields = form.get_fields(params)
         return HttpResponse(json.dumps(fields),
                             mimetype="application/json")
 
@@ -313,7 +336,10 @@ class TaskFormView(DetailView):
 @permission_required('ws.execute_task', (Task, 'pk', 'pk'))
 def TaskStartView(request, pk):
     task = get_object_or_404(Task, pk=pk)
-    result = task.launch(request.POST)
+    # FIXME: Convert QueryDict to dict.  This could result in data lost if
+    # some param is a "select multiple", but this should never happen.
+    extra_params = dict(request.POST.items())
+    result = task.launch(extra_params)
     success = result is not None
     return HttpResponse(json.dumps({"success":success}),
                         mimetype="application/json")

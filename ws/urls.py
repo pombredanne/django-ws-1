@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from django.views.generic import TemplateView
 from ws.views import (ProcessListView, WorkflowListView, TaskListView,
                       TaskFormView, TaskStartView, WorkflowGraphView,
-                      CreateProcess, StartProcess)
+                      CreateProcess, StartProcess, StopProcess)
 
 urlpatterns = patterns('ws.views',
     (r'^$', TemplateView.as_view(template_name='ws/main.html')),
@@ -18,6 +18,7 @@ urlpatterns = patterns('ws.views',
     (r'^processes.json$', ProcessListView.as_view()),
     (r'^process/new.json$', CreateProcess),
     (r'^process/start.json$', StartProcess),
+    (r'^process/stop.json$', StopProcess),
     (r'^tasks.json$', TaskListView.as_view()),
     (r'^task/(?P<pk>.*)/form.json$', TaskFormView.as_view()),
     (r'^task/(?P<pk>.*)/start.json$', TaskStartView),

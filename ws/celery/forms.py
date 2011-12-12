@@ -2,10 +2,11 @@ from django import forms
 from django.core import validators
 
 class BPMTaskForm(forms.Form):
-    def get_fields(self):
+    def get_fields(self, params={}):
         fields = []
         for key,field in self.fields.items():
-            fields.append(field.to_ext_dict(key))
+            if not params.has_key(key):
+                fields.append(field.to_ext_dict(key))
         return fields
 
 
@@ -15,8 +16,8 @@ class Field(forms.Field):
             'name': fieldname,
             'xtype': 'textfield', #Default field type
         }
-        if self.label:
-            ext_dict['fieldLabel'] = self.label
+        ext_dict['fieldLabel'] = self.label or fieldname
+
         if self.initial:
             ext_dict['value'] = self.initial
         
@@ -53,11 +54,17 @@ class BooleanField(Field, forms.BooleanField):
 
 class ChoiceField(Field, forms.ChoiceField):
     def field_extras(self, ext_dict):
-        ext_dict['xtype'] = 'combo'
-#       ext_dict['store'] = Ext.data.SimpleStore({
-#       fields: ['code', 'name'],
-#       data: self.choices
-#       })
+        fieldname = ext_dict['name']
+        ext_dict['xtype'] = 'fieldcontainer'
+        ext_dict['name'] = 'fieldcontainer-'+fieldname
+        ext_dict['defaultType'] = 'radiofield'
+        ext_dict['items'] = []
+        for item in self.choices:
+            ext_dict['items'].append({
+                'boxLabel': item[1],
+                'name': fieldname,
+                'inputValue': item[0],
+            })
 
 class ModelChoiceField(forms.ModelChoiceField, ChoiceField):
     pass

@@ -35,9 +35,13 @@ class add(BPMTask):
 
 
 class SubprocessForm(forms.BPMTaskForm):
-    workflow = forms.ModelChoiceField(queryset=Workflow.objects.all())
-    name = forms.CharField(max_length=100, required=False)
-    priority = forms.IntegerField(min_value=0, max_value=9, required=False)
+    workflow = forms.ModelChoiceField(queryset=Workflow.objects.all(),
+                                      label="Workflow",
+                                      empty_label=None)
+    name = forms.CharField(max_length=100,
+                           label="Name")
+    priority = forms.IntegerField(min_value=0, max_value=9, initial=9,
+                                  label="Priority")
 
 class subprocess(BPMTask):
     form = SubprocessForm
@@ -45,7 +49,7 @@ class subprocess(BPMTask):
         self.process = Process.objects.create(workflow_id=workflow,
                name=name, priority=priority)
         self.process.start()
-        self.update_state(state=process.state)
+        self.update_state(state=self.process.state)
         while self.process.state is 'STARTED':
             pass
         self.update_state(state=self.process.state)

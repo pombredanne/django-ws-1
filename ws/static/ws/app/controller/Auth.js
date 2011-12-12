@@ -7,7 +7,6 @@ Ext.define('WS.controller.Auth', {
     ],
 
     init: function() {
-        //console.log('Initialized Tasks! This happens before the Application launch function is called');
         this.control({
             'button[action=login]': {
                 click: this.login

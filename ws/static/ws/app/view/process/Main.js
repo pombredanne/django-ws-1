@@ -21,24 +21,8 @@ Ext.define('WS.view.process.Main', {
     },{
         xtype: 'fieldset',
         title: 'Process actions',
-        defaults: {
-            xtype: 'button',
-        },
         items: [{
-            text: 'Start',
-            action: 'startprocess',
-        },{
-            text: 'Stop',
-            action: 'stopprocess',
-        },{
-            text: 'Cancel',
-            action: 'cancelprocess'
-        },{
-            text: 'Copy',
-            action: 'copyprocess',
-        },{
-            text: 'Add information',
-            action: 'addinfotask',
+            xtype: 'processmenu',
         }],
     },{
         xtype: 'fieldset',

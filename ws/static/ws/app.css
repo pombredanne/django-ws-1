@@ -58,12 +58,12 @@
     background: url('images/administration.png');
 }
 
-.x-process-status-PENDING {
+.x-process-status-FAILURE {
     background: red;
 }
 
 .x-process-status-STARTED {
-    background: red;
+    background: yellow;
 }
 
 .x-process-status-SUCCESS {

@@ -89,7 +89,6 @@ Ext.define('WS.view.layout.Portlet', {
     },
 
     toggleInterval: function(field, newvalue) {
-        console.log("toogle interval:"+newvalue);
         var portlet = field.up('portlet');
         if (portlet.refreshInterval) {
             clearInterval(portlet.refreshInterval);
@@ -98,7 +97,6 @@ Ext.define('WS.view.layout.Portlet', {
         // newvalue == true => enable refresh
         if (newvalue) {
             var interval = portlet.down('numberfield[name="refreshRate"]');
-            console.log("Enable refresh: "+interval.value);
             portlet.refreshInterval = setInterval(function(){
                 portlet.doRefresh();
             }, interval.value*1000);

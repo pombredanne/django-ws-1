@@ -18,7 +18,7 @@ Ext.define('WS.view.layout.Menubar', {
                         action: 'taskPortlet',
                     },{
                         text: 'My tasks',
-                        action: 'myTasks',
+                        action: 'myTasksPortlet',
                     },{
                         text: 'Tasks of another user',
                     }]
@@ -32,7 +32,7 @@ Ext.define('WS.view.layout.Menubar', {
                         action: 'startProcess',
                     },{
                         text: 'Processes',
-                        action: 'processes',
+                        action: 'processesPortlet',
                     },{
                         text: 'All processes',
                     }]
