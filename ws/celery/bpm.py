@@ -1,110 +1,86 @@
 from datetime import datetime
 
 from celery.task import task
-from celery.task.sets import subtask
 from celery.log import get_default_logger
 
-logger = get_default_logger(name='event_dispatcher')
+logger = get_default_logger()
 
-from ws.celery.events import dispatch
+from ws.celery.events import SignalResponses
 from ws.models import Task, Node, Process, Transition
+from ws.shortcuts import (update_task, update_process, update_parent,
+        get_pending_childs, get_revocable_parents, get_alternative_way)
 
 
-@task(ignore_result=True, priority=1, mandatory=True)
-def dispatcher():
-    try:
-        dispatch()
-    except Exception, exc:
-        dispatcher.retry(exc=exc)
-
-@task(ignore_result=True)
-def task_sent(task_pk, task_id):
-    Task.objects.select_for_update().filter(pk=task_pk).update(
-            task_id=task_id, state='SENT')
+SignalResponses.connect()
 
 
 @task(ignore_result=True)
-def task_received(task_id):
-    Task.objects.select_for_update().filter(task_id=task_id).update(
-            state='RECEIVED')
+def task_started(pk, task_id):
+    task = update_task(pk, task_id=task_id, state='STARTED',
+            start_date=datetime.now())
+
+    if task.node.workflow.start == task.node:
+        update_process(task.process.pk, state='STARTED',
+                start_date=task.start_date)
+        logger.info('Process "{process}" started'.format(process=task.process))
+        update_parent(task.process)
+
+    for parent in get_revocable_parents(task):
+        parent.revoke()
+        logger.info('Parent task "{parent}" is not longer needed for task "{task}"'.format(
+            parent=parent, task=task))
 
 
 @task(ignore_result=True)
-def task_started(task_id, timestamp):
-    start_date = datetime.fromtimestamp(timestamp)
-    Task.objects.select_for_update().filter(task_id=task_id).update(
-            start_date=start_date, state='STARTED')
+def task_succeeded(task_id, result):
+    task = update_task(task_id, state='SUCCESS',
+            end_date=datetime.now())
+
+    if task.node.workflow.end == task.node:
+        update_process(task.process.pk, state='SUCCESS',
+                end_date=task.end_date)
+        logger.info('Process "{process}" succeeded'.format(process=task.process))
+        update_parent(task.process)
+
+    for child in get_pending_childs(task):
+        task.process.launch_node(child)
+        logger.info('Node "{child}" launched by task "{task}"'.format(
+            child=child, task=task))
 
 
 @task(ignore_result=True)
-def task_succeeded(task_id, result, timestamp):
-    task = Task.objects.select_for_update().filter(task_id=task_id)
-    task.update(result=result, state='SUCCESS',
-            end_date=datetime.fromtimestamp(timestamp))
-    task = task[0]
-    print task.process.task_set.filter(state='SUCCESS')
+def task_failed(task_id):
+    task = update_task(task_id, state='FAILED',
+            end_date=datetime.now())
 
-    workflow = task.node.workflow
-    if workflow.end == task.node:
-        process = task.process
-        process.end_date = datetime.now()
-        process.save()
-        
-    transitions = task.node.child_transition_set.filter(
-            condition__in=('', result))
-    if task.node.split == 'XOR':
-        transitions = transitions[:1]
-    for transition in transitions.iterator():
-        subtask('ws.celery.bpm.start').delay(
-                node=transition.child.pk, process=task.process.pk)
+    if task.node.workflow.end == task.node:
+        update_process(task.process.pk, state='FAILED',
+                end_date=task.end_date)
+        logger.info('Process "{process}" failed'.format(process=task.process))
+        update_parent(task_process)
 
-
-@task(ignore_result=True)
-def task_failed(task_id, exception, traceback, timestamp):
-    task = Task.objects.select_for_update().filter(task_id=task_id)
-    task.update(state='FAILED', end_date=datetime.fromtimestamp(timestamp))
-    task = task[0]
-
-    xor = None
-    while not xor:
-        parents = task.node.parent_transition_set.filter(split='XOR')
-        transitions = Transition.objects.filter(parent__in=parents,
-                child__task_set__isnull=True)
-        if transitions:
-            xor = transitions[0]
-    subtask('ws.celery.bpm.start').delay(
-            node=xor.child, process=task.process)
+    alternative = get_alternative_way(task)
+    if alternative:
+        task.process.launch_node(alternative)
+        logger.info('Alternative node "{alternative}" launched by task "{task}"'.format(
+            alternative=alternative, task=task))
 
 
 @task(ignore_result=True)
 def task_revoked(task_id):
-    Task.objects.select_for_update().filter(task_id=task_id).update(
-            state='REVOKED')
+    task = update_task(task_id, state='REVOKED', end_date=datetime.now())
+    try:
+        subprocess = Process.objects.get(parent=task)
+    except Process.DoesNotExist:
+        pass
+    else:
+        subprocess.stop()
+        update_process(subprocess.pk, state='REVOKED',
+                end_date=task.end_date)
+        logger.info('Subprocess "{subprocess}" revoked by task "{task}"'.format(
+            subprocess=subprocess, task=task))
 
 
 @task(ignore_result=True)
 def task_retried(task_id):
-    end_date = datetime.fromtimestamp(timestamp)
-    Task.objects.select_for_update().filter(task_id=task_id).update(
-            state='RETRIED', end_date=end_date)
-
-
-@task(ignore_result=True)
-def start(node, process):
-    node = Node.objects.get(pk=node)
-    process = Process.objects.get(pk=process)
-
-    completed = 0
-    tasks = process.task_set.select_related().filter(state='SUCCESS')
-    print tasks
-    for transition in node.parent_transition_set.iterator():
-        if tasks.filter(node=transition.parent,  result__in=(
-            '', transition.condition)):
-            completed += 1
-
-            if node.join == 'XOR':
-                return process.start_node(node)
-
-    if node.join == 'AND' and\
-            completed == node.parent_transition_set.count():
-                return process.start_node(transition.child)
+    update_task(task_id, state='RETRIED')

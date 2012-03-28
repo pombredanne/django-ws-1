@@ -1,8 +1,6 @@
 from __future__ import absolute_import, division
 
 from datetime import datetime
-from time import sleep
-
 from django.db import models
 from django.db.models.query import QuerySet
 from django.utils.importlib import import_module
@@ -16,6 +14,33 @@ from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 
 from ws import STATES, CONDITIONS
 
+
+# TODO: django trunk includes getters and setters. 
+# Get basic logic down from tasks to models.
+
+# TODO: django trunk includes select_for_update.
+# TaskQuerySet will not be longer needed.
+
+class LockingQuerySet(QuerySet):
+    supports_locking = hasattr(QuerySet, 'select_for_update')
+
+    def select_for_update(self, *args, **kwargs):
+        if not self.supports_locking:
+            return self.all()
+        return super(LockingQuerySet, self).select_for_update(*args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        q = super(LockingQuerySet, self).update(*args, **kwargs)
+        if not self.supports_locking:
+            from time import sleep
+            sleep(1)
+        return q
+
+
+class LockingManager(models.Manager):
+    def select_for_update(self, *args, **kwargs):
+        return LockingQuerySet(self.model, using=self._db).select_for_update(
+                *args, **kwargs)
 
 class Workflow(models.Model):
     #FIXME: Here we have a problem: a circular foreignkey, from process to activity
@@ -77,8 +102,12 @@ class Transition(models.Model):
 
 
 class Process(models.Model):
+    objects = LockingManager()
+
     workflow = models.ForeignKey(Workflow)
     name = models.CharField(max_length=100, blank=True)
+    parent = models.ForeignKey('Task', null=True, blank=True,
+            related_name='subprocess')
 
     priority = models.PositiveSmallIntegerField(null=True)
     start_date = models.DateTimeField(null=True, blank=True)
@@ -111,20 +140,15 @@ class Process(models.Model):
 
     def start(self):
         assert self.state == 'PENDING', 'Process already started'
-        self.start_node(self.workflow.start)
-        self.start_date = datetime.now()
-        self.state = 'STARTED'
-        self.save()
+        self.launch_node(self.workflow.start)
 
     def stop(self):
         assert self.state == 'STARTED', 'Process not running'
-        for task in self.task_set.exclude(
-                state__in=('SUCCESS', 'FAILURE', 'REVOKED')):
-            revoke(task.task_id, terminate=True)
-        self.state = 'FAILURE'
-        self.save()
+        for task in self.task_set.exclude(state__in=(
+            'SUCCESS', 'FAILURE', 'REVOKED')):
+                task.revoke()
 
-    def start_node(self, node):
+    def launch_node(self, node):
         user = node.role.user_set.all()[0] #TODO: select valid user
         task = Task(node=node, process=self, user=user)
         task.save()
@@ -133,29 +157,8 @@ class Process(models.Model):
             task.launch()
 
 
-class TaskQuerySet(QuerySet):
-    supports_locking = hasattr(QuerySet, 'select_for_update')
-
-    def select_for_update(self, *args, **kwargs):
-        if not self.supports_locking:
-            return self.all()
-        return super(TaskQuerySet, self).select_for_update(*args, **kwargs)
-
-    def update(self, *args, **kwargs):
-        q = super(TaskQuerySet, self).update(*args, **kwargs)
-        if not self.supports_locking:
-            sleep(1)
-        return q
-
-
-class TaskManager(models.Manager):
-    def select_for_update(self, *args, **kwargs):
-        return TaskQuerySet(self.model, using=self._db).select_for_update(
-                *args, **kwargs)
-            
-
 class Task(models.Model):
-    objects = TaskManager()
+    objects = LockingManager()
 
     node = models.ForeignKey(Node, related_name='task_set')
     process = models.ForeignKey(Process)
@@ -198,8 +201,10 @@ class Task(models.Model):
             result = None
         return result
 
-    def revoke(self):
-        revoke(self.task_id, terminate=True)
+    def revoke(self, terminate=True):
+        revoke(self.task_id, terminate=terminate)
+        send_task('ws.celery.bpm.task_revoked', kwargs={
+            'task_id': self.task_id})
 
     @property
     def average_priority(self):

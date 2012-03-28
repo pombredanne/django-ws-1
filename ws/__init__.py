@@ -1,9 +1,10 @@
 from __future__ import absolute_import
 
-from celery.states import ALL_STATES
+from celery.states import READY_STATES
 from celery.registry import tasks as task_registry
 
-STATES = dict([(s,s) for s in ('SENT',) + tuple(ALL_STATES) ])
+STATES = dict([(s,s) for s in ('PENDING', 'RETRY', 'STARTED') + tuple(READY_STATES) ])
+
 CONDITIONS = dict([(s,s) for s in ('XOR', 'AND')])
 
 def get_registered_tasks():

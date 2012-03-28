@@ -369,6 +369,7 @@
             "start_date": null,
             "end_date": null,
             "priority": null,
+            "parent": null,
             "state": "PENDING"
         }
     },
@@ -381,6 +382,7 @@
             "start_date": null,
             "end_date": null,
             "priority": null,
+            "parent": null,
             "state": "PENDING"
         }
     },

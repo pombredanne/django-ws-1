@@ -45,15 +45,8 @@ class SubprocessForm(forms.BPMTaskForm):
 
 class subprocess(BPMTask):
     form = SubprocessForm
+
     def run(self, workflow_task, workflow, name, priority):
         self.process = Process.objects.create(workflow_id=workflow,
                name=name, priority=priority)
         self.process.start()
-        self.update_state(state=self.process.state)
-        while self.process.state is 'STARTED':
-            pass
-        self.update_state(state=self.process.state)
-        return self.process.result
-
-    def on_failure(self, *args, **kwargs):
-        self.process.stop()
