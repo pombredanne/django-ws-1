@@ -4,7 +4,7 @@ from ws.models import Task, Process
 
 def update_process(pk, **kwargs):
     process_q = Process.objects.select_for_update().filter(pk=pk)
-    process_q.update(**kwargs)
+    process_q.select_for_update().update(**kwargs)
     return process_q[0]
 
 

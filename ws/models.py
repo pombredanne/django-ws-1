@@ -43,9 +43,6 @@ class LockingManager(models.Manager):
                 *args, **kwargs)
 
 class Workflow(models.Model):
-    #FIXME: Here we have a problem: a circular foreignkey, from process to activity
-    #and back. We can't do it if we don't make it somewhere possible to be null
-    #because of the id assignement :-/
     name = models.CharField(max_length=100)
 
     priority = models.PositiveSmallIntegerField(default=9)

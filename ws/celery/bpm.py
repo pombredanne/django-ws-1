@@ -5,7 +5,7 @@ from celery.log import get_default_logger
 
 logger = get_default_logger()
 
-from ws.celery.events import SignalResponses
+from ws.celery.signals import SignalResponses
 from ws.models import Task, Node, Process, Transition
 from ws.shortcuts import (update_task, update_process, update_parent,
         get_pending_childs, get_revocable_parents, get_alternative_way)
