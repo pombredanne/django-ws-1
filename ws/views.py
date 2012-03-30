@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, ListView, DetailView
-from django.forms import ModelForm
+from django.forms import ModelForm, ValidationError
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from django.utils import simplejson as json
@@ -339,8 +339,12 @@ def TaskStartView(request, pk):
     # FIXME: Convert QueryDict to dict.  This could result in data lost if
     # some param is a "select multiple", but this should never happen.
     extra_params = dict(request.POST.items())
-    result = task.launch(extra_params)
-    success = result is not None
+    try:
+        result = task.launch(extra_params)
+    except ValidationError:
+        success = False
+    else:
+        success = True
     return HttpResponse(json.dumps({"success":success}),
                         mimetype="application/json")
 

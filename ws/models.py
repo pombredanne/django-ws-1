@@ -22,6 +22,7 @@ from ws import STATES, CONDITIONS
 class Workflow(models.Model):
     name = models.CharField(max_length=100)
 
+    params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9)
     start = models.ForeignKey('Node', related_name='+', null=True, blank=True)
     end = models.ForeignKey('Node', related_name='+', null=True, blank=True)
@@ -37,9 +38,9 @@ class Node(models.Model):
     join = models.CharField(max_length=3, choices=CONDITIONS.items())
     split = models.CharField(max_length=3, choices=CONDITIONS.items())
 
+    params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9)
     task_name = models.CharField(max_length=256) #ws.tasks.add
-    params = JSONField(null=True, blank=True, default={})
     info_required = models.BooleanField(editable=False)
 
     role = models.ForeignKey(Group)
@@ -62,6 +63,7 @@ class Node(models.Model):
 class Transition(models.Model):
     class Meta:
         unique_together = [('parent', 'child')]
+
     workflow = models.ForeignKey(Workflow)
     parent = models.ForeignKey(Node, related_name='child_transition_set')
     child = models.ForeignKey(Node, related_name='parent_transition_set')
@@ -81,6 +83,7 @@ class Process(models.Model):
     parent = models.ForeignKey('Task', null=True, blank=True,
             related_name='subprocess')
 
+    params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(null=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
@@ -138,6 +141,7 @@ class Task(models.Model):
 
     priority = models.PositiveSmallIntegerField(null=True)
     task_id = models.CharField(max_length=36, blank=True)
+    params = JSONField(null=True, blank=True, default={})
 
     percentage = models.PositiveSmallIntegerField(default=0)
     result = models.CharField(max_length=100, blank=True)
@@ -162,14 +166,18 @@ class Task(models.Model):
         assign('view_task', user, self)
 
     def launch(self, extra_params={}):
-        params = self.node.params.copy()
+        # Priority order: task, node, process, workflow
+        params = {}
+        params.update(self.node.workflow.params)
+        params.update(self.process.params)
+        params.update(self.node.params)
+        params.update(self.params)
         params.update(extra_params)
         form = self.node.celery_task.form(params)
         if form.is_valid():
-            result = self.apply_async(form.clean())
+            return self.apply_async(form.clean())
         else:
-            result = None
-        return result
+            raise forms.ValidationError
 
     def revoke(self, terminate=True):
         revoke(self.task_id, terminate=terminate)
