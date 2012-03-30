@@ -18,29 +18,6 @@ from ws import STATES, CONDITIONS
 # TODO: django trunk includes getters and setters. 
 # Get basic logic down from tasks to models.
 
-# TODO: django trunk includes select_for_update.
-# TaskQuerySet will not be longer needed.
-
-class LockingQuerySet(QuerySet):
-    supports_locking = hasattr(QuerySet, 'select_for_update')
-
-    def select_for_update(self, *args, **kwargs):
-        if not self.supports_locking:
-            return self.all()
-        return super(LockingQuerySet, self).select_for_update(*args, **kwargs)
-
-    def update(self, *args, **kwargs):
-        q = super(LockingQuerySet, self).update(*args, **kwargs)
-        if not self.supports_locking:
-            from time import sleep
-            sleep(1)
-        return q
-
-
-class LockingManager(models.Manager):
-    def select_for_update(self, *args, **kwargs):
-        return LockingQuerySet(self.model, using=self._db).select_for_update(
-                *args, **kwargs)
 
 class Workflow(models.Model):
     name = models.CharField(max_length=100)
@@ -99,8 +76,6 @@ class Transition(models.Model):
 
 
 class Process(models.Model):
-    objects = LockingManager()
-
     workflow = models.ForeignKey(Workflow)
     name = models.CharField(max_length=100, blank=True)
     parent = models.ForeignKey('Task', null=True, blank=True,
@@ -155,8 +130,6 @@ class Process(models.Model):
 
 
 class Task(models.Model):
-    objects = LockingManager()
-
     node = models.ForeignKey(Node, related_name='task_set')
     process = models.ForeignKey(Process)
 
