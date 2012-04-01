@@ -33,7 +33,7 @@ def task_started(pk, task_id):
 
 @task(ignore_result=True)
 def task_succeeded(task_id, result):
-    task = update_task(task_id, state='SUCCESS',
+    task = update_task(task_id, state='SUCCESS', progress=100,
             end_date=datetime.now())
 
     if task.node.workflow.end == task.node:
@@ -84,3 +84,7 @@ def task_revoked(task_id):
 @task(ignore_result=True)
 def task_retried(task_id):
     update_task(task_id, state='RETRIED')
+
+@task(ignore_result=True)
+def task_progress(pk, progress):
+    update_task(pk, progress=progress)

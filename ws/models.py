@@ -102,9 +102,9 @@ class Process(models.Model):
             return u'{0} [{1}]'.format(self.workflow.name, self.pk)
 
     @property
-    def percentage(self):
-        percentages = self.task_set.values_list('percentage', flat=True)
-        return sum(percentages) / len(percentages)
+    def progress(self):
+        progresses = self.task_set.values_list('progress', flat=True)
+        return sum(progresses) / len(progresses)
 
     @property
     def result(self):
@@ -143,7 +143,7 @@ class Task(models.Model):
     task_id = models.CharField(max_length=36, blank=True)
     params = JSONField(null=True, blank=True, default={})
 
-    percentage = models.PositiveSmallIntegerField(default=0)
+    progress = models.PositiveSmallIntegerField(default=0)
     result = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=8, 
             choices=STATES.items(), default='PENDING')
@@ -168,11 +168,9 @@ class Task(models.Model):
     def launch(self, extra_params={}):
         # Priority order: task, node, process, workflow
         params = {}
-        params.update(self.node.workflow.params)
-        params.update(self.process.params)
-        params.update(self.node.params)
-        params.update(self.params)
-        params.update(extra_params)
+        for param in (self.node.workflow.params, self.process.params, 
+                self.node.params, self.params, extra_params):
+            params.update(param)
         form = self.node.celery_task.form(params)
         if form.is_valid():
             return self.apply_async(form.clean())

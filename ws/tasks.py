@@ -50,3 +50,16 @@ class subprocess(BPMTask):
         self.process = Process.objects.create(workflow_id=workflow,
                name=name, priority=priority)
         self.process.start()
+
+
+class DownloadForm(forms.BPMTaskForm):
+    url = forms.CharField(max_length=500, label="Name")
+
+class download(BPMTask):
+    form = DownloadForm
+
+    def run(self, workflow_task, url):
+        from pexpect import spawn
+        wget = spawn('wget {url}'.format(url=url))
+        for progress in self.iter_progress(wget):
+            self.notify_progress(workflow_task, progress)
