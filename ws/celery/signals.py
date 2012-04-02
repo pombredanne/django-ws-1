@@ -44,7 +44,7 @@ class SignalResponses(object):
     def task_postrun(task_id, task, args, kwargs, retval, **kwds):
         if isinstance(retval, ExceptionInfo):
             try:
-                task.retry(retval)
+                task.retry(exc=retval)
                 send_task('ws.celery.bpm.task_retried', kwargs={
                     'task_id': task_id})
             except task.MaxRetriesExceededError:

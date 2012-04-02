@@ -9,6 +9,7 @@ class download(BPMTask):
 
     def run(self, workflow_task, url):
         from pexpect import spawn
-        wget = spawn('wget {url}'.format(url=url))
-        for progress in self.iter_progress(wget):
-            self.notify_progress(workflow_task, progress)
+        wget = spawn('wget \'{url}\''.format(url=url))
+        wget = self.track_task(wget, workflow_task)
+        if wget.exitstatus != 0:
+            raise Exception(str(wget))

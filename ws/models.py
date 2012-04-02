@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, User
 
 from jsonfield import JSONField
-from celery.task.control import revoke
+from celery.execute import send_task
 from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 
 from ws import STATES, CONDITIONS
@@ -177,8 +177,7 @@ class Task(models.Model):
         else:
             raise forms.ValidationError
 
-    def revoke(self, terminate=True):
-        revoke(self.task_id, terminate=terminate)
+    def revoke(self):
         send_task('ws.celery.bpm.task_revoked', kwargs={
             'task_id': self.task_id})
 

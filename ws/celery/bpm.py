@@ -2,6 +2,7 @@ from datetime import datetime
 
 from celery.task import task
 from celery.log import get_default_logger
+from celery.contrib.abortable import AbortableAsyncResult
 
 logger = get_default_logger()
 
@@ -68,6 +69,11 @@ def task_failed(task_id):
 
 @task(ignore_result=True)
 def task_revoked(task_id):
+    result = AbortableAsyncResult(task_id)
+    result.abort()
+    result.revoke()
+    #revoke(task_id, terminate=True)
+
     task = update_task(task_id, state='REVOKED', end_date=datetime.now())
     try:
         subprocess = Process.objects.get(parent=task)
