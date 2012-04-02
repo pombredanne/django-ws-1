@@ -17,4 +17,4 @@ BROKER_VHOST = "/"
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 CELERY_IMPORTS = 'ws.tasks', 'ws.celery.bpm'
 CELERY_RESULT_BACKEND = 'amqp'
-CELERYD_HIJACK_ROOT_LOGGER = False
+#CELERYD_HIJACK_ROOT_LOGGER = False
