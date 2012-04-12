@@ -3,16 +3,29 @@ from ws.models import Task, Process
 
 
 def update_process(pk, **kwargs):
+    """ Get process with pk primary key and update it's values with ones
+    specified in kwargs.
+    
+    Returns the updated process or None if no process found."""
     process_q = Process.objects.select_for_update().filter(pk=pk)
     process_q.select_for_update().update(**kwargs)
-    return process_q[0]
+    if process_q:
+        return process_q[0]
+    return None
 
 
-def update_task(pk_or_task_id, **kwargs):
-    try:
-        task_q = Task.objects.select_for_update().filter(pk=pk_or_task_id)
-    except ValueError:
-        task_q = Task.objects.select_for_update().filter(task_id=pk_or_task_id)
+def update_task(pk=None, task_id=None, **kwargs):
+    """ Get task with pk primary key or task_id task idand update it's
+    values with ones specified in kwargs. One of pk or task_id must be
+    passed, raises ValueError otherwise.
+    
+    Returns the updated task or None if no task found."""
+    if pk is not None:
+        task_q = Task.objects.select_for_update().filter(pk=pk)
+    elif task_id is not None:
+        task_q = Task.objects.select_for_update().filter(task_id=task_id)
+    else:
+        raise ValueError("One of pk or task_id argument must be passed.")
     task_q.select_for_update().update(**kwargs)
     if task_q:
         return task_q[0]
@@ -20,6 +33,8 @@ def update_task(pk_or_task_id, **kwargs):
 
 
 def update_parent(task):
+    """ Update task's parent with task's values. It updates state, result,
+    start_date and end_date."""
     if task.parent:
         update_task(task.parent.pk, state=task.state, result=task.result,
                 start_date=task.start_date, end_date=task.end_date)

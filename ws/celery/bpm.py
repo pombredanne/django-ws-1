@@ -17,7 +17,7 @@ SignalResponses.connect()
 
 @task(ignore_result=True)
 def task_started(pk, task_id):
-    task = update_task(pk, task_id=task_id, state='STARTED',
+    task = update_task(pk=pk, task_id=task_id, state='STARTED',
             start_date=datetime.now())
 
     if task.node.workflow.start == task.node:
@@ -34,7 +34,7 @@ def task_started(pk, task_id):
 
 @task(ignore_result=True)
 def task_succeeded(task_id, result):
-    task = update_task(task_id, state='SUCCESS', progress=100,
+    task = update_task(task_id=task_id, state='SUCCESS', progress=100,
             end_date=datetime.now())
 
     if task.node.workflow.end == task.node:
@@ -51,7 +51,7 @@ def task_succeeded(task_id, result):
 
 @task(ignore_result=True)
 def task_failed(task_id):
-    task = update_task(task_id, state='FAILED',
+    task = update_task(task_id=task_id, state='FAILED',
             end_date=datetime.now())
 
     if task.node.workflow.end == task.node:
@@ -74,7 +74,7 @@ def task_revoked(task_id):
     result.revoke()
     #revoke(task_id, terminate=True)
 
-    task = update_task(task_id, state='REVOKED', end_date=datetime.now())
+    task = update_task(task_id=task_id, state='REVOKED', end_date=datetime.now())
     try:
         subprocess = Process.objects.get(parent=task)
     except Process.DoesNotExist:
@@ -89,8 +89,8 @@ def task_revoked(task_id):
 
 @task(ignore_result=True)
 def task_retried(task_id):
-    update_task(task_id, state='RETRIED')
+    update_task(task_id=task_id, state='RETRIED')
 
 @task(ignore_result=True)
 def task_progress(pk, progress):
-    update_task(pk, progress=progress)
+    update_task(pk=pk, progress=progress)
