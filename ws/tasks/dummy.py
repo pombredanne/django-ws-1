@@ -1,5 +1,6 @@
 from ws.celery.tasks import BPMTask
 from ws.celery import forms
+from time import sleep
 
 
 class dummy(BPMTask):
@@ -12,7 +13,7 @@ class endless(BPMTask):
     form = forms.BPMTaskForm
     def run(self, workflow_task):
         while True:
-            pass
+            sleep(1000)
 
 
 class AddForm(forms.BPMTaskForm):
