@@ -54,7 +54,7 @@
             "role": 1,
             "params": {},
             "split": "XOR",
-            "task_name": "ws.tasks.dummy",
+            "task_name": "ws.tasks.dummy.dummy",
             "priority": 9
         }
     },
@@ -69,7 +69,7 @@
             "role": 1,
             "params": {},
             "split": "XOR",
-            "task_name": "ws.tasks.dummy",
+            "task_name": "ws.tasks.dummy.dummy",
             "priority": 9
         }
     },
@@ -84,7 +84,7 @@
             "role": 1,
             "params": {},
             "split": "XOR",
-            "task_name": "ws.tasks.dummy",
+            "task_name": "ws.tasks.dummy.dummy",
             "priority": 9
         }
     },
@@ -99,7 +99,7 @@
             "role": 1,
             "params": {},
             "split": "XOR",
-            "task_name": "ws.tasks.dummy",
+            "task_name": "ws.tasks.dummy.dummy",
             "priority": 9
         }
     },
@@ -151,8 +151,8 @@
             "name": "sample process",
             "start_date": null,
             "end_date": null,
-            "priority": null
-            "parent": null,
+            "priority": null,
+            "parent": null
         }
     }
 ]
