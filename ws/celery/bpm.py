@@ -3,6 +3,7 @@ from datetime import datetime
 from celery.task import task
 from celery.log import get_default_logger
 from celery.contrib.abortable import AbortableAsyncResult
+from celery.task.control import revoke
 
 logger = get_default_logger()
 
@@ -71,8 +72,7 @@ def task_failed(task_id):
 def task_revoked(task_id):
     result = AbortableAsyncResult(task_id)
     result.abort()
-    result.revoke()
-    #revoke(task_id, terminate=True)
+    revoke(task_id, terminate=True)
 
     task = update_task(task_id=task_id, state='REVOKED', end_date=datetime.now())
     try:
@@ -90,6 +90,7 @@ def task_revoked(task_id):
 @task(ignore_result=True)
 def task_retried(task_id):
     update_task(task_id=task_id, state='RETRIED')
+
 
 @task(ignore_result=True)
 def task_progress(pk, progress):
