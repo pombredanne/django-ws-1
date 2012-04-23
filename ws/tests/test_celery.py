@@ -1,7 +1,7 @@
 from time import sleep
 
 from django.test import TestCase
-from ws.tasks import add, dummy
+from ws.tasks.dummy import add, dummy
 from ws.models import Task, Node, Transition, Process, Workflow
 
 class CeleryIntegrationTestCase(TestCase):
@@ -84,7 +84,7 @@ class SplitJoinTest(TestCase):
         self.assertTasks('Split', 'One')
 
     def test_condition(self):
-        Node.objects.filter(name='Split').update(task_name='ws.tasks.add',
+        Node.objects.filter(name='Split').update(task_name='ws.tasks.dummy.add',
                 params={u"a": 2, u"b": 4})
         Transition.objects.filter(parent__name='Split', child__name='One').update(
                 condition='6')
