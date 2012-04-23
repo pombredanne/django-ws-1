@@ -130,6 +130,7 @@ class Process(models.Model):
         task.assign(user)
         if not node.info_required:
             task.launch()
+            return task
 
 
 class Task(models.Model):
