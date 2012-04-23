@@ -28,6 +28,8 @@ class SignalResponses(object):
     @staticmethod
     @bpm_only
     def task_prerun(task_id, task, args, kwargs, **kwds):
+        task.on_start(task_id, args, kwargs)
+
         if kwargs.has_key('workflow_task'):
             pk = kwargs['workflow_task']
         else:
