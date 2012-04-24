@@ -24,7 +24,12 @@ Also, this project uses South to ease upgrading.
 Configuration
 =============
 
-Add 'ws' to INSTALLED_APPS in project's settings.py
+Add this to INSTALLED_APPS in project's settings.py:
+
+* 'ws'
+* 'django-guardian'
+* 'djcelery'
+* 'extjs4'
 
 Configure Celery and add 'ws.tasks' and 'ws.celery.bpm' to CELERY_IMPORTS
 
