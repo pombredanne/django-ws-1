@@ -51,7 +51,10 @@ setup(name='django-%s' % APP_NAME,
       zip_safe=False,
       install_requires=[
           # -*- Extra requirements: -*-
-          django_extjs4
+          'django_extjs4',
+          'django-celery',
+          'django-guardian',
+          'django-jsonfield',
       ],
       entry_points="""
       # -*- Entry points: -*-

@@ -6,6 +6,34 @@ A Business Process Manager for Django. Uses Celery for task automation and
 ExtJS for web interface.
 
 
+Instalation
+===========
+
+The code is developed and tested in Django 1.4 and RabbitMQ 2.8.
+
+All the dependencies should be installed automatically:
+
+* django_extjs4
+* django-celery
+* django-guardian
+* django-jsonfield
+
+Also, this project uses South to ease upgrading.
+
+
+Configuration
+=============
+
+Add 'ws' to INSTALLED_APPS in project's settings.py
+
+Configure Celery and add 'ws.tasks' and 'ws.celery.bpm' to CELERY_IMPORTS
+
+For inpatients, ws.settings module has default values. You could add this
+to your project's settings.py::
+
+    from ws.settings import *
+
+
 License
 =======
 
