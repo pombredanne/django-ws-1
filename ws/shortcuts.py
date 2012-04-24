@@ -1,3 +1,22 @@
+##################################################################################
+#  Copyright 2011,2012 GISA Elkartea.                                            #
+#                                                                                #
+#  This file is part of django-ws.                                               #
+#                                                                                #
+#  django-ws is free software: you can redistribute it and/or modify it under    #
+#  the terms of the GNU Affero General Public License as published by the Free   #
+#  Software Foundation, either version 3 of the License, or (at your option)     #
+#  any later version.                                                            #
+#                                                                                #
+#  django-ws is distributed in the hope that it will be useful, but WITHOUT ANY  #
+#  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS     #
+#  FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for      #
+#  more details.                                                                 #
+#                                                                                #
+#  You should have received a copy of the GNU Affero General Public License      #
+#  along with django-ws. If not, see <http://www.gnu.org/licenses/>.             #
+##################################################################################
+
 from django.db.models import Count
 from ws.models import Task, Process
 
@@ -66,6 +85,9 @@ def is_launchable(node, process):
 
 
 def get_pending_childs(task):
+    """ Return the list of workflow nodes that must be launched when a task
+    finishes. If task's node's split mode is XOR, only first found child node
+    is returned."""
     childs = []
     process = task.process
 
@@ -91,6 +113,7 @@ def get_revocable_parents(task):
 
 
 def get_alternative_way(task):
+    """ Find another node in the workflow that can be started."""
     ways = [task.node]
     while ways:
         way = ways.pop()

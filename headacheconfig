@@ -1,0 +1,3 @@
+# Python source
+| ".*\\.py"      -> skip match:".*encoding.*"
+| ".*\\.py"      -> frame open:"#" line:"#" close:"#"
