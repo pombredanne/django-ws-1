@@ -51,6 +51,7 @@ setup(name='django-%s' % APP_NAME,
       zip_safe=False,
       install_requires=[
           # -*- Extra requirements: -*-
+          django_extjs4
       ],
       entry_points="""
       # -*- Entry points: -*-
