@@ -27,13 +27,19 @@ ANONYMOUS_USER_ID = 1
 
 import djcelery
 djcelery.setup_loader()
-BROKER_HOST = "localhost"
-BROKER_PORT = 5672
-BROKER_USER = "guest"
-BROKER_PASSWORD = "guest"
-BROKER_VHOST = "/"
+BROKER_URL = 'amqp://guest:guest@localhost:5672/'
 
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 CELERY_IMPORTS = 'ws.tasks', 'ws.celery.bpm'
-CELERY_RESULT_BACKEND = 'amqp'
-#CELERYD_HIJACK_ROOT_LOGGER = False
+
+CELERY_DEFAULT_QUEUE = 'tasks'
+CELERY_QUEUES = {
+        'tasks': {},
+        'bpm': {
+            'binding_key': 'ws.celery.bpm.#',
+            },
+        }
+
+CELERY_DEFAULT_EXCHANGE = 'default'
+CELERY_DEFAULT_EXCHANGE_TYPE = 'topic'
+CELERY_DEFAULT_ROUTING_KEY = 'default.tasks'
