@@ -26,13 +26,11 @@ from celery.task.control import revoke
 
 logger = get_default_logger()
 
-from ws.celery.signals import SignalResponses
 from ws.models import Task, Node, Process, Transition
-from ws.shortcuts import (update_task, update_process, update_parent,
+from ws.celery.signals import SignalResponses
+from ws.celery.shortcuts import (update_task, update_process, update_parent,
         get_pending_childs, get_revocable_parents, get_alternative_way)
 
-
-SignalResponses.connect()
 
 
 @task(ignore_result=True)
@@ -114,3 +112,12 @@ def task_retried(task_id):
 @task(ignore_result=True)
 def task_progress(pk, progress):
     update_task(pk=pk, progress=progress)
+
+
+SignalResponses.task_started = task_started
+SignalResponses.task_failed = task_failed
+SignalResponses.task_retried = task_retried
+SignalResponses.task_succeeded = task_succeeded
+# task_revoked is called from Task model
+# task_progress is called from BPMTask class
+SignalResponses.connect()

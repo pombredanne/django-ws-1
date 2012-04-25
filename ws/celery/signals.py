@@ -39,6 +39,11 @@ def bpm_only(func):
 
 
 class SignalResponses(object):
+    task_started = None
+    task_retried = None
+    task_failed = None
+    task_succeeded = None
+
     @staticmethod
     def connect():
         task_prerun.connect(SignalResponses.task_prerun)
@@ -54,8 +59,8 @@ class SignalResponses(object):
         else:
             pk = args[0]
 
-        send_task('ws.celery.bpm.task_started', kwargs={
-            'pk': pk, 'task_id': task_id})
+        if self.task_started is not None:
+            self.task_started.apply_async(kwargs={'pk': pk, 'task_id': task_id})
 
         logger.debug('{state}: {task}'.format(
             state=c.bold('STARTED'), task=task))
@@ -66,11 +71,12 @@ class SignalResponses(object):
         if isinstance(retval, ExceptionInfo):
             try:
                 task.retry(exc=retval)
-                send_task('ws.celery.bpm.task_retried', kwargs={
-                    'task_id': task_id})
+                if self.task_retried is not None:
+                    self.task_retried.apply_async(kwargs={'task_id': task_id})
             except task.MaxRetriesExceededError:
-                send_task('ws.celery.bpm.task_failed', kwargs={
-                    'task_id': task_id})
+                if self.task_failed is not None:
+                    self.task_failed.apply_async(kwargs={'task_id': task_id})
         else:
-            send_task('ws.celery.bpm.task_succeeded', kwargs={
-                'task_id': task_id, 'result': retval})
+            if self.task_succeeded is not None:
+                self.task_succeeded.apply_async(kwargs={
+                    'task_id': task_id, 'result': retval})
