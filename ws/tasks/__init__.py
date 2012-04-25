@@ -17,13 +17,6 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.             #
 ##################################################################################
 
-####################
-from ws.tasks.bpm import subprocess
-from ws.tasks.dummy import dummy, endless, add
-from ws.tasks.http import download
-####################
-
-
 from time import sleep
 
 from celery.contrib.abortable import AbortableTask
@@ -72,3 +65,10 @@ class BPMTask(AbortableTask):
 
     def on_revoke(self, task_id, args, kwargs):
         pass
+
+
+####################
+from ws.tasks.bpm import subprocess
+from ws.tasks.dummy import dummy, endless, add
+from ws.tasks.http import download
+####################

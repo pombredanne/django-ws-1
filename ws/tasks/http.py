@@ -17,8 +17,8 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.             #
 ##################################################################################
 
-from ws.celery.tasks import BPMTask
-from ws.celery import forms
+from ws.tasks import BPMTask
+from ws import forms
 
 class DownloadForm(forms.BPMTaskForm):
     url = forms.CharField(max_length=500, label="Name")

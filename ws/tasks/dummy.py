@@ -17,8 +17,8 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.             #
 ##################################################################################
 
-from ws.celery.tasks import BPMTask
-from ws.celery import forms
+from ws.tasks import BPMTask
+from ws import forms
 from time import sleep
 
 
