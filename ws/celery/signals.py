@@ -19,16 +19,15 @@
 
 from time import time
 
-from celery.signals import task_sent, task_prerun, task_postrun, task_failure
+from celery.signals import task_prerun, task_postrun
 from celery.datastructures import ExceptionInfo
-from celery.execute import send_task
 from celery.utils.term import colored
 from celery.log import get_default_logger
 
 logger = get_default_logger()
 c = colored()
 
-from ws.celery.tasks import BPMTask
+from ws.tasks import BPMTask
 
 
 def bpm_only(func):
@@ -39,19 +38,16 @@ def bpm_only(func):
 
 
 class SignalResponses(object):
-    task_started = None
-    task_retried = None
-    task_failed = None
-    task_succeeded = None
+    def connect(self, task_started, task_retried, task_failed, task_succeeded):
+        self.task_started = task_started
+        self.task_retried = task_retried
+        self.task_failed = task_failed 
+        self.task_succeeded = task_succeeded
+        task_prerun.connect(self.task_prerun)
+        task_postrun.connect(self.task_postrun)
 
-    @staticmethod
-    def connect():
-        task_prerun.connect(SignalResponses.task_prerun)
-        task_postrun.connect(SignalResponses.task_postrun)
-
-    @staticmethod
     @bpm_only
-    def task_prerun(task_id, task, args, kwargs, **kwds):
+    def task_prerun(self, task_id, task, args, kwargs, **kwds):
         task.on_start(task_id, args, kwargs)
 
         if kwargs.has_key('workflow_task'):
@@ -65,9 +61,8 @@ class SignalResponses(object):
         logger.debug('{state}: {task}'.format(
             state=c.bold('STARTED'), task=task))
 
-    @staticmethod
     @bpm_only
-    def task_postrun(task_id, task, args, kwargs, retval, **kwds):
+    def task_postrun(self, task_id, task, args, kwargs, retval, **kwds):
         if isinstance(retval, ExceptionInfo):
             try:
                 task.retry(exc=retval)

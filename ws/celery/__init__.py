@@ -17,3 +17,25 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.             #
 ##################################################################################
 
+'''Celery bindings, signal handling and BPM's logical tasks.
+
+Submodules:
+    bpm         -- BPM's logical tasks
+    shortcuts   -- BPM's logic helpers and shortcuts
+    signals     -- binding beetween Celery's signals and BPM' logical tasks
+'''
+
+
+from ws.celery.signals import SignalResponses
+from ws.celery.bpm import (task_started, task_failed, task_retried, 
+        task_succeeded)
+
+bindings = SignalResponses()
+bindings.connect(
+        task_started=task_started,
+        task_failed=task_failed,
+        task_retried=task_retried,
+        task_succeeded=task_succeeded,
+        # task_revoked is called from Task model
+        # task_progress is called from BPMTask class
+        )
