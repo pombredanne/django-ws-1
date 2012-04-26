@@ -17,24 +17,65 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
+"""Celery tasks on steroids.
+
+Submodules:
+    Automatically detected and imported.
+
+Classes:
+    - BPMTask: intended for inheritance by celery tasks
+
+Functions:
+    - load_task_modules: automatically load all submodules
+"""
+
 from time import sleep
 
 from celery.contrib.abortable import AbortableTask
 from celery.execute import send_task
-from pexpect import EOF
+from pexpect import spawn, EOF
 
 from ws.forms import BPMTaskForm
 
 
 class BPMTask(AbortableTask):
+    """Abstract class intended for inheritance by celery tasks.
+
+    Functions:
+        run                 -- actual task, must receive 'workflow_task' argument
+        spawn               -- spawn a subprocess
+        notify_progress     -- execute task for updating the progress of a task
+        iter_progress       -- iterate over the progress of a task
+        track_task          -- track the progress of a task
+        on_start            -- executed when a task starts
+        on_success          -- executed when a task is succeeded
+        on_failure          -- executed when a task fails
+        on_retry            -- executed when a task is retried
+        on_revoke           -- executed when a task is revoked
+
+    Attributes:
+        form                -- related form
+    """
     abstract = True
     form = BPMTaskForm
 
+    def spawn(self, process):
+        """Spawn a subprocess."""
+        return spawn(process)
+
     def notify_progress(self, workflow_task, progress):
+        """Execute task for updating the progress of a task."""
         send_task('ws.celery.bpm.task_progress', kwargs={
             'pk': workflow_task, 'progress': progress})
 
     def iter_progress(self, process, every, regexp='(\d{1,3})%'):
+        """Iterate over the progress of a task.
+
+        Keyword arguments:
+            process     -- process returned by BPMTask.spawn
+            every       -- interval in seconds for iteration
+            regexp      -- progress regexp
+        """
         while not process.terminated:
             try:
                 process.expect(regexp)
@@ -45,11 +86,21 @@ class BPMTask(AbortableTask):
             sleep(every)
 
     def track_task(self, process, workflow_task, every=30):
+        """Iterate over the progress of a task and update his state.
+
+        Keyword arguments:
+            process         -- process returned by BPMTask.spawn
+            workflow_task   -- django's id for a ws.models.Task
+            every           -- interval in seconds for updating
+        """
         for progress in self.iter_progress(process, every):
             if self.is_aborted():
                 return process
             else:
                 self.notify_progress(workflow_task, progress)
+
+    def run(self, workflow_task, *args, **kwargs):
+        pass
 
     def on_start(self, task_id, args, kwargs):
         pass
@@ -68,6 +119,7 @@ class BPMTask(AbortableTask):
 
 
 def load_task_modules():
+    """Load submodules so that tasks are automatically detected by celery."""
     import os
     from celery.loaders.default import Loader
     loader = Loader()

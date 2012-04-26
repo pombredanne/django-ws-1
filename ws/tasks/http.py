@@ -29,8 +29,7 @@ class download(BPMTask):
     form = DownloadForm
 
     def run(self, workflow_task, url):
-        from pexpect import spawn
-        wget = spawn('wget \'{url}\''.format(url=url))
+        wget = self.spawn('wget \'{url}\''.format(url=url))
         wget = self.track_task(wget, workflow_task)
         if wget.exitstatus != 0:
             raise Exception(str(wget))
