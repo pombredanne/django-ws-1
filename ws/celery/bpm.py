@@ -31,7 +31,6 @@ from ws.celery.shortcuts import (update_task, update_process, update_parent,
         get_pending_childs, get_revocable_parents, get_alternative_way)
 
 
-
 @task(ignore_result=True)
 def task_started(pk, task_id):
     task = update_task(pk=pk, task_id=task_id, state='STARTED',
@@ -45,8 +44,8 @@ def task_started(pk, task_id):
 
     for parent in get_revocable_parents(task):
         parent.revoke()
-        logger.info('Parent task "{parent}" is not longer needed for task "{task}"'.format(
-            parent=parent, task=task))
+        logger.info('Parent task "{parent}" is not longer needed for task '
+                '"{task}"'.format(parent=parent, task=task))
 
 
 @task(ignore_result=True)
@@ -57,7 +56,8 @@ def task_succeeded(task_id, result):
     if task.node.workflow.end == task.node:
         update_process(task.process.pk, state='SUCCESS',
                 end_date=task.end_date)
-        logger.info('Process "{process}" succeeded'.format(process=task.process))
+        logger.info('Process "{process}" succeeded'.format(
+            process=task.process))
         update_parent(task.process)
 
     for child in get_pending_childs(task):
@@ -80,8 +80,8 @@ def task_failed(task_id):
     alternative = get_alternative_way(task)
     if alternative:
         task.process.launch_node(alternative)
-        logger.info('Alternative node "{alternative}" launched by task "{task}"'.format(
-            alternative=alternative, task=task))
+        logger.info('Alternative node "{alternative}" launched by task '
+                '"{task}"'.format(alternative=alternative, task=task))
 
 
 @task(ignore_result=True)
@@ -90,7 +90,8 @@ def task_revoked(task_id):
     result.abort()
     revoke(task_id, terminate=True)
 
-    task = update_task(task_id=task_id, state='REVOKED', end_date=datetime.now())
+    task = update_task(task_id=task_id, state='REVOKED',
+            end_date=datetime.now())
     try:
         subprocess = Process.objects.get(parent=task)
     except Process.DoesNotExist:
@@ -99,8 +100,8 @@ def task_revoked(task_id):
         subprocess.stop()
         update_process(subprocess.pk, state='REVOKED',
                 end_date=task.end_date)
-        logger.info('Subprocess "{subprocess}" revoked by task "{task}"'.format(
-            subprocess=subprocess, task=task))
+        logger.info('Subprocess "{subprocess}" revoked by task '
+                '"{task}"'.format(subprocess=subprocess, task=task))
 
 
 @task(ignore_result=True)

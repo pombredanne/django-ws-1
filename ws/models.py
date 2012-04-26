@@ -34,7 +34,7 @@ from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 from ws import STATES, CONDITIONS
 
 
-# TODO: django trunk includes getters and setters. 
+# TODO: django trunk includes getters and setters.
 # Get basic logic down from tasks to models.
 
 
@@ -59,7 +59,7 @@ class Node(models.Model):
 
     params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9)
-    task_name = models.CharField(max_length=256) #ws.tasks.add
+    task_name = models.CharField(max_length=256)
     info_required = models.BooleanField(editable=False)
 
     role = models.ForeignKey(Group)
@@ -106,9 +106,9 @@ class Process(models.Model):
     priority = models.PositiveSmallIntegerField(null=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
-    state = models.CharField(max_length=8, 
+    state = models.CharField(max_length=8,
             choices=STATES.items(), default='PENDING')
-    
+
     class Meta:
         permissions = (
                 ('execute_process', 'Can execute process'),
@@ -143,7 +143,8 @@ class Process(models.Model):
                 task.revoke()
 
     def launch_node(self, node):
-        user = node.role.user_set.all()[0] #TODO: select valid user
+        # TODO: select valid user
+        user = node.role.user_set.all()[0]
         task = Task(node=node, process=self, user=user)
         task.save()
         task.assign(user)
@@ -165,7 +166,7 @@ class Task(models.Model):
 
     progress = models.PositiveSmallIntegerField(default=0)
     result = models.CharField(max_length=100, blank=True)
-    state = models.CharField(max_length=8, 
+    state = models.CharField(max_length=8,
             choices=STATES.items(), default='PENDING')
 
     user = models.ForeignKey(User)
@@ -181,14 +182,14 @@ class Task(models.Model):
 
     def assign(self, user):
         for user, perms in get_users_with_perms(self, attach_perms=True):
-            [ remove_perm(perm, user, self) for perm in perms ]
+            [remove_perm(perm, user, self) for perm in perms]
         assign('execute_task', user, self)
         assign('view_task', user, self)
 
     def launch(self, extra_params={}):
         # Priority order: task, node, process, workflow
         params = {}
-        for param in (self.node.workflow.params, self.process.params, 
+        for param in (self.node.workflow.params, self.process.params,
                 self.node.params, self.params, extra_params):
             params.update(param)
         form = self.node.celery_task.form(params)

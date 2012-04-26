@@ -31,6 +31,7 @@ class SubprocessForm(forms.BPMTaskForm):
     priority = forms.IntegerField(min_value=0, max_value=9, initial=9,
                                   label="Priority")
 
+
 class subprocess(BPMTask):
     form = SubprocessForm
 

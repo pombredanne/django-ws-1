@@ -24,7 +24,7 @@ from ws.models import Task, Process
 def update_process(pk, **kwargs):
     """ Get process with pk primary key and update it's values with ones
     specified in kwargs.
-    
+
     Returns the updated process or None if no process found."""
     process_q = Process.objects.select_for_update().filter(pk=pk)
     process_q.select_for_update().update(**kwargs)
@@ -37,7 +37,7 @@ def update_task(pk=None, task_id=None, **kwargs):
     """ Get task with pk primary key or task_id task idand update it's
     values with ones specified in kwargs. One of pk or task_id must be
     passed, raises ValueError otherwise.
-    
+
     Returns the updated task or None if no task found."""
     if pk is not None:
         task_q = Task.objects.select_for_update().filter(pk=pk)
@@ -61,7 +61,7 @@ def update_parent(task):
 
 def is_launchable(node, process):
     completed = 0
-    
+
     # All the successful parent tasks of the node
     parent_tasks = process.task_set.select_related().filter(state='SUCCESS')
 
@@ -118,7 +118,8 @@ def get_alternative_way(task):
     while ways:
         way = ways.pop()
         parent_transitions = way.parent_transition_set.filter(split='XOR')
-        siblings = Node.objects.filter(parent_transition_set=parent_transitions)
+        siblings = Node.objects.filter(
+                parent_transition_set=parent_transitions)
 
         for sibling in siblings:
             if is_launchable(sibling, task.process):

@@ -32,6 +32,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from ws.models import Task, Process, Workflow, Transition
 
+
 class ProtectedTemplateView(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -48,7 +49,7 @@ class JSONResponseMixin(object):
 
     def convert_context_to_json(self, context):
         """Convert the context dictionary into a JSON object.
-        
+
         This function should be overriden with more specific code, this
         only works with integers and strings."""
         # Note: This is *EXTREMELY* naive; in reality, you'll need
@@ -56,6 +57,7 @@ class JSONResponseMixin(object):
         # objects -- such as Django model instances or querysets
         # -- can be serialized as JSON.
         return json.dumps(context)
+
 
 class LoginRequiredMixin(object):
     """ Views that inherit this mixin had login required. """
@@ -92,7 +94,7 @@ class ExtListView(LoginRequiredMixin, JSONResponseMixin, ListView):
     def get_queryset(self):
         query = super(ExtListView, self).get_queryset()
 
-        ext_filters = self.request.GET.get('filter',None)
+        ext_filters = self.request.GET.get('filter', None)
         if ext_filters:
             for ext_filter in json.loads(ext_filters):
                 params = {ext_filter['property']: ext_filter['value']}
@@ -106,7 +108,7 @@ class ExtListView(LoginRequiredMixin, JSONResponseMixin, ListView):
             total = len(context['object_list'])
         data = {'success': True,
                 'total': total,
-                'rows':[]
+                'rows': [],
         }
         for obj in context['object_list']:
             data['rows'].append(self.convert_object_to_dict(obj))
@@ -136,13 +138,13 @@ def JSONLogin(request):
     else:
         message = 'login must be done with a POST request.'
     request.session.set_test_cookie()
-    return HttpResponse(json.dumps({'success':success, 'message': message}),
+    return HttpResponse(json.dumps({'success': success, 'message': message}),
                         mimetype="application/json")
 
 
 def JSONLogout(request):
     logout(request)
-    return HttpResponse(json.dumps({'success':True, 'message': 'Logged out'}),
+    return HttpResponse(json.dumps({'success': True, 'message': 'Logged out'}),
                         mimetype="application/json")
 
 
@@ -263,14 +265,14 @@ def StopProcess(request):
     return HttpResponse(json.dumps({'success': success,
                                     'message': message}),
                         mimetype="application/json")
-    
+
 
 class TaskListView(ExtListView):
     model = Task
 
     def get_queryset(self):
         queryset = super(TaskListView, self).get_queryset()
-        return get_objects_for_user(self.request.user, 
+        return get_objects_for_user(self.request.user,
                 'ws.view_task', queryset)
 
     def convert_object_to_dict(self, obj):
@@ -308,8 +310,10 @@ class WorkflowGraphView(DetailView):
         nodes = context['workflow'].node_set.all()
         role_colors = {}
         for node in nodes:
-            if not role_colors.has_key(node.role.name):
-                role_colors[node.role.name] = "#%s%s%s" % tuple([random.choice('1234567890abcdef')*2 for x in range(3)])
+            if not node.role.name in role_colors:
+                role_colors[node.role.name] = "#%s%s%s" % tuple(
+                        [random.choice('1234567890abcdef') * 2\
+                                for x in range(3)])
             graph.add_node(node, color=role_colors[node.role.name])
         for role, color in role_colors.items():
             graph.add_node(role, color=color, shape='note')
@@ -364,7 +368,7 @@ def TaskStartView(request, pk):
         success = False
     else:
         success = True
-    return HttpResponse(json.dumps({"success":success}),
+    return HttpResponse(json.dumps({"success": success}),
                         mimetype="application/json")
 
 
@@ -378,7 +382,7 @@ def UserInfoView(request):
         data = {'success': False}
     return HttpResponse(json.dumps(data),
                         mimetype='application/json')
-    
+
 """
 class ProcessLauncherDetailView(JSONResponseMixin, DetailView):
     model = ProcessLauncher

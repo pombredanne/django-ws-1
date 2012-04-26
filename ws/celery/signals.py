@@ -41,7 +41,7 @@ class SignalResponses(object):
     def connect(self, task_started, task_retried, task_failed, task_succeeded):
         self.task_started = task_started
         self.task_retried = task_retried
-        self.task_failed = task_failed 
+        self.task_failed = task_failed
         self.task_succeeded = task_succeeded
         task_prerun.connect(self.task_prerun)
         task_postrun.connect(self.task_postrun)
@@ -50,13 +50,14 @@ class SignalResponses(object):
     def task_prerun(self, task_id, task, args, kwargs, **kwds):
         task.on_start(task_id, args, kwargs)
 
-        if kwargs.has_key('workflow_task'):
+        if 'workflow_task' in kwargs:
             pk = kwargs['workflow_task']
         else:
             pk = args[0]
 
         if self.task_started is not None:
-            self.task_started.apply_async(kwargs={'pk': pk, 'task_id': task_id})
+            self.task_started.apply_async(kwargs={
+                'pk': pk, 'task_id': task_id})
 
         logger.debug('{state}: {task}'.format(
             state=c.bold('STARTED'), task=task))

@@ -20,8 +20,10 @@
 from ws.tasks import BPMTask
 from ws import forms
 
+
 class DownloadForm(forms.BPMTaskForm):
     url = forms.CharField(max_length=500, label="Name")
+
 
 class download(BPMTask):
     form = DownloadForm

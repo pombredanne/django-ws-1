@@ -27,7 +27,7 @@ Submodules:
 
 
 from ws.celery.signals import SignalResponses
-from ws.celery.bpm import (task_started, task_failed, task_retried, 
+from ws.celery.bpm import (task_started, task_failed, task_retried,
         task_succeeded)
 
 bindings = SignalResponses()
