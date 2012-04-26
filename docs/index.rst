@@ -6,10 +6,18 @@
 Welcome to WS's documentation!
 ==============================
 
-Contents:
+A Business Process Manager for Django. Uses Celery for task automation and
+ExtJS for web interface.
 
 .. toctree::
    :maxdepth: 2
+
+   installation
+   fast_tutorial/index
+   custom_tasks/index
+   testing/index
+
+   todo
 
 
 
@@ -19,4 +27,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
