@@ -55,6 +55,7 @@ setup(name='django-%s' % APP_NAME,
           'django-celery',
           'django-guardian',
           'django-jsonfield',
+          'pexpect',
       ],
       entry_points="""
       # -*- Entry points: -*-
