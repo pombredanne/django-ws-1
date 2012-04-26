@@ -67,8 +67,12 @@ class BPMTask(AbortableTask):
         pass
 
 
-####################
-from ws.tasks.bpm import subprocess
-from ws.tasks.dummy import dummy, endless, add
-from ws.tasks.http import download
-####################
+def load_task_modules():
+    import os
+    from celery.loaders.default import Loader
+    loader = Loader()
+    for filename in os.listdir(os.path.dirname(__file__)):
+        filename, extension = os.path.splitext(filename)
+        if extension == '.py':
+            loader.import_task_module('ws.tasks.{}'.format(filename))
+load_task_modules()
