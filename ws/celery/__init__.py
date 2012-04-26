@@ -23,6 +23,8 @@ Submodules:
     bpm         -- BPM's logical tasks
     shortcuts   -- BPM's logic helpers and shortcuts
     signals     -- binding beetween Celery's signals and BPM' logical tasks
+
+bindings        -- already established bindings
 '''
 
 

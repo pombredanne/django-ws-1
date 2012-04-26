@@ -17,6 +17,8 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
+"""BPM logical tasks"""
+
 from datetime import datetime
 
 from celery.task import task
@@ -33,6 +35,11 @@ from ws.celery.shortcuts import (update_task, update_process, update_parent,
 
 @task(ignore_result=True)
 def task_started(pk, task_id):
+    """Mark the task as started and execute BPM logic:
+
+        - if it's the beginning of a process, mark the process as started
+        - if there is no need of them, cancel the running ancestors
+    """
     task = update_task(pk=pk, task_id=task_id, state='STARTED',
             start_date=datetime.now())
 
@@ -50,6 +57,11 @@ def task_started(pk, task_id):
 
 @task(ignore_result=True)
 def task_succeeded(task_id, result):
+    """Mark the task as succeeded and execute BPM logic:
+
+        - if it's the ending of a process, mark the process as suceeded
+        - launch the needed children
+    """
     task = update_task(task_id=task_id, state='SUCCESS', progress=100,
             end_date=datetime.now())
 
@@ -68,6 +80,12 @@ def task_succeeded(task_id, result):
 
 @task(ignore_result=True)
 def task_failed(task_id):
+    """Mark the task as failed and execute BPM logic:
+
+        - if it's the ending of a process, mark the process as failed
+        - if there's an alternative way to continue the workflow,
+          execute the alternative tasks
+    """
     task = update_task(task_id=task_id, state='FAILED',
             end_date=datetime.now())
 
@@ -86,6 +104,9 @@ def task_failed(task_id):
 
 @task(ignore_result=True)
 def task_revoked(task_id):
+    """Stop the task, mark it as revoked and execute BPM logic:
+        - if the task executed a subprocess, revoke the process
+    """
     result = AbortableAsyncResult(task_id)
     result.abort()
     revoke(task_id, terminate=True)
@@ -106,9 +127,11 @@ def task_revoked(task_id):
 
 @task(ignore_result=True)
 def task_retried(task_id):
+    """Mark the task as retried."""
     update_task(task_id=task_id, state='RETRIED')
 
 
 @task(ignore_result=True)
 def task_progress(pk, progress):
+    """Update the tasks progress."""
     update_task(pk=pk, progress=progress)
