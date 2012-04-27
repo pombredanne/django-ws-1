@@ -12,6 +12,7 @@ ExtJS for web interface.
 .. toctree::
    :maxdepth: 2
 
+   features
    installation
    fast_tutorial/index
    custom_tasks/index
