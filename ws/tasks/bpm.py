@@ -35,7 +35,7 @@ class SubprocessForm(forms.BPMTaskForm):
 class subprocess(BPMTask):
     form = SubprocessForm
 
-    def run(self, workflow_task, workflow, name, priority):
+    def call(self, workflow, name, priority):
         self.process = Process.objects.create(workflow_id=workflow,
                name=name, priority=priority)
         self.process.start()

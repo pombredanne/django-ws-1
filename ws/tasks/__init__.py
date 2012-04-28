@@ -42,11 +42,12 @@ class BPMTask(AbortableTask):
     """Abstract class intended for inheritance by celery tasks.
 
     Functions:
-        run                 -- actual task, must receive 'workflow_task' argument
+        run                 -- wrapper around call method
         spawn               -- spawn a subprocess
         notify_progress     -- execute task for updating the progress of a task
         iter_progress       -- iterate over the progress of a task
         track_task          -- track the progress of a task
+        call                -- actual task
         on_start            -- executed when a task starts
         on_success          -- executed when a task is succeeded
         on_failure          -- executed when a task fails
@@ -58,6 +59,9 @@ class BPMTask(AbortableTask):
     """
     abstract = True
     form = BPMTaskForm
+
+    def run(self, workflow_task, *args, **kwargs):
+        return self.call(*args, **kwargs)
 
     def spawn(self, process):
         """Spawn a subprocess."""
@@ -99,7 +103,7 @@ class BPMTask(AbortableTask):
             else:
                 self.notify_progress(workflow_task, progress)
 
-    def run(self, workflow_task, *args, **kwargs):
+    def call(self, *args, **kwargs):
         pass
 
     def on_start(self, task_id, args, kwargs):

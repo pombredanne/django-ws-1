@@ -25,14 +25,14 @@ from time import sleep
 class dummy(BPMTask):
     form = forms.BPMTaskForm
 
-    def run(self, workflow_task):
+    def call(self):
         return ''
 
 
 class endless(BPMTask):
     form = forms.BPMTaskForm
 
-    def run(self, workflow_task):
+    def call(self):
         while True:
             sleep(1000)
 
@@ -53,5 +53,5 @@ class AddForm(forms.BPMTaskForm):
 class add(BPMTask):
     form = AddForm
 
-    def run(self, workflow_task, a, b):
+    def call(self, a, b):
         return a + b
