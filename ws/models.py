@@ -78,6 +78,10 @@ class Node(models.Model):
         module = import_module(module)
         return getattr(module, task)
 
+    @celery_task.setter
+    def celery_task(self, celery_task):
+        self.task_name = celery_task.name
+
 
 class Transition(models.Model):
     class Meta:
