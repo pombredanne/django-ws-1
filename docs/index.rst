@@ -12,14 +12,17 @@ ExtJS for web interface.
 .. toctree::
    :maxdepth: 2
 
-   features
+   overview
    installation
-   fast_tutorial/index
-   custom_tasks/index
+   tutorials/index
+   api/index
    testing/index
 
-   todo
 
+TODOs
+=====
+
+.. todolist::
 
 
 Indices and tables

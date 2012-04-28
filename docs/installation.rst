@@ -2,7 +2,7 @@
 Installation
 ============
 
-.. note:: *(future)* pip install django-ws
+.. todo:: pip install django-ws
 
 django-ws and all needed dependencies should be installed automatically with::
 
