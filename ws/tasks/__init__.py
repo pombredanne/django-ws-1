@@ -122,13 +122,15 @@ class BPMTask(AbortableTask):
         pass
 
 
-def load_task_modules():
-    """Load submodules so that tasks are automatically detected by celery."""
+def load_task_submodules(module_name):
+    """Load submodules of module so that tasks are automatically detected by celery."""
     import os
     from celery.loaders.default import Loader
     loader = Loader()
-    for filename in os.listdir(os.path.dirname(__file__)):
+    module = loader.import_task_module(module_name)
+    directory = os.path.dirname(module.__file__)
+    for filename in os.listdir(directory):
         filename, extension = os.path.splitext(filename)
         if extension == '.py':
-            loader.import_task_module('ws.tasks.{}'.format(filename))
-load_task_modules()
+            yield loader.import_task_module('{}.{}'.format(module_name, filename))
+load_task_submodules('ws.tasks')
