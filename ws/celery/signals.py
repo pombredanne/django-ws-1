@@ -20,11 +20,12 @@
 """Bindings for tying BPMTask events to callback celery tasks.
 
 Functions:
-    bpm_only        -- decorator for excluding tasks that don't inherit
-                       from ws.tasks.BPMTask
+    :func:`bpm_only`
+        decorator for excluding tasks that don't inherit from ws.tasks.BPMTask
 
 Classes:
-    SignalResponses -- bind BPMTasks to callback events
+    :func:`SignalResponses`
+        bind BPMTasks to callback events
 """
 
 from time import time
@@ -43,7 +44,7 @@ from ws.tasks import BPMTask
 
 def bpm_only(func):
     """Call a function only when it receives an object inherited from
-    ws.tasks.BPMTask as it's 'task' argument.
+    :class:`ws.tasks.BPMTask` as it's 'task' argument.
     """
     @wraps(func)
     def wrapper(task, *args, **kwargs):
@@ -56,13 +57,18 @@ class SignalResponses(object):
     """Binding between celery BPMTask events and callback tasks.
 
     Methods:
-        connect         -- make the binding between events and tasks
+        :meth:`connect`
+            make the binding between events and tasks
 
     Attributes:
-        task_started    -- task called when a BPMTask starts
-        task_retried    -- task called when a BPMTask is retried
-        task_failed     -- task called when a BPMTask fails
-        task_succeeded  -- task called when a BPMTask is succeeded
+        :attr:`task_started`
+            task called when a BPMTask starts
+        :attr:`task_retried`
+            task called when a BPMTask is retried
+        :attr:`task_failed`
+            task called when a BPMTask fails
+        :attr:`task_succeeded`
+            task called when a BPMTask is succeeded
     """
 
     def connect(self, task_started, task_retried, task_failed, task_succeeded):

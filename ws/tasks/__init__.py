@@ -23,10 +23,12 @@ Submodules:
     Automatically detected and imported.
 
 Classes:
-    - BPMTask: intended for inheritance by celery tasks
+    :class:`BPMTask`
+        intended for inheritance by celery tasks
 
 Functions:
-    - load_task_modules: automatically load all submodules
+    :func:`load_task_submodules`
+        automatically load all submodules
 """
 
 from time import sleep
@@ -42,20 +44,32 @@ class BPMTask(AbortableTask):
     """Abstract class intended for inheritance by celery tasks.
 
     Functions:
-        run                 -- wrapper around call method
-        spawn               -- spawn a subprocess
-        notify_progress     -- execute task for updating the progress of a task
-        iter_progress       -- iterate over the progress of a task
-        track_task          -- track the progress of a task
-        call                -- actual task
-        on_start            -- executed when a task starts
-        on_success          -- executed when a task is succeeded
-        on_failure          -- executed when a task fails
-        on_retry            -- executed when a task is retried
-        on_revoke           -- executed when a task is revoked
+        :meth:`run`
+         wrapper around call method
+        :meth:`spawn`
+         spawn a subprocess
+        :meth:`notify_progress`
+         execute task for updating the progress of a task
+        :meth:`iter_progress`
+         iterate over the progress of a task
+        :meth:`track_task`
+         track the progress of a task
+        :meth:`call`
+         actual task
+        :meth:`on_start`
+         executed when a task starts
+        :meth:`on_success`
+         executed when a task is succeeded
+        :meth:`on_failure`
+         executed when a task fails
+        :meth:`on_retry`
+         executed when a task is retried
+        :meth:`on_revoke`
+            executed when a task is revoked
 
     Attributes:
-        form                -- related form
+        :attr:`form`
+            related form
     """
     abstract = True
     form = BPMTaskForm
@@ -76,9 +90,12 @@ class BPMTask(AbortableTask):
         """Iterate over the progress of a task.
 
         Keyword arguments:
-            process     -- process returned by BPMTask.spawn
-            every       -- interval in seconds for iteration
-            regexp      -- progress regexp
+            process     
+                process returned by BPMTask.spawn
+            every
+                interval in seconds for iteration
+            regexp
+                progress regexp
         """
         while not process.terminated:
             try:
@@ -93,9 +110,12 @@ class BPMTask(AbortableTask):
         """Iterate over the progress of a task and update his state.
 
         Keyword arguments:
-            process         -- process returned by BPMTask.spawn
-            workflow_task   -- django's id for a ws.models.Task
-            every           -- interval in seconds for updating
+            process
+                process returned by BPMTask.spawn
+            workflow_task
+                django's id for a ws.models.Task
+            every
+                interval in seconds for updating
         """
         for progress in self.iter_progress(process, every):
             if self.is_aborted():

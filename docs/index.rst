@@ -6,6 +6,8 @@
 Welcome to WS's documentation!
 ==============================
 
+.. note:: **Documentation still in active development**!
+
 A Business Process Manager for Django. Uses Celery for task automation and
 ExtJS for web interface.
 

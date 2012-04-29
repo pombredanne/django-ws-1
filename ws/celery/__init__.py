@@ -20,12 +20,15 @@
 '''Celery bindings, signal handling and BPM's logical tasks.
 
 Submodules:
-    bpm         -- BPM's logical tasks
-    shortcuts   -- BPM's logic helpers and shortcuts
-    signals     -- binding beetween Celery's signals and BPM' logical tasks
-
-bindings        -- already established bindings
+    :mod:`ws.celery.bpm`
+        BPM's logical tasks
+    :mod:`ws.celery.shortcuts`
+        BPM's logic helpers and shortcuts
+    :mod:`ws.celery.signals`
+        binding beetween Celery's signals and BPM' logical tasks
 '''
+
+__all__ = ['bpm', 'signals', 'shortcuts']
 
 
 from ws.celery.signals import SignalResponses

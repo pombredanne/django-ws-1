@@ -18,6 +18,8 @@
 ###############################################################################
 
 """BPM logical tasks"""
+__all__ = ['task_started', 'task_succeeded', 'task_failed', 'task_retried',
+        'task_revoked', 'task_progress']
 
 from datetime import datetime
 
@@ -105,6 +107,7 @@ def task_failed(task_id):
 @task(ignore_result=True)
 def task_revoked(task_id):
     """Stop the task, mark it as revoked and execute BPM logic:
+
         - if the task executed a subprocess, revoke the process
     """
     result = AbortableAsyncResult(task_id)
