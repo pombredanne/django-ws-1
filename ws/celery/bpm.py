@@ -30,8 +30,8 @@ from celery.task.control import revoke
 
 logger = get_default_logger()
 
-from ws.models import Task, Node, Process, Transition
-from ws.celery.shortcuts import (update_task, update_process, update_parent,
+from ws.models import Task, Process
+from ws.celery.shortcuts import (update_task, update_process,
         get_pending_childs, get_revocable_parents, get_alternative_way)
 
 
@@ -48,13 +48,12 @@ def task_started(pk, task_id):
     if task.node.workflow.start == task.node:
         update_process(task.process.pk, state='STARTED',
                 start_date=task.start_date)
-        logger.info('Process "{process}" started'.format(process=task.process))
-        update_parent(task.process)
+        logger.info('Process "{}" started'.format(task.process))
 
     for parent in get_revocable_parents(task):
         parent.revoke()
-        logger.info('Parent task "{parent}" is not longer needed for task '
-                '"{task}"'.format(parent=parent, task=task))
+        logger.info('Parent task "{}" is not longer needed for task "{}"'.format(
+            parent, task))
 
 
 @task(ignore_result=True)
@@ -70,9 +69,7 @@ def task_succeeded(task_id, result):
     if task.node.workflow.end == task.node:
         update_process(task.process.pk, state='SUCCESS',
                 end_date=task.end_date)
-        logger.info('Process "{process}" succeeded'.format(
-            process=task.process))
-        update_parent(task.process)
+        logger.info('Process "{}" succeeded'.format(task.process))
 
     for child in get_pending_childs(task):
         task.process.launch_node(child)
@@ -95,7 +92,6 @@ def task_failed(task_id):
         update_process(task.process.pk, state='FAILED',
                 end_date=task.end_date)
         logger.info('Process "{process}" failed'.format(process=task.process))
-        update_parent(task_process)
 
     alternative = get_alternative_way(task)
     if alternative:

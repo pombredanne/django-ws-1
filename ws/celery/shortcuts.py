@@ -25,11 +25,20 @@ def update_process(pk, **kwargs):
     """ Get process with pk primary key and update it's values with ones
     specified in kwargs.
 
+    If the process is a subprocess, update the parent process too.
+
     Returns the updated process or None if no process found."""
+
     process_q = Process.objects.select_for_update().filter(pk=pk)
     process_q.select_for_update().update(**kwargs)
     if process_q:
-        return process_q[0]
+        process = process_q[0]
+        if process.parent:
+            ending = Task.objects.get(process=process, 
+                    node=process.workflow.ending)
+            update_process(process.parent.pk, state=process.state,
+                    result=process.result, start_date=process.start_date,
+                    end_date=process.end_date)
     return None
 
 
@@ -49,14 +58,6 @@ def update_task(pk=None, task_id=None, **kwargs):
     if task_q:
         return task_q[0]
     return None
-
-
-def update_parent(task):
-    """ Update task's parent with task's values. It updates state, result,
-    start_date and end_date."""
-    if task.parent:
-        update_task(task.parent.pk, state=task.state, result=task.result,
-                start_date=task.start_date, end_date=task.end_date)
 
 
 def is_launchable(node, process):
