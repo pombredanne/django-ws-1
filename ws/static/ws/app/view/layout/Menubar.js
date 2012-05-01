@@ -10,6 +10,10 @@ Ext.define('WS.view.layout.Menubar', {
     initComponent : function() {
         // Implement a Container beforeLayout call from the layout to this Container
         this.items = [{
+                xtype: 'image',
+                src: '/static/logo.svg',
+                heigth: 30,
+            },{
                 text: 'Tasks',
                 menu: {
                     xtype: 'menu',

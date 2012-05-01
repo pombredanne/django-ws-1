@@ -7,15 +7,6 @@ Ext.define('WS.view.layout.Viewport', {
     },
 
     items: [{
-            xtype: 'panel',
-            height: 40,
-            layout: 'hbox',
-            items: [{
-                 xtype: 'image',
-                 src: '/static/logo.png',
-                 heigth: 30,
-            }]
-        },{
             flex: 1,
             id: 'ws-main',
             layout : {
