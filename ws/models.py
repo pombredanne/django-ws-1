@@ -43,8 +43,6 @@ class Workflow(models.Model):
 
     params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9)
-    start = models.ForeignKey('Node', related_name='+', null=True, blank=True)
-    end = models.ForeignKey('Node', related_name='+', null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -65,6 +63,9 @@ class Node(models.Model):
 
     join = models.CharField(max_length=3, choices=CONDITIONS.items())
     split = models.CharField(max_length=3, choices=CONDITIONS.items())
+
+    is_start = models.BooleanField(default=False)
+    is_end = models.BooleanField(default=False)
 
     params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9)
@@ -160,7 +161,10 @@ class Process(models.Model):
 
     def start(self):
         assert self.state == 'PENDING', 'Process already started'
-        self.launch_node(self.workflow.start)
+        start_nodes = self.workflow.node_set.filter(is_start=True)
+        assert not start_nodes.empty(), 'No starting nodes'
+        for node in start_nodes.iterator():
+            self.launch_node(node)
 
     def stop(self):
         assert self.state == 'STARTED', 'Process not running'
