@@ -39,7 +39,7 @@ from ws import STATES, CONDITIONS
 
 
 class Workflow(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9)
@@ -49,8 +49,17 @@ class Workflow(models.Model):
     def __unicode__(self):
         return self.name
 
+    def natural_key(self):
+        return self.name
+
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 
 class Node(models.Model):
+    class Meta:
+        unique_together = [('name', 'workflow')]
+
     name = models.CharField(max_length=100)
     workflow = models.ForeignKey(Workflow)
 
@@ -66,6 +75,12 @@ class Node(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def natural_key(self):
+        return (self.name, self.workflow.name)
+
+    def get_by_natural_key(self, name, workflow):
+        return self.get(name=name, workflow__name=workflow)
 
     def save(self, *args, **kwargs):
         form = self.celery_task.form(self.params)
@@ -99,8 +114,19 @@ class Transition(models.Model):
         return u'{0} --{1}--> {2}'.format(
                 self.parent.name, condition, self.child.name)
 
+    def natural_key(self):
+        return self.parent.name, self.child.name
+
+    def get_by_natural_key(self, parent, child):
+        return self.get(parent__name=parent, child__name=child)
+
 
 class Process(models.Model):
+    class Meta:
+        permissions = (
+                ('execute_process', 'Can execute process'),
+                )
+
     workflow = models.ForeignKey(Workflow)
     name = models.CharField(max_length=100, blank=True)
     parent = models.ForeignKey('Task', null=True, blank=True,
@@ -113,10 +139,6 @@ class Process(models.Model):
     state = models.CharField(max_length=8,
             choices=STATES.items(), default='PENDING')
 
-    class Meta:
-        permissions = (
-                ('execute_process', 'Can execute process'),
-                )
 
     def __unicode__(self):
         if self.name:
