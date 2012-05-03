@@ -17,14 +17,10 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
-from __future__ import absolute_import, division
+from __future__ import absolute_import
 
-from datetime import datetime
 from django.db import models
-from django.db.models.query import QuerySet
-from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, User
 
 from jsonfield import JSONField
@@ -33,6 +29,7 @@ from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 
 from ws import STATES, CONDITIONS
 from ws.fields import CeleryTaskField
+from ws.celery import shortcuts
 
 
 # TODO: django trunk includes getters and setters.
@@ -97,6 +94,8 @@ class Node(models.Model):
         self.info_required = not form.is_valid()
         super(Node, self).save(*args, **kwargs)
 
+    def is_launchable(self, process):
+        return shortcuts.is_launchable(self, process)
 
 class Transition(models.Model):
     class Meta:
@@ -175,6 +174,9 @@ class Process(models.Model):
             task.launch()
             return task
 
+    def update(self, **kwargs):
+        return shortcuts.update_process(self.pk, **kwargs)
+
 
 class Task(models.Model):
     node = models.ForeignKey(Node, related_name='task_set')
@@ -237,3 +239,15 @@ class Task(models.Model):
                 kwargs=kwargs,
                 priority=self.average_priority,
                 )
+
+    def update(self, **kwargs):
+        return shortcuts.update_task(pk=self.pk, **kwargs)
+
+    def get_pending_childs(self):
+        return shortcuts.get_pending_childs(self)
+
+    def get_revocable_parents(self):
+        return shortcuts.get_revocable_parents(self)
+
+    def get_alternative_way(self):
+        return shortcuts.get_alternative_way(self)
