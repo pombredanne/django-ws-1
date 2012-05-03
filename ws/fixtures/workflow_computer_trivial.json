@@ -1,0 +1,71 @@
+[
+  {
+    "pk": null,
+    "model": "ws.workflow",
+    "fields": {
+      "priority": 9,
+      "params": {},
+      "name": "computer_trivial"
+    }
+  },
+  {
+    "pk": null,
+    "model": "ws.node",
+    "fields": {
+      "info_required": false,
+      "join": "AND",
+      "name": "step1",
+      "workflow": [
+        "computer_trivial"
+      ],
+      "priority": 9,
+      "params": {},
+      "split": "AND",
+      "task_name": "ws.tasks.dummy.dummy",
+      "is_end": false,
+      "role": [
+        "Computer"
+      ],
+      "is_start": true
+    }
+  },
+  {
+    "pk": null,
+    "model": "ws.node",
+    "fields": {
+      "info_required": false,
+      "join": "AND",
+      "name": "step2",
+      "workflow": [
+        "computer_trivial"
+      ],
+      "priority": 9,
+      "params": {},
+      "split": "AND",
+      "task_name": "ws.tasks.dummy.dummy",
+      "is_end": true,
+      "role": [
+        "Computer"
+      ],
+      "is_start": false
+    }
+  },
+  {
+    "pk": null,
+    "model": "ws.transition",
+    "fields": {
+      "child": [
+        "step2",
+        "computer_trivial"
+      ],
+      "condition": "",
+      "parent": [
+        "step1",
+        "computer_trivial"
+      ],
+      "workflow": [
+        "computer_trivial"
+      ]
+    }
+  }
+]

@@ -37,6 +37,10 @@ from ws import STATES, CONDITIONS
 # TODO: django trunk includes getters and setters.
 # Get basic logic down from tasks to models.
 
+class WorkflowManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 
 class Workflow(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -44,14 +48,18 @@ class Workflow(models.Model):
     params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9)
 
+    objects = WorkflowManager()
+
     def __unicode__(self):
         return self.name
 
     def natural_key(self):
-        return self.name
+        return (self.name, )
 
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
+
+class NodeManager(models.Manager):
+    def get_by_natural_key(self, name, workflow):
+        return self.get(name=name, workflow__name=workflow)
 
 
 class Node(models.Model):
@@ -74,14 +82,14 @@ class Node(models.Model):
 
     role = models.ForeignKey(Group)
 
+    objects = NodeManager()
+
     def __unicode__(self):
         return self.name
 
     def natural_key(self):
         return (self.name, self.workflow.name)
-
-    def get_by_natural_key(self, name, workflow):
-        return self.get(name=name, workflow__name=workflow)
+    natural_key.dependencies = ['ws.Workflow']
 
     def save(self, *args, **kwargs):
         form = self.celery_task.form(self.params)
@@ -114,12 +122,6 @@ class Transition(models.Model):
             condition = '[' + condition + ']'
         return u'{0} --{1}--> {2}'.format(
                 self.parent.name, condition, self.child.name)
-
-    def natural_key(self):
-        return self.parent.name, self.child.name
-
-    def get_by_natural_key(self, parent, child):
-        return self.get(parent__name=parent, child__name=child)
 
 
 class Process(models.Model):
