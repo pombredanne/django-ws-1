@@ -18,6 +18,7 @@
 ###############################################################################
 
 from __future__ import absolute_import
+from inspect import getargspec
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -216,17 +217,39 @@ class Task(models.Model):
         assign('execute_task', user, self)
         assign('view_task', user, self)
 
-    def launch(self, extra_params={}):
-        # Priority order: task, node, process, workflow
+    def _get_params(self, extra_params={}):
+        # Priority order: extra_params, task, node, process, workflow
         params = {}
         for param in (self.node.workflow.params, self.process.params,
                 self.node.params, self.params, extra_params):
             params.update(param)
-        form = self.node.celery_task.form(params)
-        if form.is_valid():
-            return self.apply_async(form.clean())
+        return params
+
+    def _filter_params(self, params):
+        # If there's a related form, cleanup params with it
+        if hasattr(self.node.celery_task, 'form'):
+            form = self.node.celery_task.form(params)
+            if form.is_valid():
+                kwargs = form.clean()
+            else:
+                raise forms.ValidationError
+
+        # Else, inspect the tasks call method
         else:
-            raise forms.ValidationError
+            args = getargspec(self.node.celery_task.call)
+            
+            # If it accepts no *args nor **kwargs, pass only the accepted args
+            if (args.varargs, args.keywords) == (None, None):
+                kwargs = { arg: params[arg] for arg in args }
+            # Else, pass them all
+            else:
+                kwargs = params
+        return kwargs
+
+    def launch(self, extra_params={}):
+        params = self._get_params(extra_params)
+        kwargs = self._filter_params(params)
+        return self.apply_async(kwargs)
 
     def revoke(self):
         send_task('ws.celery.bpm.task_revoked', kwargs={

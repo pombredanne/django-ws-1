@@ -23,15 +23,11 @@ from time import sleep
 
 
 class dummy(BPMTask):
-    form = forms.BPMTaskForm
-
     def call(self):
         return ''
 
 
 class endless(BPMTask):
-    form = forms.BPMTaskForm
-
     def call(self):
         while True:
             sleep(1000)
