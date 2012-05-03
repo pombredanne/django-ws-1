@@ -18,7 +18,7 @@
 ###############################################################################
 
 from django.db.models import Count
-from ws.models import Task, Process, Node
+import ws.models
 
 
 def assert_one_in_queryset(queryset):
@@ -47,9 +47,10 @@ def update_task(pk=None, task_id=None, **kwargs):
         raise ValueError('pk or task_id argument must be passed.')
 
     if pk is not None:
-        task_q = Task.objects.select_for_update().filter(pk=pk)
+        task_q = ws.models.Task.objects.select_for_update().filter(pk=pk)
     elif task_id is not None:
-        task_q = Task.objects.select_for_update().filter(task_id=task_id)
+        task_q = ws.models.Task.objects.select_for_update().filter(
+                task_id=task_id)
 
     assert_one_in_queryset(task_q)
     if task_id is not None:
@@ -65,16 +66,15 @@ def update_process(pk, **kwargs):
     If the process is a subprocess, update the parent task too.
     """
 
-    process_q = Process.objects.select_for_update().filter(pk=pk)
+    process_q = ws.models.Process.objects.select_for_update().filter(pk=pk)
     assert_one_in_queryset(process_q)
     process_q.update(**kwargs)
     process = process_q[0]
 
     if process.parent:
         try:
-            result = Task.objects.get(process=process, 
-                    node__is_end=True).result
-        except Task.DoesNotExist:
+            result = process.task_set.get(node__is_end=True).result
+        except ws.models.Task.DoesNotExist:
             result = ''
         update_task(process.parent.pk, state=process.state, result=result,
                 start_date=process.start_date, end_date=process.end_date)
@@ -169,13 +169,14 @@ def get_alternative_way(task):
     while ways:
         way = ways.pop()
         parent_transitions = way.parent_transition_set.filter(split='XOR')
-        siblings = Node.objects.filter(
+        siblings = ws.models.Node.objects.filter(
                 parent_transition_set=parent_transitions)
 
         for sibling in siblings:
             if is_launchable(sibling, task.process):
                 return sibling
 
-        parents = Node.objects.filter(child_transition_set=parent_transitions)
+        parents = ws.models.Node.objects.filter(
+                child_transition_set=parent_transitions)
         ways.append(parents)
     return None
