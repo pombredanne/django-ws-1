@@ -45,7 +45,7 @@ def task_started(pk, task_id):
     task = update_task(pk=pk, task_id=task_id, state='STARTED',
             start_date=datetime.now())
 
-    if task.node.workflow.start == task.node:
+    if task.node.is_start:
         update_process(task.process.pk, state='STARTED',
                 start_date=task.start_date)
         logger.info('Process "{}" started'.format(task.process))
@@ -66,7 +66,7 @@ def task_succeeded(task_id, result):
     task = update_task(task_id=task_id, state='SUCCESS', progress=100,
             end_date=datetime.now())
 
-    if task.node.workflow.end == task.node:
+    if task.node.is_end:
         update_process(task.process.pk, state='SUCCESS',
                 end_date=task.end_date)
         logger.info('Process "{}" succeeded'.format(task.process))
@@ -88,7 +88,7 @@ def task_failed(task_id):
     task = update_task(task_id=task_id, state='FAILED',
             end_date=datetime.now())
 
-    if task.node.workflow.end == task.node:
+    if task.node.is_end:
         update_process(task.process.pk, state='FAILED',
                 end_date=task.end_date)
         logger.info('Process "{process}" failed'.format(process=task.process))

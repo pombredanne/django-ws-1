@@ -18,53 +18,97 @@
 ###############################################################################
 
 from django.db.models import Count
-from ws.models import Task, Process
+from ws.models import Task, Process, Node
 
 
-def update_process(pk, **kwargs):
-    """ Get process with pk primary key and update it's values with ones
-    specified in kwargs.
+def assert_one_in_queryset(queryset):
+    """Assert that queryset contains one object.
 
-    If the process is a subprocess, update the parent process too.
+    Raise :exc:`django.core.exceptions.DoesNotExist` if queryset is empty,
+    raise :exc:`django.core.exceptions.MultipleObjectsReturned` if more than
+    one.
+    """
 
-    Returns the updated process or None if no process found."""
-
-    process_q = Process.objects.select_for_update().filter(pk=pk)
-    process_q.select_for_update().update(**kwargs)
-    if process_q:
-        process = process_q[0]
-        if process.parent:
-            ending = Task.objects.get(process=process, 
-                    node=process.workflow.ending)
-            update_process(process.parent.pk, state=process.state,
-                    result=process.result, start_date=process.start_date,
-                    end_date=process.end_date)
-    return None
+    num = queryset.count()
+    if num == 0:
+        raise queryset.model.DoesNotExist
+    elif num > 1:
+        raise queryset.model.MultipleObjectsReturned
+    else:
+        return True
 
 
 def update_task(pk=None, task_id=None, **kwargs):
-    """ Get task with pk primary key or task_id task idand update it's
-    values with ones specified in kwargs. One of pk or task_id must be
-    passed, raises ValueError otherwise.
+    """ Get task with pk primary key or task_id task id, update it's
+    values with ones specified in kwargs and return it.
+    """
 
-    Returns the updated task or None if no task found."""
+    if (pk, task_id) == (None, None):
+        raise ValueError('pk or task_id argument must be passed.')
+
     if pk is not None:
         task_q = Task.objects.select_for_update().filter(pk=pk)
     elif task_id is not None:
         task_q = Task.objects.select_for_update().filter(task_id=task_id)
-    else:
-        raise ValueError("One of pk or task_id argument must be passed.")
-    task_q.select_for_update().update(**kwargs)
-    if task_q:
-        return task_q[0]
-    return None
+
+    assert_one_in_queryset(task_q)
+    if task_id is not None:
+        kwargs['task_id'] = task_id
+    task_q.update(**kwargs)
+    return task_q[0]
+
+
+def update_process(pk, **kwargs):
+    """Get process with pk primary key, update it's values with the ones
+    specified in kwargs and return it.
+
+    If the process is a subprocess, update the parent task too.
+    """
+
+    process_q = Process.objects.select_for_update().filter(pk=pk)
+    assert_one_in_queryset(process_q)
+    process_q.update(**kwargs)
+    process = process_q[0]
+
+    if process.parent:
+        try:
+            result = Task.objects.get(process=process, 
+                    node__is_end=True).result
+        except Task.DoesNotExist:
+            result = ''
+        update_task(process.parent.pk, state=process.state, result=result,
+                start_date=process.start_date, end_date=process.end_date)
+    return process
 
 
 def is_launchable(node, process):
-    completed = 0
+    """Decide whether a node can be launched or not.
+
+    For a node to be possible to launch, it must have a number of successful
+    parent transitions:
+
+    with no parent transitions:
+        0 must be fulfilled
+    with a 'XOR' join:
+        1 must be fulfilled
+    with an 'AND' join:
+        all parent transitions must be fulfilled
+    """
 
     # All the successful parent tasks of the node
     parent_tasks = process.task_set.select_related().filter(state='SUCCESS')
+
+    # Number of parent transitions
+    num_parent_transitions = node.parent_transition_set.count()
+
+    completed = 0
+    # Number of parent transitions that must be fulfilled
+    if num_parent_transitions == 0:
+        must_complete = 0
+    elif node.join == 'XOR':
+        must_complete = 1
+    else:
+        must_complete = num_parent_transitions
 
     # For every parent transitions of the node
     for parent_transition in node.parent_transition_set.iterator():
@@ -73,16 +117,12 @@ def is_launchable(node, process):
         if parent_tasks.filter(node=parent_transition.parent,  result__in=(
             '', parent_transition.condition)):
 
-            # With XOR join only one parent has to be OK
-            if node.join == 'XOR':
-                return True
-            else:
-                completed += 1
+            completed += 1
+            if completed == must_complete:
+                break
 
-    # With AND join all the parents has to be OK
-    if node.join == 'AND' and\
-            completed == node.parent_transition_set.count():
-                return True
+    return completed == must_complete
+
 
 
 def get_pending_childs(task):
