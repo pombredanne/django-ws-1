@@ -26,13 +26,6 @@ from ws.models import Task, Node, Transition, Process, Workflow
 from ws.celery import shortcuts
 
 
-def update_task(task):
-    return Task.objects.get(pk=task.pk)
-
-def update_process(process):
-    return Process.objects.get(pk=process.pk)
-
-
 class ShortcutsTestCase(TestCase):
     fixtures = ['authorization']
 
@@ -61,13 +54,11 @@ class ShortcutsTestCase(TestCase):
         with self.assertRaises(ValueError):
             shortcuts.update_task()
 
-        shortcuts.update_task(pk=task.pk, task_id='example', result='2')
-        task = update_task(task)
+        task = shortcuts.update_task(pk=task.pk, task_id='example', result='2')
         self.assertEquals(task.task_id, 'example')
         self.assertEquals(task.result, '2')
 
-        shortcuts.update_task(task_id='example', result='3')
-        task = update_task(task)
+        task = shortcuts.update_task(task_id='example', result='3')
         self.assertEquals(task.result, '3')
 
     def test_update_process(self):
@@ -83,15 +74,13 @@ class ShortcutsTestCase(TestCase):
         subtask = Task.objects.create(node=node, process=subprocess, 
                 user=self.boss)
 
-        shortcuts.update_process(process.pk, state='STARTED')
-
-        process = update_process(process)
+        process = shortcuts.update_process(process.pk, state='STARTED')
         self.assertEquals(process.state, 'STARTED')
 
         shortcuts.update_task(subtask.pk, result='1')
         shortcuts.update_process(subprocess.pk, state='SUCCESS')
 
-        task = update_task(task)
+        task = shortcuts.update_task(task.pk)
         self.assertEquals(task.state, 'SUCCESS')
         self.assertEquals(task.result, '1')
 
