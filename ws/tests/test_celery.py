@@ -20,8 +20,130 @@
 from time import sleep
 
 from django.test import TestCase
+from django.contrib.auth.models import Group, User
 from ws.tasks.dummy import add, dummy
 from ws.models import Task, Node, Transition, Process, Workflow
+from ws.celery import shortcuts
+
+
+def update_task(task):
+    return Task.objects.get(pk=task.pk)
+
+def update_process(process):
+    return Process.objects.get(pk=process.pk)
+
+
+class ShortcutsTestCase(TestCase):
+    fixtures = ['authorization']
+
+    def setUp(self):
+        self.bosses = Group.objects.get(name='bosses')
+        self.boss = User.objects.get(username='boss')
+
+    def test_assert_one_in_queryset(self):
+        Workflow.objects.create(name='one')
+        Workflow.objects.create(name='two')
+        with self.assertRaises(Workflow.DoesNotExist):
+            shortcuts.assert_one_in_queryset(Workflow.objects.none())
+        with self.assertRaises(Workflow.MultipleObjectsReturned):
+            shortcuts.assert_one_in_queryset(Workflow.objects.all())
+        one = Workflow.objects.filter(name='one')
+        self.assertTrue(shortcuts.assert_one_in_queryset(one))
+
+
+    def test_update_task(self):
+        workflow = Workflow.objects.create(name='one')
+        process = Process.objects.create(workflow=workflow)
+        node = Node.objects.create(name='one', workflow=workflow, 
+                task_name='ws.tasks.dummy.dummy', role=self.bosses)
+        task = Task.objects.create(node=node, process=process, user=self.boss)
+
+        with self.assertRaises(ValueError):
+            shortcuts.update_task()
+
+        shortcuts.update_task(pk=task.pk, task_id='example', result='2')
+        task = update_task(task)
+        self.assertEquals(task.task_id, 'example')
+        self.assertEquals(task.result, '2')
+
+        shortcuts.update_task(task_id='example', result='3')
+        task = update_task(task)
+        self.assertEquals(task.result, '3')
+
+    def test_update_process(self):
+        workflow = Workflow.objects.create(name='one')
+        node = Node.objects.create(name='one', workflow=workflow, 
+                is_start=True, is_end=True, task_name='ws.tasks.dummy.dummy', 
+                role=self.bosses)
+
+        process = Process.objects.create(workflow=workflow)
+        task = Task.objects.create(node=node, process=process, user=self.boss)
+
+        subprocess = Process.objects.create(workflow=workflow, parent=task)
+        subtask = Task.objects.create(node=node, process=subprocess, 
+                user=self.boss)
+
+        shortcuts.update_process(process.pk, state='STARTED')
+
+        process = update_process(process)
+        self.assertEquals(process.state, 'STARTED')
+
+        shortcuts.update_task(subtask.pk, result='1')
+        shortcuts.update_process(subprocess.pk, state='SUCCESS')
+
+        task = update_task(task)
+        self.assertEquals(task.state, 'SUCCESS')
+        self.assertEquals(task.result, '1')
+
+    def test_is_launchable(self):
+        workflow = Workflow.objects.create(name='main')
+        process = Process.objects.create(workflow=workflow)
+
+        join_node = Node.objects.create(name='join', workflow=workflow,
+                join='XOR', task_name='ws.tasks.dummy.dummy', role=self.bosses)
+        node1 = Node.objects.create(name='one', workflow=workflow, 
+                task_name='ws.tasks.dummy.dummy', role=self.bosses)
+        node2 = Node.objects.create(name='two', workflow=workflow, 
+                task_name='ws.tasks.dummy.dummy', role=self.bosses)
+
+        # With no parent transitions, it must be always launchable
+        self.assertTrue(shortcuts.is_launchable(join_node, process))
+
+        task1 = Task.objects.create(node=node1, process=process,
+                user=self.boss)
+        task2 = Task.objects.create(node=node2, process=process,
+                user=self.boss)
+
+        Transition.objects.create(workflow=workflow, parent=node1, 
+                child=join_node)
+        Transition.objects.create(workflow=workflow, parent=node2,
+                child=join_node)
+
+        # With parent transitions but without fulfilled tasks, it's not launchable
+        self.assertFalse(shortcuts.is_launchable(join_node, process))
+
+        # With a XOR join and with one fulfilled task, it's launchable
+        task1.state = 'SUCCESS'; task1.save()
+        self.assertTrue(shortcuts.is_launchable(join_node, process))
+
+        # With an AND join and with one fulfilled task, it's not launchable
+        join_node.join = 'AND'; join_node.save()
+        self.assertFalse(shortcuts.is_launchable(join_node, process))
+
+        # With an AND join and with all tasks fulfilled, it's launchable
+        task2.state = 'SUCCESS'; task2.save()
+        self.assertTrue(shortcuts.is_launchable(join_node, process))
+
+    def test_get_pending_childs(self):
+        pass
+
+    def test_get_revocable_parents(self):
+        pass
+
+    def test_get_alternative_way(self):
+        pass
+
+
 
 class CeleryIntegrationTestCase(TestCase):
     fixtures = ['sample_workflow']
