@@ -128,7 +128,7 @@
                 "b": 1
             }, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.add", 
+            "celery_task": "ws.tasks.dummy.add", 
             "role": 1,
             "priority": 9
         }
@@ -146,7 +146,7 @@
                 "b": 2
             }, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.add", 
+            "celery_task": "ws.tasks.dummy.add", 
             "role": 2,
             "priority": 9
         }
@@ -163,7 +163,7 @@
                 "a": 2
             }, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.add", 
+            "celery_task": "ws.tasks.dummy.add", 
             "role": 2,
             "priority": 9
         }
@@ -178,7 +178,7 @@
             "workflow": 2, 
             "params": {}, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.dummy", 
+            "celery_task": "ws.tasks.dummy.dummy", 
             "role": 1,
             "priority": 9
         }
@@ -193,7 +193,7 @@
             "workflow": 2, 
             "params": {}, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.dummy", 
+            "celery_task": "ws.tasks.dummy.dummy", 
             "role": 2,
             "priority": 9
         }
@@ -208,7 +208,7 @@
             "workflow": 2, 
             "params": {}, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.dummy", 
+            "celery_task": "ws.tasks.dummy.dummy", 
             "role": 1,
             "priority": 9
         }
@@ -225,7 +225,7 @@
                 "a": 2
             }, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.add", 
+            "celery_task": "ws.tasks.dummy.add", 
             "role": 2,
             "priority": 9
         }
@@ -240,7 +240,7 @@
             "workflow": 3, 
             "params": {}, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.dummy", 
+            "celery_task": "ws.tasks.dummy.dummy", 
             "role": 1,
             "priority": 9
         }
@@ -255,7 +255,7 @@
             "workflow": 3, 
             "params": {}, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.dummy", 
+            "celery_task": "ws.tasks.dummy.dummy", 
             "role": 1,
             "priority": 9
         }
@@ -270,7 +270,7 @@
             "workflow": 3, 
             "params": {}, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.dummy", 
+            "celery_task": "ws.tasks.dummy.dummy", 
             "role": 1,
             "priority": 9
         }
@@ -285,7 +285,7 @@
             "workflow": 1, 
             "params": {}, 
             "split": "AND", 
-            "task_name": "ws.tasks.dummy.endless", 
+            "celery_task": "ws.tasks.dummy.endless", 
             "role": 1,
             "priority": 9
         }

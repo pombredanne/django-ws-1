@@ -55,7 +55,7 @@ class ShortcutsTestCase(TestCase):
         workflow = Workflow.objects.create(name='one')
         process = Process.objects.create(workflow=workflow)
         node = Node.objects.create(name='one', workflow=workflow, 
-                task_name='ws.tasks.dummy.dummy', role=self.bosses)
+                celery_task=dummy, role=self.bosses)
         task = Task.objects.create(node=node, process=process, user=self.boss)
 
         with self.assertRaises(ValueError):
@@ -73,7 +73,7 @@ class ShortcutsTestCase(TestCase):
     def test_update_process(self):
         workflow = Workflow.objects.create(name='one')
         node = Node.objects.create(name='one', workflow=workflow, 
-                is_start=True, is_end=True, task_name='ws.tasks.dummy.dummy', 
+                is_start=True, is_end=True, celery_task=dummy, 
                 role=self.bosses)
 
         process = Process.objects.create(workflow=workflow)
@@ -96,15 +96,20 @@ class ShortcutsTestCase(TestCase):
         self.assertEquals(task.result, '1')
 
     def test_is_launchable(self):
+        """
+        node1 -----
+                  |-- join_node
+        node2------
+        """
         workflow = Workflow.objects.create(name='main')
         process = Process.objects.create(workflow=workflow)
 
         join_node = Node.objects.create(name='join', workflow=workflow,
-                join='XOR', task_name='ws.tasks.dummy.dummy', role=self.bosses)
+                join='XOR', celery_task=dummy, role=self.bosses)
         node1 = Node.objects.create(name='one', workflow=workflow, 
-                task_name='ws.tasks.dummy.dummy', role=self.bosses)
+                celery_task=dummy, role=self.bosses)
         node2 = Node.objects.create(name='two', workflow=workflow, 
-                task_name='ws.tasks.dummy.dummy', role=self.bosses)
+                celery_task=dummy, role=self.bosses)
 
         # With no parent transitions, it must be always launchable
         self.assertTrue(shortcuts.is_launchable(join_node, process))
@@ -123,7 +128,7 @@ class ShortcutsTestCase(TestCase):
         self.assertFalse(shortcuts.is_launchable(join_node, process))
 
         # With a XOR join and with one fulfilled task, it's launchable
-        task1.state = 'SUCCESS'; task1.save()
+        shortcuts.update_task(task1.pk, state='SUCCESS')
         self.assertTrue(shortcuts.is_launchable(join_node, process))
 
         # With an AND join and with one fulfilled task, it's not launchable
@@ -131,14 +136,53 @@ class ShortcutsTestCase(TestCase):
         self.assertFalse(shortcuts.is_launchable(join_node, process))
 
         # With an AND join and with all tasks fulfilled, it's launchable
-        task2.state = 'SUCCESS'; task2.save()
+        shortcuts.update_task(task2.pk, state='SUCCESS')
         self.assertTrue(shortcuts.is_launchable(join_node, process))
 
     def test_get_pending_childs(self):
-        pass
+        """
+                 |-- child1
+        parent --|
+                 |-- child2
+        """
+        workflow = Workflow.objects.create(name='main')
+        process = Process.objects.create(workflow=workflow)
+
+        parent = Node.objects.create(name='parent', workflow=workflow,
+                celery_task=dummy, role=self.bosses)
+        parent_task = Task.objects.create(node=parent, process=process,
+                user=self.boss)
+
+        child1 = Node.objects.create(name='one', workflow=workflow,
+                celery_task=dummy, role=self.bosses)
+        child2 = Node.objects.create(name='two', workflow=workflow,
+                celery_task=dummy, role=self.bosses)
+
+        Transition.objects.create(workflow=workflow, parent=parent, 
+                child=child1)
+        Transition.objects.create(workflow=workflow, parent=parent,
+                child=child2)
+
+        # If the parent is not successful, no child is returned
+        self.assertEqual(len(shortcuts.get_pending_childs(parent_task)), 0)
+
+        shortcuts.update_task(parent_task.pk, state='SUCCESS')
+
+        # If a parent is successful and had a XOR split, one child is returned
+        parent.split = 'XOR'; parent.save()
+        self.assertEqual(len(shortcuts.get_pending_childs(parent_task)), 1)
+
+        # If a parent is successful and had an AND split, all childs are returned
+        parent.split = 'AND'; parent.save()
+        self.assertEqual(len(shortcuts.get_pending_childs(parent_task)), 2)
 
     def test_get_revocable_parents(self):
-        pass
+        """
+        parent1 --|
+                  |-- child
+        parent2 --|
+        """
+
 
     def test_get_alternative_way(self):
         pass
@@ -225,7 +269,7 @@ class SplitJoinTest(TestCase):
         self.assertTasks('Split', 'One')
 
     def test_condition(self):
-        Node.objects.filter(name='Split').update(task_name='ws.tasks.dummy.add',
+        Node.objects.filter(name='Split').update(celery_task=add,
                 params={u"a": 2, u"b": 4})
         Transition.objects.filter(parent__name='Split', child__name='One').update(
                 condition='6')

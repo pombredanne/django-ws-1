@@ -32,6 +32,7 @@ from celery.execute import send_task
 from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 
 from ws import STATES, CONDITIONS
+from ws.fields import CeleryTaskField
 
 
 # TODO: django trunk includes getters and setters.
@@ -77,7 +78,7 @@ class Node(models.Model):
 
     params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9)
-    task_name = models.CharField(max_length=256)
+    celery_task = CeleryTaskField(max_length=256)
     info_required = models.BooleanField(editable=False)
 
     role = models.ForeignKey(Group)
@@ -95,16 +96,6 @@ class Node(models.Model):
         form = self.celery_task.form(self.params)
         self.info_required = not form.is_valid()
         super(Node, self).save(*args, **kwargs)
-
-    @property
-    def celery_task(self):
-        module, _, task = self.task_name.rpartition('.')
-        module = import_module(module)
-        return getattr(module, task)
-
-    @celery_task.setter
-    def celery_task(self, celery_task):
-        self.task_name = celery_task.name
 
 
 class Transition(models.Model):

@@ -20,6 +20,7 @@
 from django.test import TestCase
 from ws import forms
 from ws.models import Node
+from ws.tasks.dummy import add, dummy
 
 class FormsTestCase(TestCase):
 
@@ -79,21 +80,21 @@ class TaskFormsTestCase(TestCase):
         node1 = Node(name="test node 1",
                      workflow_id=1,
                      role_id=1,
-                     task_name='ws.tasks.add',
+                     celery_task=add,
                      params={"a":1,"b":1})
         node1.save()
         #Node2: this task needs two arguments, give one
         node2 = Node(name="test node 1",
                      workflow_id=1,
                      role_id=1,
-                     task_name='ws.tasks.add',
+                     celery_task=add,
                      params={"a":1})
         node2.save()
         #Node3: this task needs no arguments
         node3 = Node(name="test node 1",
                      workflow_id=1,
                      role_id=1,
-                     task_name='ws.tasks.dummy',
+                     celery_task=dummy,
                      params={})
         node3.save()
         self.assertEqual(node1.info_required, False)

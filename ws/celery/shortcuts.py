@@ -126,9 +126,10 @@ def is_launchable(node, process):
 
 
 def get_pending_childs(task):
-    """ Return the list of workflow nodes that must be launched when a task
+    """Return the list of workflow nodes that must be launched when a task
     finishes. If task's node's split mode is XOR, only first found child node
-    is returned."""
+    is returned.
+    """
     childs = []
     process = task.process
 
@@ -146,15 +147,24 @@ def get_pending_childs(task):
 
 
 def get_revocable_parents(task):
-    parent_transitions = task.node.parent_transition_set.iterator()
-    return task.process.task_set.filter(state='STARTED',
-            node__child_transition_set__in=parent_transitions).annotate(
-                    child_num=Count('node__child_transition_set')).filter(
-                            child_num=1)
+    """Return revocable parents for a started child.
+
+    If a child has been already started, return it's parents that hasn't
+    already finished, if this parents has not any other child.
+    """
+
+    if task.state != 'STARTED':
+        return task.process.task_set.none()
+    else:
+        parent_transitions = task.node.parent_transition_set.iterator()
+        return task.process.task_set.filter(state='STARTED',
+                node__child_transition_set__in=parent_transitions).annotate(
+                        child_num=Count('node__child_transition_set')).filter(
+                                child_num=1)
 
 
 def get_alternative_way(task):
-    """ Find another node in the workflow that can be started."""
+    """Find another node in the workflow that can be started."""
     ways = [task.node]
     while ways:
         way = ways.pop()

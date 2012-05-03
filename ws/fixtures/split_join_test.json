@@ -54,7 +54,7 @@
             "role": 1,
             "params": {},
             "split": "XOR",
-            "task_name": "ws.tasks.dummy.dummy",
+            "celery_task": "ws.tasks.dummy.dummy",
             "priority": 9
         }
     },
@@ -69,7 +69,7 @@
             "role": 1,
             "params": {},
             "split": "XOR",
-            "task_name": "ws.tasks.dummy.dummy",
+            "celery_task": "ws.tasks.dummy.dummy",
             "priority": 9
         }
     },
@@ -84,7 +84,7 @@
             "role": 1,
             "params": {},
             "split": "XOR",
-            "task_name": "ws.tasks.dummy.dummy",
+            "celery_task": "ws.tasks.dummy.dummy",
             "priority": 9
         }
     },
@@ -99,7 +99,7 @@
             "role": 1,
             "params": {},
             "split": "XOR",
-            "task_name": "ws.tasks.dummy.dummy",
+            "celery_task": "ws.tasks.dummy.dummy",
             "priority": 9
         }
     },

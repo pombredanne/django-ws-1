@@ -21,7 +21,7 @@
       "priority": 9,
       "params": {},
       "split": "AND",
-      "task_name": "ws.tasks.dummy.dummy",
+      "celery_task": "ws.tasks.dummy.dummy",
       "is_end": false,
       "role": [
         "Computer"
@@ -42,7 +42,7 @@
       "priority": 9,
       "params": {},
       "split": "AND",
-      "task_name": "ws.tasks.dummy.dummy",
+      "celery_task": "ws.tasks.dummy.dummy",
       "is_end": true,
       "role": [
         "Computer"

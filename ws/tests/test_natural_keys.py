@@ -19,9 +19,11 @@
 
 from django.test import TestCase
 from django.utils import simplejson as json
-from ws.models import Workflow, Node, Transition
 from django.core.serializers import serialize, deserialize
 from django.contrib.auth.models import Group
+
+from ws.models import Workflow, Node, Transition
+from ws.tasks.dummy import dummy
 
 class NaturalKeysTestCase(TestCase):
 
@@ -30,10 +32,10 @@ class NaturalKeysTestCase(TestCase):
         workflow = Workflow.objects.create(name='test workflow')
         node1 = Node.objects.create(name='step 1', workflow=workflow,
                      join='AND', split='AND', role=role,
-                     task_name='ws.tasks.dummy.dummy')
+                     celery_task=dummy)
         node2 = Node.objects.create(name='step 2', workflow=workflow,
                      join='AND', split='AND', role=role,
-                     task_name='ws.tasks.dummy.dummy')
+                     celery_task=dummy)
         transition = Transition.objects.create(workflow=workflow, parent=node1,
                                 child=node2)
 
