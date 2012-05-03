@@ -18,7 +18,7 @@
 ###############################################################################
 
 from django.test import TestCase
-from ws.celery import forms
+from ws import forms
 from ws.models import Node
 
 class FormsTestCase(TestCase):
