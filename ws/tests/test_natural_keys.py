@@ -26,21 +26,17 @@ from django.contrib.auth.models import Group
 class NaturalKeysTestCase(TestCase):
 
     def testSerialize(self):
-        role = Group(name='Computer')
-        role.save()
-        workflow = Workflow(name='test workflow')
-        workflow.save()
-        node1 = Node(name='step 1', workflow=workflow,
+        role = Group.objects.create(name='Computer')
+        workflow = Workflow.objects.create(name='test workflow')
+        node1 = Node.objects.create(name='step 1', workflow=workflow,
                      join='AND', split='AND', role=role,
                      task_name='ws.tasks.dummy.dummy')
-        node1.save()
-        node2 = Node(name='step 2', workflow=workflow,
+        node2 = Node.objects.create(name='step 2', workflow=workflow,
                      join='AND', split='AND', role=role,
                      task_name='ws.tasks.dummy.dummy')
-        node2.save()
-        transition = Transition(workflow=workflow, parent=node1,
+        transition = Transition.objects.create(workflow=workflow, parent=node1,
                                 child=node2)
-        transition.save()
+
         json_result = serialize('json', (workflow, node1, node2, transition),
                                   use_natural_keys=True)
         result = json.loads(json_result)
