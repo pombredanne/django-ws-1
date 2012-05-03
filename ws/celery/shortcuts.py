@@ -72,10 +72,7 @@ def update_process(pk, **kwargs):
     process = process_q[0]
 
     if process.parent:
-        try:
-            result = process.task_set.get(node__is_end=True).result
-        except ws.models.Task.DoesNotExist:
-            result = ''
+        result = ', '.join(process.results)
         update_task(process.parent.pk, state=process.state, result=result,
                 start_date=process.start_date, end_date=process.end_date)
     return process

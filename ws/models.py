@@ -97,6 +97,7 @@ class Node(models.Model):
     def is_launchable(self, process):
         return shortcuts.is_launchable(self, process)
 
+
 class Transition(models.Model):
     class Meta:
         unique_together = [('parent', 'child')]
@@ -145,11 +146,9 @@ class Process(models.Model):
         return sum(progresses) / len(progresses)
 
     @property
-    def result(self):
-        try:
-            self.task_set.get(node=self.workflow.end).result
-        except Task.DoesNotExist:
-            return ''
+    def results(self):
+        return self.task_set.get(node__is_end=True).values_list('result',
+                flat=True)
 
     def start(self):
         assert self.state == 'PENDING', 'Process already started'
