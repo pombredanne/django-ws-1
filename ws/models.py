@@ -54,6 +54,14 @@ class Workflow(models.Model):
     def natural_key(self):
         return (self.name, )
 
+    @property
+    def start_nodes(self):
+        return self.node_set.filter(is_start=True)
+
+    @property
+    def end_nodes(self):
+        return self.node_set.filter(is_end=True)
+
 
 class NodeManager(models.Manager):
     def get_by_natural_key(self, name, workflow):
@@ -152,9 +160,8 @@ class Process(models.Model):
 
     def start(self):
         assert self.state == 'PENDING', 'Process already started'
-        start_nodes = self.workflow.node_set.filter(is_start=True)
-        assert not start_nodes.empty(), 'No starting nodes'
-        for node in start_nodes.iterator():
+        assert not self.workflow.start_nodes.empty(), 'No starting nodes'
+        for node in self.workflow.start_nodes.iterator():
             self.launch_node(node)
 
     def stop(self):
@@ -166,12 +173,11 @@ class Process(models.Model):
     def launch_node(self, node):
         # TODO: select valid user
         user = node.role.user_set.all()[0]
-        task = Task(node=node, process=self, user=user)
-        task.save()
+        task = Task.objects.create(node=node, process=self, user=user)
         task.assign(user)
         if not node.info_required:
             task.launch()
-            return task
+        return task
 
     def update(self, **kwargs):
         return shortcuts.update_process(self.pk, **kwargs)
