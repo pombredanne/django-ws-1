@@ -77,6 +77,27 @@ class BPMTask(AbortableTask):
     form = BPMTaskForm
     pass_workflow_task = False
 
+    def _filter_params(self, params):
+        # If there's a related form with some fields, cleanup params with it
+        if self.form is not None and self.form.base_fields.keys():
+            form = self.form(params)
+            if form.is_valid():
+                kwargs = form.clean()
+            else:
+                raise forms.ValidationError
+
+        # Else, inspect the tasks call method
+        else:
+            args = getargspec(self.call)
+            
+            # If it accepts no *args nor **kwargs, pass only the accepted args
+            if (args.varargs, args.keywords) == (None, None):
+                kwargs = { arg: params[arg] for arg in args }
+            # Else, pass them all
+            else:
+                kwargs = params
+        return kwargs
+
     def run(self, workflow_task, *args, **kwargs):
         if self.pass_workflow_task:
             return self.call(workflow_task=workflow_task, *args, **kwargs)

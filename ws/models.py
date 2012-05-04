@@ -225,30 +225,9 @@ class Task(models.Model):
             params.update(param)
         return params
 
-    def _filter_params(self, params):
-        # If there's a related form, cleanup params with it
-        if hasattr(self.node.celery_task, 'form'):
-            form = self.node.celery_task.form(params)
-            if form.is_valid():
-                kwargs = form.clean()
-            else:
-                raise forms.ValidationError
-
-        # Else, inspect the tasks call method
-        else:
-            args = getargspec(self.node.celery_task.call)
-            
-            # If it accepts no *args nor **kwargs, pass only the accepted args
-            if (args.varargs, args.keywords) == (None, None):
-                kwargs = { arg: params[arg] for arg in args }
-            # Else, pass them all
-            else:
-                kwargs = params
-        return kwargs
-
     def launch(self, extra_params={}):
         params = self._get_params(extra_params)
-        kwargs = self._filter_params(params)
+        params = self.node.celery_task._filter_params(params)
         return self.apply_async(kwargs)
 
     def revoke(self):
