@@ -29,6 +29,42 @@
     },
     {
         "pk": null,
+        "model": "auth.group",
+        "fields": {
+            "name": "computers",
+            "permissions": [
+                [
+                    "change_task",
+                    "ws",
+                    "task"
+                ]
+            ]
+        }
+    },
+    {
+        "pk": null,
+        "model": "auth.user",
+        "fields": {
+            "username": "computer",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2011-11-15T20:06:00Z",
+            "groups": [
+                [
+                    "workers"
+                ]
+            ],
+            "user_permissions": [],
+            "password": "sha1$e0afd$4f444d7efdcf51447aad4a78db2df5d8ca7040fb",
+            "email": "",
+            "date_joined": "2011-11-15T20:06:00Z"
+        }
+    },
+    {
+        "pk": null,
         "model": "auth.user",
         "fields": {
             "username": "worker",
