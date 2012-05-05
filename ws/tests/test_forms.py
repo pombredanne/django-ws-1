@@ -84,14 +84,14 @@ class TaskFormsTestCase(TestCase):
                      params={"a":1,"b":1})
         node1.save()
         #Node2: this task needs two arguments, give one
-        node2 = Node(name="test node 1",
+        node2 = Node(name="test node 2",
                      workflow_id=1,
                      role_id=1,
                      celery_task=add,
                      params={"a":1})
         node2.save()
         #Node3: this task needs no arguments
-        node3 = Node(name="test node 1",
+        node3 = Node(name="test node 3",
                      workflow_id=1,
                      role_id=1,
                      celery_task=dummy,
