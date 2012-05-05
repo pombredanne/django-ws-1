@@ -24,7 +24,7 @@
       "celery_task": "ws.tasks.dummy.dummy",
       "is_end": false,
       "role": [
-        "Computer"
+        "computers"
       ],
       "is_start": true
     }
@@ -45,7 +45,7 @@
       "celery_task": "ws.tasks.dummy.dummy",
       "is_end": true,
       "role": [
-        "Computer"
+        "computers"
       ],
       "is_start": false
     }

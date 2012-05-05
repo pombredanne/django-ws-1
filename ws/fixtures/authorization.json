@@ -1,71 +1,110 @@
 [
     {
-        "pk": 1, 
-        "model": "auth.group", 
+        "pk": null,
+        "model": "auth.group",
         "fields": {
-            "name": "bosses", 
+            "name": "bosses",
             "permissions": [
                 [
-                    "add_process", 
-                    "ws", 
+                    "add_process",
+                    "ws",
                     "process"
-                ] 
+                ]
             ]
         }
-    }, 
+    },
     {
-        "pk": 2, 
-        "model": "auth.group", 
+        "pk": null,
+        "model": "auth.group",
         "fields": {
-            "name": "workers", 
+            "name": "workers",
             "permissions": [
                 [
-                    "change_task", 
-                    "ws", 
+                    "change_task",
+                    "ws",
                     "task"
                 ]
             ]
         }
-    }, 
+    },
     {
-        "pk": 1, 
-        "model": "auth.user", 
+        "pk": null,
+        "model": "auth.group",
         "fields": {
-            "username": "worker", 
-            "first_name": "", 
-            "last_name": "", 
-            "is_active": true, 
-            "is_superuser": false, 
-            "is_staff": false, 
-            "last_login": "2011-11-15 21:06:00", 
-            "groups": [
-                2
-            ], 
-            "user_permissions": [], 
-            "password": "sha1$e0afd$4f444d7efdcf51447aad4a78db2df5d8ca7040fb", 
-            "email": "", 
-            "date_joined": "2011-11-15 21:06:00"
+            "name": "computers",
+            "permissions": [
+                [
+                    "change_task",
+                    "ws",
+                    "task"
+                ]
+            ]
         }
-    }, 
+    },
     {
-        "pk": 2, 
-        "model": "auth.user", 
+        "pk": null,
+        "model": "auth.user",
         "fields": {
-            "username": "boss", 
-            "first_name": "", 
-            "last_name": "", 
-            "is_active": true, 
-            "is_superuser": false, 
-            "is_staff": false, 
-            "last_login": "2011-11-15 21:06:27", 
+            "username": "computer",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2011-11-15T20:06:00Z",
             "groups": [
-                1
-            ], 
-            "user_permissions": [], 
-            "password": "sha1$0ef28$417d9a18f9a2fdb31c75c6ffb9372846d5df659e", 
-            "email": "", 
-            "date_joined": "2011-11-15 21:06:27"
+                [
+                    "workers"
+                ]
+            ],
+            "user_permissions": [],
+            "password": "sha1$e0afd$4f444d7efdcf51447aad4a78db2df5d8ca7040fb",
+            "email": "",
+            "date_joined": "2011-11-15T20:06:00Z"
+        }
+    },
+    {
+        "pk": null,
+        "model": "auth.user",
+        "fields": {
+            "username": "worker",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2011-11-15T20:06:00Z",
+            "groups": [
+                [
+                    "workers"
+                ]
+            ],
+            "user_permissions": [],
+            "password": "sha1$e0afd$4f444d7efdcf51447aad4a78db2df5d8ca7040fb",
+            "email": "",
+            "date_joined": "2011-11-15T20:06:00Z"
+        }
+    },
+    {
+        "pk": null,
+        "model": "auth.user",
+        "fields": {
+            "username": "boss",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2011-11-15T20:06:27Z",
+            "groups": [
+                [
+                    "bosses"
+                ]
+            ],
+            "user_permissions": [],
+            "password": "sha1$0ef28$417d9a18f9a2fdb31c75c6ffb9372846d5df659e",
+            "email": "",
+            "date_joined": "2011-11-15T20:06:27Z"
         }
     }
 ]
-

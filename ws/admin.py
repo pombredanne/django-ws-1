@@ -23,7 +23,7 @@ from ws.models import *
 
 class NodeAdmin(admin.ModelAdmin):
     list_display = ['name', 'role', 'workflow', 'join', 'split',
-                    'task_name', 'params']
+                    'celery_task', 'params']
     list_filter = ['workflow', 'role']
 
 
