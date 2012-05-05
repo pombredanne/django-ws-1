@@ -44,38 +44,44 @@ class BPMTask(AbortableTask):
     """Abstract class intended for inheritance by celery tasks.
 
     Functions:
-        :meth:`run`
-         wrapper around call method
-        :meth:`spawn`
-         spawn a subprocess
-        :meth:`notify_progress`
-         execute task for updating the progress of a task
-        :meth:`iter_progress`
-         iterate over the progress of a task
-        :meth:`track_task`
-         track the progress of a task
         :meth:`call`
-         actual task
+            actual task
+        :meth:`run`
+             wrapper around :meth:`call` method
+        :meth:`spawn`
+             spawn a subprocess
+        :meth:`notify_progress`
+             execute task for updating the progress of a task
+        :meth:`iter_progress`
+             iterate over the progress of a task
+        :meth:`track_task`
+             track the progress of a task
         :meth:`on_start`
-         executed when a task starts
+             executed when a task starts
         :meth:`on_success`
-         executed when a task is succeeded
+             executed when a task is succeeded
         :meth:`on_failure`
-         executed when a task fails
+             executed when a task fails
         :meth:`on_retry`
-         executed when a task is retried
+             executed when a task is retried
         :meth:`on_revoke`
             executed when a task is revoked
 
     Attributes:
         :attr:`form`
             related form
+        :attr:`pass_workflow_task`
+            either receive :class:`ws.models.Task` ID or not
     """
     abstract = True
     form = BPMTaskForm
+    pass_workflow_task = False
 
     def run(self, workflow_task, *args, **kwargs):
-        return self.call(*args, **kwargs)
+        if self.pass_workflow_task:
+            return self.call(workflow_task=workflow_task, *args, **kwargs)
+        else:
+            return self.call(*args, **kwargs)
 
     def spawn(self, process):
         """Spawn a subprocess."""
@@ -124,7 +130,7 @@ class BPMTask(AbortableTask):
                 self.notify_progress(workflow_task, progress)
 
     def call(self, *args, **kwargs):
-        pass
+        raise NotImplemented
 
     def on_start(self, task_id, args, kwargs):
         pass
