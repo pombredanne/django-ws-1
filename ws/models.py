@@ -63,6 +63,10 @@ class Workflow(models.Model):
     def end_nodes(self):
         return self.node_set.filter(is_end=True)
 
+    @property
+    def inherited_params(self):
+        return self.params
+
 
 class NodeManager(models.Manager):
     def get_by_natural_key(self, name, workflow):
@@ -105,6 +109,12 @@ class Node(models.Model):
 
     def is_launchable(self, process):
         return shortcuts.is_launchable(self, process)
+
+    @property
+    def inherited_params(self):
+        params = self.workflow.inherited_params
+        params.update(self.params)
+        return params
 
 
 class Transition(models.Model):
@@ -183,6 +193,12 @@ class Process(models.Model):
     def update(self, **kwargs):
         return shortcuts.update_process(self.pk, **kwargs)
 
+    @property
+    def inherited_params(self):
+        params = self.workflow.inherited_params
+        params.update(self.params)
+        return params
+
 
 class Task(models.Model):
     node = models.ForeignKey(Node, related_name='task_set')
@@ -217,16 +233,9 @@ class Task(models.Model):
         assign('execute_task', user, self)
         assign('view_task', user, self)
 
-    def _get_params(self, extra_params={}):
-        # Priority order: extra_params, task, node, process, workflow
-        params = {}
-        for param in (self.node.workflow.params, self.process.params,
-                self.node.params, self.params, extra_params):
-            params.update(param)
-        return params
-
     def launch(self, extra_params={}):
-        params = self._get_params(extra_params)
+        params = self.inherited_params
+        params.update(extra_params)
         params = self.node.celery_task._filter_params(params)
         return self.apply_async(kwargs)
 
@@ -258,3 +267,10 @@ class Task(models.Model):
 
     def get_alternative_way(self):
         return shortcuts.get_alternative_way(self)
+
+    @property
+    def inherited_params(self):
+        params = self.node.inherited_params
+        params.update(self.process.inherited_params)
+        params.update(self.params)
+        return params
