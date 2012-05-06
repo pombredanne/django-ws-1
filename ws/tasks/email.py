@@ -17,7 +17,7 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
-from django.core.email import send_mail
+from django.core.mail import send_mail
 from django.conf import settings
 from ws.tasks import BPMTask
 from ws import forms
@@ -28,7 +28,7 @@ class SendEmailForm(forms.BPMTaskForm):
     from_email = forms.CharField(max_length=100, label='From',
             initial=settings.DEFAULT_FROM_EMAIL)
     to = forms.CharField(max_length=2000, label='To',
-            widget=forms.Textarea, help='Separate recipients with newlines')
+            widget=forms.Textarea, )#help='Separate recipients with newlines')
     body = forms.CharField(max_length=5000, label='Body',
             widget=forms.Textarea)
 
