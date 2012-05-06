@@ -25,12 +25,12 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_URL = '/ws/login'
 ANONYMOUS_USER_ID = 1
 
-import djcelery
-djcelery.setup_loader()
+import ws
+ws.setup_loader()
+
 BROKER_URL = 'amqp://guest:guest@localhost:5672/'
 
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
-CELERY_IMPORTS = 'ws.tasks', 'ws.celery.bpm'
 
 CELERY_DEFAULT_QUEUE = 'tasks'
 CELERY_QUEUES = {

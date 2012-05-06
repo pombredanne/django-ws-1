@@ -25,10 +25,6 @@ Submodules:
 Classes:
     :class:`BPMTask`
         intended for inheritance by celery tasks
-
-Functions:
-    :func:`load_task_submodules`
-        automatically load all submodules
 """
 
 from time import sleep
@@ -169,15 +165,10 @@ class BPMTask(AbortableTask):
         pass
 
 
-def load_task_submodules(module_name):
-    """Load submodules of module so that tasks are automatically detected by celery."""
-    import os
-    from celery.loaders.default import Loader
-    loader = Loader()
-    module = loader.import_task_module(module_name)
-    directory = os.path.dirname(module.__file__)
-    for filename in os.listdir(directory):
-        filename, extension = os.path.splitext(filename)
-        if extension == '.py':
-            yield loader.import_task_module('{}.{}'.format(module_name, filename))
-load_task_submodules('ws.tasks')
+def get_registered_tasks():
+    from celery.loaders import current_loader
+    from ws.tasks import BPMTask
+    current_loader = current_loader()
+    current_loader.import_default_modules()
+    return [key for key, value in task_registry.items()\
+            if isinstance(value, BPMTask)]
