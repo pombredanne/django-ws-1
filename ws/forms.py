@@ -17,11 +17,11 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
-from django import forms
+from django.forms import *
 from django.core import validators
 
 
-class BPMTaskForm(forms.Form):
+class BPMTaskForm(Form):
     def get_fields(self, params={}):
         fields = []
         for key, field in self.fields.items():
@@ -30,7 +30,7 @@ class BPMTaskForm(forms.Form):
         return fields
 
 
-class Field(forms.Field):
+class Field(Field):
     def to_ext_dict(self, fieldname):
         ext_dict = {
             'name': fieldname,
@@ -48,7 +48,7 @@ class Field(forms.Field):
         raise NotImplementedError
 
 
-class IntegerField(Field, forms.IntegerField):
+class IntegerField(Field, IntegerField):
     def field_extras(self, ext_dict):
         ext_dict['xtype'] = 'numberfield'
         for validator in self.validators:
@@ -58,9 +58,9 @@ class IntegerField(Field, forms.IntegerField):
                 ext_dict['min_value'] = validator.limit_value
 
 
-class CharField(Field, forms.CharField):
+class CharField(Field, CharField):
     def field_extras(self, ext_dict):
-        if type(self.widget) == forms.Textarea:
+        if type(self.widget) == Textarea:
             ext_dict['xtype'] = 'textarea'
         for validator in self.validators:
             if type(validator) == validators.MinLengthValidator:
@@ -69,14 +69,14 @@ class CharField(Field, forms.CharField):
                 ext_dict['maxLength'] = validator.limit_value
 
 
-class BooleanField(Field, forms.BooleanField):
+class BooleanField(Field, BooleanField):
     def field_extras(self, ext_dict):
         ext_dict['xtype'] = 'checkbox'
         if self.initial:
             ext_dict['checked'] = self.initial
 
 
-class ChoiceField(Field, forms.ChoiceField):
+class ChoiceField(Field, ChoiceField):
     def field_extras(self, ext_dict):
         fieldname = ext_dict['name']
         ext_dict['xtype'] = 'fieldcontainer'
@@ -91,5 +91,5 @@ class ChoiceField(Field, forms.ChoiceField):
             })
 
 
-class ModelChoiceField(forms.ModelChoiceField, ChoiceField):
+class ModelChoiceField(ModelChoiceField, ChoiceField):
     pass
