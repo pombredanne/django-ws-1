@@ -22,7 +22,6 @@ from __future__ import absolute_import
 import os
 
 from celery.states import READY_STATES
-from celery.registry import tasks as task_registry
 
 __all__ = ['STATES', 'CONDITIONS']
 

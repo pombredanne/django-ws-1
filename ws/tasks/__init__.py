@@ -29,6 +29,7 @@ Classes:
 
 from time import sleep
 
+from celery.registry import tasks as task_registry
 from celery.contrib.abortable import AbortableTask
 from celery.execute import send_task
 from pexpect import spawn, EOF
