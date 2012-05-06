@@ -18,7 +18,6 @@
 ###############################################################################
 
 from __future__ import absolute_import
-from inspect import getargspec
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -33,8 +32,13 @@ from ws.fields import CeleryTaskField
 from ws.celery import shortcuts
 
 
-# TODO: django trunk includes getters and setters.
-# Get basic logic down from tasks to models.
+def get_task_choices():
+    from ws import loaders
+    from ws.tasks import get_registered_tasks
+    loaders.autodiscover()
+    for task in get_registered_tasks():
+        yield (task, task)
+
 
 class WorkflowManager(models.Manager):
     def get_by_natural_key(self, name):
@@ -88,7 +92,7 @@ class Node(models.Model):
 
     params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9)
-    celery_task = CeleryTaskField(max_length=256)
+    celery_task = CeleryTaskField(max_length=256, choices=get_task_choices())
     info_required = models.BooleanField(editable=False)
 
     role = models.ForeignKey(Group)
