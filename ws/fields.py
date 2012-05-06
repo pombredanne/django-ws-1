@@ -6,9 +6,12 @@ class CeleryTaskField(CharField):
 
     def to_python(self, value):
         if isinstance(value, str) or isinstance(value, unicode):
-            module, _, task = value.rpartition('.')
-            module = import_module(module)
-            return getattr(module, task)
+            if value:
+                module, _, task = value.rpartition('.')
+                module = import_module(module)
+                return getattr(module, task)
+            else:
+                return None
         elif hasattr(value, 'name'):
             return value
         else:
@@ -21,6 +24,7 @@ class CeleryTaskField(CharField):
             return value.name
         else:
             raise TypeError
+
 
 try:
     from south.modelsinspector import add_introspection_rules
