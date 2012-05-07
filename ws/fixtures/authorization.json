@@ -5,11 +5,24 @@
         "fields": {
             "name": "bosses",
             "permissions": [
-                [
-                    "add_process",
-                    "ws",
-                    "process"
-                ]
+                [ "add_node", "ws", "node" ],
+                [ "change_node", "ws", "node" ],
+                [ "delete_node", "ws", "node" ],
+                [ "add_process", "ws", "process" ],
+                [ "change_process", "ws", "process" ],
+                [ "delete_process", "ws", "process" ],
+                [ "execute_process", "ws", "process" ],
+                [ "add_task", "ws", "task" ],
+                [ "change_task", "ws", "task" ],
+                [ "delete_task", "ws", "task" ],
+                [ "execute_task", "ws", "task" ],
+                [ "view_task", "ws", "task" ],
+                [ "add_transition", "ws", "transition" ],
+                [ "change_transition", "ws", "transition" ],
+                [ "delete_transition", "ws", "transition" ],
+                [ "add_workflow", "ws", "workflow" ],
+                [ "change_workflow", "ws", "workflow" ],
+                [ "delete_workflow", "ws", "workflow" ]
             ]
         }
     },
@@ -80,7 +93,7 @@
                 ]
             ],
             "user_permissions": [],
-            "password": "sha1$e0afd$4f444d7efdcf51447aad4a78db2df5d8ca7040fb",
+            "password": "pbkdf2_sha256$10000$0NYcV4YnarO7$S6EagVc64bt9P5tr/XdeMBL1uHR9KD6peWmHr9Zf4II=",
             "email": "",
             "date_joined": "2011-11-15T20:06:00Z"
         }
@@ -102,7 +115,7 @@
                 ]
             ],
             "user_permissions": [],
-            "password": "sha1$0ef28$417d9a18f9a2fdb31c75c6ffb9372846d5df659e",
+            "password": "pbkdf2_sha256$10000$EDZ07wZapOn9$37/24CEz09TmPwbSLd7m57uOzY1SGw/DWehPGXKMzSY=",
             "email": "",
             "date_joined": "2011-11-15T20:06:27Z"
         }
