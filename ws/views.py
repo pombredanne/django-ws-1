@@ -201,11 +201,13 @@ def CreateProcess(request):
             try:
                 process.save()
                 success = True
+                message = "Process created"
             except:
                 message = 'Invalid workflow_id'
             if autostart == 'on':
                 try:
                     process.start()
+                    message = "Process created and started"
                 except:
                     success = False
                     message = "Process created, but auto start failed"
