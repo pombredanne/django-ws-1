@@ -24,6 +24,8 @@ from django.contrib.auth.models import Group, User
 from ws.tasks.dummy import add, dummy
 from ws.models import Task, Node, Transition, Process, Workflow
 from ws.celery import shortcuts
+import unittest
+from django.conf import settings
 
 
 class ShortcutsTestCase(TestCase):
@@ -210,6 +212,8 @@ class CeleryIntegrationTestCase(TestCase):
         self.assertEqual(result.get(), '')
         self.assertTrue(result.successful())
 
+    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER == True,
+                     "Endless task blocks everyting on a single process")
     def testStop(self):
         task = Task.objects.get(pk=3)
         result = task.launch()
