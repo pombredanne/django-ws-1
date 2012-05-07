@@ -17,11 +17,30 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
+from functools import wraps
+
 from django.forms import *
 from django.core import validators
+from django.utils.translation import ugettext as _
+
+
+def with_cleaned_data(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        if hasattr(self, 'cleaned_data'):
+            return func(self, *args, **kwargs)
+        else:
+            return ''
+    return wrapper
 
 
 class BPMTaskForm(Form):
+    def get_title(self):
+        return _('')
+
+    def get_description(self):
+        return _('')
+
     def get_fields(self, params={}):
         fields = []
         for key, field in self.fields.items():
