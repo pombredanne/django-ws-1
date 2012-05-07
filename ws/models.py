@@ -241,7 +241,7 @@ class Task(models.Model):
         params = self.inherited_params
         params.update(extra_params)
         params = self.node.celery_task.task._filter_params(params)
-        return self.apply_async(kwargs)
+        return self.apply_async(params)
 
     def revoke(self):
         send_task('ws.celery.bpm.task_revoked', kwargs={

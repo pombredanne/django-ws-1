@@ -33,6 +33,7 @@ from celery.registry import tasks as task_registry
 from celery.contrib.abortable import AbortableTask
 from celery.execute import send_task
 from pexpect import spawn, EOF
+from inspect import getargspec
 
 from ws.forms import BPMTaskForm
 
@@ -74,10 +75,11 @@ class BPMTask(AbortableTask):
     form = BPMTaskForm
     pass_workflow_task = False
 
-    def _filter_params(self, params):
+    @classmethod
+    def _filter_params(klass, params):
         # If there's a related form with some fields, cleanup params with it
-        if self.form is not None and self.form.base_fields.keys():
-            form = self.form(params)
+        if klass.form is not None and klass.form.base_fields.keys():
+            form = klass.form(params)
             if form.is_valid():
                 kwargs = form.clean()
             else:
@@ -85,7 +87,7 @@ class BPMTask(AbortableTask):
 
         # Else, inspect the tasks call method
         else:
-            args = getargspec(self.call)
+            args = getargspec(klass.call)
             
             # If it accepts no *args nor **kwargs, pass only the accepted args
             if (args.varargs, args.keywords) == (None, None):
