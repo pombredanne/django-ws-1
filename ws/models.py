@@ -175,7 +175,7 @@ class Process(models.Model):
 
     def start(self):
         assert self.state == 'PENDING', 'Process already started'
-        assert not self.workflow.start_nodes.empty(), 'No starting nodes'
+        assert self.workflow.start_nodes.count() >= 1, 'No starting nodes'
         for node in self.workflow.start_nodes.iterator():
             self.launch_node(node)
 

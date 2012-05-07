@@ -22,8 +22,5 @@ Ext.define('WS.view.process.NewForm', {
     buttons: [{
         text: 'Create',
         action: 'create',
-    },{
-        text: 'Cancel',
-        action: 'cancel',
     }],
 });
