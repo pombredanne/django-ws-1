@@ -1,5 +1,13 @@
 from django.db.models import CharField, SubfieldBase
 from django.utils.importlib import import_module
+from django.utils.functional import curry
+from django.utils.encoding import force_unicode
+
+
+def _get_FIELD_display(self, field):
+    value = field.get_prep_value(getattr(self, field.attname))
+    return force_unicode(dict(field.flatchoices).get(value, value), strings_only=True)
+
 
 class CeleryTaskField(CharField):
     __metaclass__ = SubfieldBase
@@ -25,6 +33,11 @@ class CeleryTaskField(CharField):
         else:
             raise TypeError
 
+    def contribute_to_class(self, cls, name):
+        super(CeleryTaskField, self).contribute_to_class(cls, name)
+        if self.choices:
+            setattr(cls, 'get_{}_display'.format(self.name),
+                    curry(_get_FIELD_display, field=self))
 
 try:
     from south.modelsinspector import add_introspection_rules
