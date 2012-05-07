@@ -177,17 +177,16 @@ class ShortcutsTestCase(TestCase):
         pass
 
 
-
 class CeleryIntegrationTestCase(TestCase):
-    fixtures = ['sample_workflow']
+    fixtures = ['authorization', 'workflow_two_plus_two']
 
     def testGetCeleryTask(self):
-        n1 = Node.objects.get(pk=1)
-        self.assertEqual(n1.celery_task, add)
+        n1 = Node.objects.get(name="add 1 and 1")
+        self.assertEqual(n1.celery_task.task, add)
 
     def testNodeInfoRequired(self):
-        n1 = Node.objects.get(pk=1) #"params": {"a": 2, "b": 2}
-        n2 = Node.objects.get(pk=3) #"params": {"a": 2}
+        n1 = Node.objects.get(name="add 1 and 1") #"params": {"a": 2, "b": 2}
+        n2 = Node.objects.get(name="add 2 and something") #"params": {"a": 2}
         self.assertFalse(n1.info_required)
         self.assertTrue(n2.info_required)
     
@@ -218,7 +217,7 @@ class CeleryIntegrationTestCase(TestCase):
         task.revoke()
 
     def testPriority(self):
-        pass
+        self.fail("TODO: test priority")
 
 
 class SplitJoinTest(TestCase):

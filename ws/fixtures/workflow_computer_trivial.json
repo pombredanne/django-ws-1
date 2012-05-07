@@ -5,7 +5,7 @@
     "fields": {
       "priority": 9,
       "params": {},
-      "name": "computer_trivial"
+      "name": "computer trivial"
     }
   },
   {
@@ -16,7 +16,7 @@
       "join": "AND",
       "name": "step1",
       "workflow": [
-        "computer_trivial"
+        "computer trivial"
       ],
       "priority": 9,
       "params": {},
@@ -37,7 +37,7 @@
       "join": "AND",
       "name": "step2",
       "workflow": [
-        "computer_trivial"
+        "computer trivial"
       ],
       "priority": 9,
       "params": {},
@@ -56,15 +56,15 @@
     "fields": {
       "child": [
         "step2",
-        "computer_trivial"
+        "computer trivial"
       ],
       "condition": "",
       "parent": [
         "step1",
-        "computer_trivial"
+        "computer trivial"
       ],
       "workflow": [
-        "computer_trivial"
+        "computer trivial"
       ]
     }
   }

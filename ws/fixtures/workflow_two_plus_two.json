@@ -1,0 +1,169 @@
+[
+    {
+        "model": "ws.workflow", 
+        "pk": null, 
+        "fields": {
+            "priority": 9,
+            "params": {},
+            "name": "Two plus two"
+        }
+    }, 
+    {
+        "model": "ws.node", 
+        "pk": null, 
+        "fields": {
+            "info_required": false, 
+            "join": "AND", 
+            "name": "add 1 and 1", 
+            "workflow": [
+                "Two plus two"
+            ], 
+            "priority": 9,
+            "params": {
+                "a": 1, 
+                "b": 1
+            }, 
+            "split": "AND", 
+            "celery_task": "ws.tasks.dummy.add", 
+            "role": [
+                "bosses"
+            ],
+            "is_end": false,
+            "is_start": true
+        }
+    }, 
+    {
+        "model": "ws.node", 
+        "pk": null, 
+        "fields": {
+            "info_required": false, 
+            "join": "AND", 
+            "name": "add 2 and 2", 
+            "workflow": [
+                "Two plus two"
+            ], 
+            "priority": 9,
+            "params": {
+                "a": 2, 
+                "b": 2
+            }, 
+            "split": "AND", 
+            "celery_task": "ws.tasks.dummy.add", 
+            "role": [
+                "workers"
+            ],
+            "is_end": true,
+            "is_start": false
+        }
+    },
+    {
+        "model": "ws.node", 
+        "pk": null, 
+        "fields": {
+            "info_required": true, 
+            "join": "AND", 
+            "name": "add 2 and something", 
+            "workflow": [
+                "Two plus two"
+            ], 
+            "priority": 9,
+            "params": {
+                "a": 2
+            }, 
+            "split": "AND", 
+            "celery_task": "ws.tasks.dummy.add", 
+            "role": [
+                "bosses"
+            ],
+            "is_end": false,
+            "is_start": false
+        }
+    },
+    {
+        "model": "ws.node", 
+        "pk": null, 
+        "fields": {
+            "info_required": true, 
+            "join": "AND", 
+            "name": "this is endless", 
+            "workflow": [
+                "Two plus two"
+            ], 
+            "priority": 9,
+            "params": { }, 
+            "split": "AND", 
+            "celery_task": "ws.tasks.dummy.endless", 
+            "role": [
+                "bosses"
+            ],
+            "is_end": false,
+            "is_start": false
+        }
+    },
+    {
+        "model": "ws.process", 
+        "pk": null, 
+        "fields": {
+            "workflow": [
+                "Two plus two"
+            ], 
+            "name": "sample process",
+            "start_date": null,
+            "end_date": null,
+            "priority": null,
+            "parent": null,
+            "state": "PENDING"
+        }
+    },
+    {
+        "model": "ws.task", 
+        "pk": 1, 
+        "fields": {
+            "node": [
+                "add 1 and 1",
+                "Two plus two"
+            ], 
+            "process": 1, 
+            "user": 3,
+            "state": "RECEIVED", 
+            "result": "",
+            "start_date": null,
+            "end_date": null,
+            "priority": null
+        }
+    },
+    {
+        "model": "ws.task", 
+        "pk": 2, 
+        "fields": {
+            "node": [
+                "add 2 and 2",
+                "Two plus two"
+            ], 
+            "process": 1, 
+            "user": 3,
+            "state": "RECEIVED", 
+            "result": "",
+            "start_date": null,
+            "end_date": null,
+            "priority": null
+        }
+    },
+    {
+        "model": "ws.task", 
+        "pk": 3, 
+        "fields": {
+            "node": [
+                "this is endless",
+                "Two plus two"
+            ], 
+            "process": 1, 
+            "user": 3,
+            "state": "RECEIVED", 
+            "result": "",
+            "start_date": null,
+            "end_date": null,
+            "priority": null
+        }
+    }
+]

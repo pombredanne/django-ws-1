@@ -20,16 +20,77 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson as json
+from ws.models import Workflow, Process
 
 class ViewsTestCase(TestCase):
-    fixtures = ['sample_workflow']
+    fixtures = ['authorization', 'workflow_two_plus_two',
+                'workflow_computer_trivial']
 
     def setUp(self):
         self.client = Client()
 
     def testWorkflowListView(self):
+        # Anonymous users can't get workflow list
+        response = self.client.get('/ws/workflows.json')
+        self.assertEqual(response.status_code, 302)
+
+        self.client.login(username='worker', password='worker')
         response = self.client.get('/ws/workflows.json')
         json_response = json.loads(response.content)
         self.assertEqual(json_response['success'], True)
+        self.assertEqual(json_response['total'], 2)
+
+
+        wf = Workflow(name='Guess the number')
+        wf.save()
+        response = self.client.get('/ws/workflows.json')
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], True)
+        self.assertEqual(json_response['total'], 3)
         self.assertEqual(len(json_response['rows']), json_response['total'])
-        self.assertEqual(response.content, True)
+        workflow_names = [a['name'] for a in json_response['rows']]
+        self.assertIn('Two plus two', workflow_names)
+        self.assertIn('computer trivial', workflow_names)
+        self.assertIn('Guess the number', workflow_names)
+
+    def testProcessListView(self):
+        self.fail('TODO: test process list view')
+
+    def testCreateProcess(self):
+        url = '/ws/process/new.json'
+        params = {'workflow': 1,
+                  'autostart': 'off',
+                  'name': 'test process'}
+        # Anonymous users can't create processes
+        response = self.client.post(url,  params)
+        self.assertEqual(response.status_code, 302)
+
+        # workers also, can't create processes
+        self.client.login(username='worker', password='worker')
+        response = self.client.post(url,  params)
+        self.assertEqual(response.status_code, 302)
+
+        self.client.login(username='boss', password='boss')
+        response = self.client.post(url,  params)
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], True)
+        self.assertIn('created', json_response['message'])
+        self.assertNotIn('start', json_response['message'])
+
+        #The process is created, with the correct workflow and no task has started
+        process = Process.objects.get(name='test process')
+        self.assertEqual(process.workflow_id, 1)
+        self.assertEqual(process.task_set.count(), 0)
+
+        #Now try with autostart
+        params['autostart'] = 'on'
+        params['name'] += ' with autostart'
+        response = self.client.post(url,  params)
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], True)
+        self.assertIn('created', json_response['message'])
+        self.assertIn('started', json_response['message'])
+
+        #The process is created and one task started
+        process = Process.objects.get(name='test process with autostart')
+        self.assertEqual(process.task_set.count(), 1)
