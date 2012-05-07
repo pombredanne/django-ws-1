@@ -349,7 +349,7 @@ class TaskFormView(DetailView):
     model = Task
 
     def render_to_response(self, context):
-        form = context['task'].node.celery_task.form()
+        form = context['task'].node.celery_task.task.form()
         params = context['task'].node.params
         fields = form.get_fields(params)
         return HttpResponse(json.dumps(fields),
