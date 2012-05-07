@@ -170,7 +170,7 @@ class Process(models.Model):
 
     @property
     def results(self):
-        return self.task_set.get(node__is_end=True).values_list('result',
+        return self.task_set.filter(node__is_end=True).values_list('result',
                 flat=True)
 
     def start(self):
