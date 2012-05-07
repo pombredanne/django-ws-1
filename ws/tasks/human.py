@@ -4,7 +4,7 @@ from ws.tasks import BPMTask
 from ws import forms
 
 
-class QuestionForm(forms.BPMForm):
+class QuestionForm(forms.BPMTaskForm):
     title = forms.CharField(max_length=100, label=_('Title'))
     description = forms.CharField(max_length=1000, label=_('Description'),
             required=False)
