@@ -1,7 +1,7 @@
 from django.db.models import CharField, SubfieldBase
 from django.utils.importlib import import_module
 from django.utils.functional import curry
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_unicode, smart_unicode
 
 
 def _get_FIELD_display(self, field):
@@ -32,6 +32,22 @@ class CeleryTaskField(CharField):
             return value.name
         else:
             raise TypeError
+
+    def clean(self, value, model_instance):
+        value = self.get_prep_value(value)
+        self.validate(value, model_instance)
+        self.run_validators(value)
+        return value
+
+    def value_to_string(self, obj):
+        return smart_unicode(self.get_prep_value(self._get_val_from_obj(obj)))
+
+    def formfield(self, *args, **kwargs):
+        kwargs['coerce'] = super(CeleryTaskField, self).to_python
+        return super(CeleryTaskField, self).formfield(*args, **kwargs)
+
+    def value_from_object(self, obj):
+        return self.get_prep_value(getattr(obj, self.attname))
 
     def contribute_to_class(self, cls, name):
         super(CeleryTaskField, self).contribute_to_class(cls, name)
