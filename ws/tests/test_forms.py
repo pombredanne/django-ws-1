@@ -73,7 +73,6 @@ class FormsTestCase(TestCase):
         self.assertEqual(len(fields), 2)
 
 class TaskFormsTestCase(TestCase):
-    fixtures = ['sample_workflow']
 
     def testInfoRequired(self):
         #Node1: this task needs two arguments, give two
