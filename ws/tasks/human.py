@@ -22,7 +22,7 @@ class QuestionForm(forms.BPMTaskForm):
 class question(BPMTask):
     form = QuestionForm
 
-    def call(self, title, description, answer):
+    def run(self, workflow_task, title, description, answer):
         return answer
 
 
@@ -33,5 +33,5 @@ class BooleanQuestionForm(QuestionForm):
 class boolean_question(BPMTask):
     form = BooleanQuestionForm
 
-    def call(self, title, description, answer):
+    def run(self, workflow_task, title, description, answer):
         return answer

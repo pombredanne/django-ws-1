@@ -42,10 +42,8 @@ class BPMTask(AbortableTask):
     """Abstract class intended for inheritance by celery tasks.
 
     Functions:
-        :meth:`call`
-            actual task
         :meth:`run`
-             wrapper around :meth:`call` method
+            actual task, must receive 'workflow_task' argument
         :meth:`spawn`
              spawn a subprocess
         :meth:`notify_progress`
@@ -68,12 +66,9 @@ class BPMTask(AbortableTask):
     Attributes:
         :attr:`form`
             related form
-        :attr:`pass_workflow_task`
-            either receive :class:`ws.models.Task` ID or not
     """
     abstract = True
     form = BPMTaskForm
-    pass_workflow_task = False
 
     @classmethod
     def _filter_params(klass, params):
@@ -85,9 +80,9 @@ class BPMTask(AbortableTask):
             else:
                 raise forms.ValidationError
 
-        # Else, inspect the tasks call method
+        # Else, inspect the tasks run method
         else:
-            args = getargspec(klass.call)
+            args = getargspec(klass.run)
             
             # If it accepts no *args nor **kwargs, pass only the accepted args
             if (args.varargs, args.keywords) == (None, None):
@@ -98,10 +93,7 @@ class BPMTask(AbortableTask):
         return kwargs
 
     def run(self, workflow_task, *args, **kwargs):
-        if self.pass_workflow_task:
-            return self.call(workflow_task=workflow_task, *args, **kwargs)
-        else:
-            return self.call(*args, **kwargs)
+        raise NotImplemented
 
     def spawn(self, process):
         """Spawn a subprocess."""
@@ -148,9 +140,6 @@ class BPMTask(AbortableTask):
                 return process
             else:
                 self.notify_progress(workflow_task, progress)
-
-    def call(self, *args, **kwargs):
-        raise NotImplemented
 
     def on_start(self, task_id, args, kwargs):
         pass

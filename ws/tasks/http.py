@@ -27,9 +27,8 @@ class DownloadForm(forms.BPMTaskForm):
 
 class download(BPMTask):
     form = DownloadForm
-    pass_workflow_task = True
 
-    def call(self, workflow_task, url):
+    def run(self, workflow_task, url):
         wget = self.spawn('wget \'{url}\''.format(url=url))
         wget = self.track_task(wget, workflow_task)
         if wget.exitstatus != 0:

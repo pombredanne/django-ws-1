@@ -36,7 +36,7 @@ class SendEmailForm(forms.BPMTaskForm):
 class send_email(BPMTask):
     form = SendEmailForm
 
-    def call(self, subject, from_email, to, body):
+    def run(self, workflow_task, subject, from_email, to, body):
         to = [rcv.strip() for rcv in to.splitlines()]
         subject = '{} {}'.format(settings.EMAIL_SUBJECT_PREFIX, subject)
         send_email(subject, body, from_email, to)
