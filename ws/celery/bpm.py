@@ -21,8 +21,7 @@
 __all__ = ['task_started', 'task_succeeded', 'task_failed', 'task_retried',
         'task_revoked', 'task_progress']
 
-from datetime import datetime
-
+from django.utils.timezone import now
 from celery.task import task
 from celery.log import get_default_logger
 from celery.contrib.abortable import AbortableAsyncResult
@@ -41,8 +40,8 @@ def task_started(pk, task_id):
         - if it's the beginning of a process, mark the process as started
         - if there is no need of them, cancel the running ancestors
     """
-    task = update_task(pk=pk, task_id=task_id, state='STARTED',
-            start_date=datetime.now())
+    task = update_task(pk=pk, task_id=task_id, state='STARTED', 
+            start_date=now())
 
     if task.node.is_start:
         task.process.update(state='STARTED', start_date=task.start_date)
@@ -62,7 +61,7 @@ def task_succeeded(task_id, result):
         - launch the needed children
     """
     task = update_task(task_id=task_id, state='SUCCESS', progress=100,
-            end_date=datetime.now())
+            end_date=now())
 
     if task.node.is_end:
         task.process.update(state='SUCCESS', end_date=task.end_date)
@@ -82,8 +81,7 @@ def task_failed(task_id):
         - if there's an alternative way to continue the workflow,
           execute the alternative tasks
     """
-    task = update_task(task_id=task_id, state='FAILED',
-            end_date=datetime.now())
+    task = update_task(task_id=task_id, state='FAILED', end_date=now())
 
     if task.node.is_end:
         task.process.update(state='FAILED', end_date=task.end_date)
@@ -106,8 +104,7 @@ def task_revoked(task_id):
     result.abort()
     revoke(task_id, terminate=True)
 
-    task = update_task(task_id=task_id, state='REVOKED',
-            end_date=datetime.now())
+    task = update_task(task_id=task_id, state='REVOKED', end_date=now())
     try:
         subprocess = Process.objects.get(parent=task)
     except Process.DoesNotExist:
