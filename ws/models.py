@@ -20,6 +20,7 @@
 from __future__ import absolute_import
 
 from django.db import models
+from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group, User
 
@@ -107,8 +108,7 @@ class Node(models.Model):
     natural_key.dependencies = ['ws.Workflow']
 
     def save(self, *args, **kwargs):
-        form = self.celery_task.task.form(self.params)
-        self.info_required = not form.is_valid()
+        self.info_required = self.celery_task.task._info_required(self.params)
         super(Node, self).save(*args, **kwargs)
 
     def is_launchable(self, process):

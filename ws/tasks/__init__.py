@@ -28,12 +28,14 @@ Classes:
 """
 
 from time import sleep
+from inspect import getargspec
+
+from django import forms
 
 from celery.registry import tasks as task_registry
 from celery.contrib.abortable import AbortableTask
 from celery.execute import send_task
 from pexpect import spawn, EOF
-from inspect import getargspec
 
 from ws.forms import BPMTaskForm
 
@@ -78,7 +80,7 @@ class BPMTask(AbortableTask):
             if form.is_valid():
                 kwargs = form.clean()
             else:
-                raise forms.ValidationError
+                raise forms.ValidationError('Invalid or insufficient parameters')
 
         # Else, inspect the tasks run method
         else:
@@ -86,14 +88,32 @@ class BPMTask(AbortableTask):
             
             # If it accepts no *args nor **kwargs, pass only the accepted args
             if (args.varargs, args.keywords) == (None, None):
-                # don't pass workflow_task, as it's passed automatically
-                # later
+
+                # don't pass workflow_task, as it's passed automatically later
                 kwargs = { arg: params[arg] for arg in args.args if arg not
                           in ('self', 'workflow_task') }
+
             # Else, pass them all
             else:
                 kwargs = params
+
+            # Args without default values
+            args = args.args[:-len(args.defaults or ())]
+
+            # Assert that all needed args are given
+            if not all([arg in kwargs for arg in args]):
+                raise forms.ValidationError('Insufficient parameters')
+
         return kwargs
+
+    @classmethod
+    def _info_required(klass, params):
+        try:
+            klass._filter_params(params)
+        except forms.ValidationError:
+            return True
+        else:
+            return False
 
     def run(self, workflow_task, *args, **kwargs):
         raise NotImplemented
