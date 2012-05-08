@@ -60,8 +60,8 @@ def task_succeeded(task_id, result):
         - if it's the ending of a process, mark the process as suceeded
         - launch the needed children
     """
-    task = update_task(task_id=task_id, state='SUCCESS', progress=100,
-            end_date=now())
+    task = update_task(task_id=task_id, state='SUCCESS', result=result,
+            progress=100, end_date=now())
 
     if task.node.is_end:
         task.process.update(state='SUCCESS', end_date=task.end_date)
