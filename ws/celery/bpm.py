@@ -68,7 +68,7 @@ def task_succeeded(task_id, result):
         task.process.update(state='SUCCESS', end_date=task.end_date)
         logger.info('Process "{}" succeeded'.format(task.process))
 
-    for child in taks.get_pending_childs():
+    for child in task.get_pending_childs():
         task.process.launch_node(child)
         logger.info('Node "{child}" launched by task "{task}"'.format(
             child=child, task=task))
