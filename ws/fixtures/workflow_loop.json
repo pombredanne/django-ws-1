@@ -1,0 +1,119 @@
+[
+    {
+        "model": "ws.workflow", 
+        "pk": null, 
+        "fields": {
+            "priority": 9,
+            "params": {},
+            "name": "Loop test"
+        }
+    }, 
+    {
+        "model": "ws.node", 
+        "pk": null, 
+        "fields": {
+            "info_required": false, 
+            "join": "XOR", 
+            "split": "XOR", 
+            "name": "first", 
+            "workflow": [ "Loop test" ], 
+            "priority": 9,
+            "params": { }, 
+            "celery_task": "ws.tasks.dummy.dummy", 
+            "role": [ "bosses" ],
+            "is_end": false,
+            "is_start": true
+        }
+    }, 
+    {
+        "model": "ws.node", 
+        "pk": null, 
+        "fields": {
+            "info_required": false, 
+            "join": "XOR", 
+            "split": "XOR", 
+            "name": "middle", 
+            "workflow": [ "Loop test" ], 
+            "priority": 9,
+            "params": { }, 
+            "celery_task": "ws.tasks.dummy.dummy", 
+            "role": [ "workers" ],
+            "is_end": false,
+            "is_start": false
+        }
+    },
+    {
+        "model": "ws.node", 
+        "pk": null, 
+        "fields": {
+            "info_required": true, 
+            "join": "XOR", 
+            "split": "XOR", 
+            "name": "last", 
+            "workflow": [ "Loop test" ], 
+            "priority": 9,
+            "params": { }, 
+            "celery_task": "ws.tasks.dummy.dummy", 
+            "role": [ "bosses" ],
+            "is_end": true,
+            "is_start": false
+        }
+    },
+    {
+        "model": "ws.transition",
+        "pk": null,
+        "fields": {
+            "workflow": [ "Loop test" ],
+            "condition": "",
+            "parent": [ "first", "Loop test" ],
+            "child": [ "middle", "Loop test" ]
+        }
+    },
+    {
+        "model": "ws.transition",
+        "pk": null,
+        "fields": {
+            "workflow": [ "Loop test" ],
+            "condition": "OK",
+            "parent": [ "middle", "Loop test" ],
+            "child": [ "last", "Loop test" ]
+        }
+    },
+    {
+        "model": "ws.transition",
+        "pk": null,
+        "fields": {
+            "workflow": [ "Loop test" ],
+            "condition": "Fail",
+            "parent": [ "middle", "Loop test" ],
+            "child": [ "first", "Loop test" ]
+        }
+    },
+    {
+        "model": "ws.process", 
+        "pk": 1, 
+        "fields": {
+            "workflow": [ "Loop test" ], 
+            "name": "test process",
+            "start_date": null,
+            "end_date": null,
+            "priority": null,
+            "parent": null,
+            "state": "PENDING"
+        }
+    },
+    {
+        "model": "ws.task", 
+        "pk": null, 
+        "fields": {
+            "node": [ "first", "Loop test" ], 
+            "process": 1, 
+            "user": 3,
+            "state": "RECEIVED", 
+            "result": "",
+            "start_date": null,
+            "end_date": null,
+            "priority": null
+        }
+    }
+]

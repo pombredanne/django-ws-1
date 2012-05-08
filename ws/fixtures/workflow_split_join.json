@@ -1,153 +1,126 @@
 [
     {
-        "pk": 1, 
-        "model": "auth.group", 
-        "fields": {
-            "name": "bosses", 
-            "permissions": [
-                [
-                    "add_process", 
-                    "ws", 
-                    "process"
-                ] 
-            ]
-        }
-    }, 
-    {
-        "pk": 3, 
-        "model": "auth.user", 
-        "fields": {
-            "username": "mandamas", 
-            "first_name": "", 
-            "last_name": "", 
-            "is_active": true, 
-            "is_superuser": false, 
-            "is_staff": false, 
-            "last_login": "2011-11-15 21:06:27", 
-            "groups": [
-                1
-            ], 
-            "user_permissions": [], 
-            "password": "sha1$0ef28$417d9a18f9a2fdb31c75c6ffb9372846d5df659e", 
-            "email": "", 
-            "date_joined": "2011-11-15 21:06:27"
-        }
-    },
-    {
-        "pk": 1,
         "model": "ws.workflow",
+        "pk": null,
         "fields": {
-            "start": 1,
-            "end": 4,
             "name": "SplitJoinTest",
+            "params": {},
             "priority": 9
         }
     },
     {
-        "pk": 1,
         "model": "ws.node",
+        "pk": null,
         "fields": {
             "info_required": false,
             "join": "XOR",
             "name": "Split",
-            "workflow": 1,
-            "role": 1,
+            "workflow": [ "SplitJoinTest" ],
+            "role": [ "bosses" ],
             "params": {},
             "split": "XOR",
             "celery_task": "ws.tasks.dummy.dummy",
-            "priority": 9
+            "priority": 9,
+            "is_end": false,
+            "is_start": true
         }
     },
     {
-        "pk": 2,
         "model": "ws.node",
+        "pk": null,
         "fields": {
             "info_required": false,
             "join": "XOR",
             "name": "One",
-            "workflow": 1,
-            "role": 1,
+            "workflow": [ "SplitJoinTest" ],
+            "role": [ "bosses" ],
             "params": {},
             "split": "XOR",
             "celery_task": "ws.tasks.dummy.dummy",
-            "priority": 9
+            "priority": 9,
+            "is_end": false,
+            "is_start": false
         }
     },
     {
-        "pk": 3,
         "model": "ws.node",
+        "pk": null,
         "fields": {
             "info_required": false,
             "join": "XOR",
             "name": "Two",
-            "workflow": 1,
-            "role": 1,
+            "workflow": [ "SplitJoinTest" ],
+            "role": [ "bosses" ],
             "params": {},
             "split": "XOR",
             "celery_task": "ws.tasks.dummy.dummy",
-            "priority": 9
+            "priority": 9,
+            "is_end": false,
+            "is_start": false
         }
     },
     {
-        "pk": 4,
         "model": "ws.node",
+        "pk": null,
         "fields": {
             "info_required": false,
             "join": "XOR",
             "name": "Join",
-            "workflow": 1,
-            "role": 1,
+            "workflow": [ "SplitJoinTest" ],
+            "role": [ "bosses" ],
             "params": {},
             "split": "XOR",
             "celery_task": "ws.tasks.dummy.dummy",
-            "priority": 9
+            "priority": 9,
+            "is_end": true,
+            "is_start": false
         }
     },
     {
-        "pk": 1,
         "model": "ws.transition",
+        "pk": null,
         "fields": {
-            "workflow": 1,
+            "workflow": [ "SplitJoinTest" ],
             "condition": "",
-            "parent": 1,
-            "child": 2
+            "parent": [ "Split", "SplitJoinTest" ],
+            "child": [ "One", "SplitJoinTest" ]
         }
     },
     {
-        "pk": 2,
         "model": "ws.transition",
+        "pk": null,
         "fields": {
-            "workflow": 1,
+            "workflow": [ "SplitJoinTest" ],
             "condition": "",
-            "parent": 1,
-            "child": 3
+            "parent": [ "Split", "SplitJoinTest" ],
+            "child": [ "Two", "SplitJoinTest" ]
         }
     },
     {
-        "pk": 3,
         "model": "ws.transition",
+        "pk": null,
         "fields": {
-            "workflow": 1,
+            "workflow": [ "SplitJoinTest" ],
             "condition": "",
-            "parent": 2,
-            "child": 4
+            "parent": [ "One", "SplitJoinTest" ],
+            "child": [ "Join", "SplitJoinTest" ]
         }
     },
     {
-        "pk": 4,
         "model": "ws.transition",
+        "pk": null,
         "fields": {
-            "workflow": 1,
+            "workflow": [ "SplitJoinTest" ],
             "condition": "",
-            "parent": 3,
-            "child": 4
+            "parent": [ "Two", "SplitJoinTest" ],
+            "child": [ "Join", "SplitJoinTest" ]
         }
     },
     {
-        "pk": 1,
         "model": "ws.process",
+        "pk": null,
         "fields": {
-            "workflow": 1,
+            "workflow": [ "SplitJoinTest" ],
             "name": "sample process",
             "start_date": null,
             "end_date": null,

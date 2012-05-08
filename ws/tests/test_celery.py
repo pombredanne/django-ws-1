@@ -230,7 +230,7 @@ class SplitJoinTest(TestCase):
     Split--|           |--Join
            |----Two----|
     '''
-    fixtures = ['split_join_test']
+    fixtures = ['authorization', 'workflow_split_join']
 
     def assertTasks(self, *names):
         ok = Node.objects.filter(task_set__isnull=False)
@@ -276,34 +276,14 @@ class LoopTest(TestCase):
      v             |
     first-------->middle----OK----->last
     '''
-    def setUp(self):
-        super(LoopTest, self).setUp()
 
-        #Create three nodes
-        self.first = Node.objects.create(name='first',
-                workflow=self.workflow, join=XOR, split=XOR)
-        self.middle = Node.objects.create(name='middle',
-                workflow=self.workflow, join=XOR, split=XOR)
-        self.last = Node.objects.create(name='last',
-                workflow=self.workflow, join=XOR, split=XOR)
+    fixtures = ['authorization', 'workflow_loop']
 
-        #Create transitions, one of them a loop:
-
-        self.first_middle = Transition.objects.create(
-                parent=self.first, child=self.middle)
-        self.middle_last = Transition.objects.create(
-                parent=self.middle, child=self.last, condition='OK')
-        self.middle_first = Transition.objects.create(
-                parent=self.middle, child=self.first, condition='Fail')
-
-        self.task_first = Task.objects.create(
-                node=self.first, process=self.process)
 
     def test_loop(self):
-        self.task_middle = self.task_first.finish('SUCCESS')[0]
-        self.task_first = self.task_middle.finish('SUCCESS', 'Fail')[0]
-        self.task_middle = self.task_first.finish('SUCCESS')[0]
-        self.task_last = self.task_middle.finish('SUCCESS', 'OK')[0]
-
-
-
+        first = Node.objects.get(name='first')
+        task_first = Task.objects.get(node=first)
+        task_middle = task_first.finish('SUCCESS')[0]
+        task_first = task_middle.finish('SUCCESS', 'Fail')[0]
+        task_middle = task_first.finish('SUCCESS')[0]
+        task_last = task_middle.finish('SUCCESS', 'OK')[0]
