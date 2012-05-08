@@ -86,7 +86,10 @@ class BPMTask(AbortableTask):
             
             # If it accepts no *args nor **kwargs, pass only the accepted args
             if (args.varargs, args.keywords) == (None, None):
-                kwargs = { arg: params[arg] for arg in args.args if arg!='self' }
+                # don't pass workflow_task, as it's passed automatically
+                # later
+                kwargs = { arg: params[arg] for arg in args.args if arg not
+                          in ('self', 'workflow_task') }
             # Else, pass them all
             else:
                 kwargs = params
