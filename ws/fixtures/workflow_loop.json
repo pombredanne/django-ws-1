@@ -109,7 +109,7 @@
             "node": [ "first", "Loop test" ], 
             "process": 1, 
             "user": 3,
-            "state": "RECEIVED", 
+            "state": "PENDING", 
             "result": "",
             "start_date": null,
             "end_date": null,
