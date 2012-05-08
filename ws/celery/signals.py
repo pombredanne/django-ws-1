@@ -47,9 +47,9 @@ def bpm_only(func):
     :class:`ws.tasks.BPMTask` as it's 'task' argument.
     """
     @wraps(func)
-    def wrapper(bpmtask, *args, **kwargs):
-        if isinstance(bpmtask, BPMTask):
-            return func(task=bpmtask, *args, **kwargs)
+    def wrapper(self, task, *args, **kwargs):
+        if isinstance(task, BPMTask):
+            return func(self, task=task, *args, **kwargs)
     return wrapper
 
 
