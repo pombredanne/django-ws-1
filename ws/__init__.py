@@ -23,12 +23,14 @@ import os
 
 from celery.states import READY_STATES
 
-__all__ = ['STATES', 'CONDITIONS']
+__all__ = ['STATES', 'CONDITIONS', 'PRIORITIES']
 
 STATES = dict([(s, s) for s in ('PENDING', 'RETRY', 'STARTED')\
         + tuple(READY_STATES)])
 
 CONDITIONS = dict([(s, s) for s in ('XOR', 'AND')])
+
+PRIORITIES = [(s, s) for s in range(10)] # 0..9
 
 
 def setup_loader():

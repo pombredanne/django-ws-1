@@ -28,7 +28,7 @@ from jsonfield import JSONField
 from celery.execute import send_task
 from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 
-from ws import STATES, CONDITIONS
+from ws import STATES, CONDITIONS, PRIORITIES
 from ws.fields import CeleryTaskField
 from ws.celery import shortcuts
 
@@ -50,7 +50,9 @@ class Workflow(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
     params = JSONField(null=True, blank=True, default={})
-    priority = models.PositiveSmallIntegerField(default=9)
+    priority = models.PositiveSmallIntegerField(default=9,
+                                                choices=PRIORITIES,
+                                                help_text="0 highest, 9 lowest")
 
     objects = WorkflowManager()
 
@@ -85,14 +87,30 @@ class Node(models.Model):
     name = models.CharField(max_length=100)
     workflow = models.ForeignKey(Workflow)
 
-    join = models.CharField(max_length=3, choices=CONDITIONS.items())
-    split = models.CharField(max_length=3, choices=CONDITIONS.items())
+    join = models.CharField(max_length=3, choices=CONDITIONS.items(),
+                            help_text="""
+                            Controls when this node must start.
+
+                            If XOR then only one of the transitions must be
+                            fullfilled (stopping the rest, if any still
+                            running). If AND then all the transitions must
+                            be fulfilled.""")
+    split = models.CharField(max_length=3, choices=CONDITIONS.items(),
+                             help_text="""
+                             Controls what to do when this node finishes.
+
+                             If XOR then only one of the transitions is
+                             folllowed. If AND all the transitions are
+                             followed. 
+                             """)
 
     is_start = models.BooleanField(default=False)
     is_end = models.BooleanField(default=False)
 
     params = JSONField(null=True, blank=True, default={})
-    priority = models.PositiveSmallIntegerField(default=9)
+    priority = models.PositiveSmallIntegerField(default=9,
+                                                choices=PRIORITIES,
+                                                help_text="0 highest, 9 lowest")
     celery_task = CeleryTaskField(max_length=256, choices=get_task_choices())
     info_required = models.BooleanField(editable=False)
 
@@ -150,7 +168,9 @@ class Process(models.Model):
             related_name='subprocess')
 
     params = JSONField(null=True, blank=True, default={})
-    priority = models.PositiveSmallIntegerField(null=True)
+    priority = models.PositiveSmallIntegerField(default=9,
+                                                choices=PRIORITIES,
+                                                help_text="0 highest, 9 lowest")
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     state = models.CharField(max_length=8,
@@ -211,7 +231,9 @@ class Task(models.Model):
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
 
-    priority = models.PositiveSmallIntegerField(null=True)
+    priority = models.PositiveSmallIntegerField(default=9,
+                                                choices=PRIORITIES,
+                                                help_text="0 highest, 9 lowest")
     task_id = models.CharField(max_length=36, blank=True)
     params = JSONField(null=True, blank=True, default={})
 
