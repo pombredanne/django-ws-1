@@ -18,7 +18,9 @@
 ###############################################################################
 
 from django.db.models import Count
+from ws.celery import exceptions
 import ws.models
+
 
 
 def assert_one_in_queryset(queryset):
@@ -31,9 +33,9 @@ def assert_one_in_queryset(queryset):
 
     num = queryset.count()
     if num == 0:
-        raise queryset.model.DoesNotExist
+        raise exceptions.ObjectDoesNotExist()
     elif num > 1:
-        raise queryset.model.MultipleObjectsReturned
+        raise exceptions.MultipleObjectsReturned()
     else:
         return True
 
