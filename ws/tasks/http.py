@@ -29,12 +29,8 @@ from ws.tasks import BPMTask
 from ws import forms
 
 
-class DownloadForm(forms.BPMTaskForm):
-    url = forms.CharField(max_length=500, label="Name")
-
-
-class download(BPMTask):
-    form = DownloadForm
+class _download(BPMTask):
+    abstract = True
 
     def run(self, workflow_task, url):
         destination = path.join(settings.MEDIA_ROOT, path.basename(url))
@@ -54,3 +50,11 @@ class download(BPMTask):
         temp.file.close()
         copyfile(temp.name, destination)
         return destination
+
+
+class DownloadForm(forms.BPMTaskForm):
+    url = forms.CharField(max_length=500, label='url', initial='http://')
+
+
+class download(_download):
+    form = DownloadForm
