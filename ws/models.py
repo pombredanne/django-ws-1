@@ -126,7 +126,7 @@ class Node(models.Model):
     natural_key.dependencies = ['ws.Workflow']
 
     def save(self, *args, **kwargs):
-        self.info_required = self.celery_task.task._info_required(self.params)
+        self.info_required = self.celery_task.obj._info_required(self.params)
         super(Node, self).save(*args, **kwargs)
 
     def is_launchable(self, process):
@@ -262,7 +262,7 @@ class Task(models.Model):
     def launch(self, extra_params={}):
         params = self.inherited_params
         params.update(extra_params)
-        params = self.node.celery_task.task._filter_params(params)
+        params = self.node.celery_task.obj._filter_params(params)
         return self.apply_async(kwargs=params)
 
     def revoke(self):
@@ -277,7 +277,7 @@ class Task(models.Model):
 
     def apply_async(self, kwargs):
         kwargs['workflow_task'] = self.pk
-        return self.node.celery_task.task.apply_async(
+        return self.node.celery_task.obj.apply_async(
                 kwargs=kwargs,
                 priority=self.average_priority,
                 )

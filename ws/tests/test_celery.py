@@ -184,7 +184,7 @@ class CeleryIntegrationTestCase(TestCase):
 
     def testGetCeleryTask(self):
         n1 = Node.objects.get(name="add 1 and 1")
-        self.assertEqual(n1.celery_task.task, add)
+        self.assertEqual(n1.celery_task.obj, add)
 
     def testNodeInfoRequired(self):
         n1 = Node.objects.get(name="add 1 and 1") #"params": {"a": 2, "b": 2}

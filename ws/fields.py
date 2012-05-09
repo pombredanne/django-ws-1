@@ -5,7 +5,7 @@ from ws.utils import import_task
 
 class CeleryTaskString(str):
     @property
-    def task(self):
+    def obj(self):
         return import_task(self)
 
 
