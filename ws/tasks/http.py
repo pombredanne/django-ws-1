@@ -53,5 +53,4 @@ class download(BPMTask):
             temp.file.write(chunk)
         temp.file.close()
         copyfile(temp.name, destination)
-        temp.close()
         return destination
