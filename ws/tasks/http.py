@@ -17,6 +17,14 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
+from tempfile import NamedTemporaryFile
+from os import path
+from urllib2 import urlopen
+from math import floor
+from shutil import copyfile
+
+from django.conf import settings
+
 from ws.tasks import BPMTask
 from ws import forms
 
@@ -29,7 +37,21 @@ class download(BPMTask):
     form = DownloadForm
 
     def run(self, workflow_task, url):
-        wget = self.spawn('wget \'{url}\''.format(url=url))
-        wget = self.track_task(wget, workflow_task)
-        if wget.exitstatus != 0:
-            raise Exception(str(wget))
+        destination = path.join(settings.MEDIA_ROOT, path.basename(url))
+        temp = NamedTemporaryFile()
+
+        request = urlopen(url)
+        size = int(request.info().getheader('Content-Length').strip())
+        downloaded = 0
+        while True:
+            chunk = request.read(1024**2) # 1MB chunks
+            downloaded += len(chunk)
+            progress = floor(downloaded / size * 100)
+            self.notify_progress(workflow_task, progress)
+            if not chunk:
+                break
+            temp.file.write(chunk)
+        temp.file.close()
+        copyfile(temp.name, destination)
+        temp.close()
+        return destination
