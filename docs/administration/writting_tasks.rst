@@ -2,25 +2,17 @@
 Custom celery tasks
 ===================
 
-
-For creating your custom task, it's needed to add the module that contains the custom task to the 'CELERY_IMPORT' setting, inherit from BPMTask, and write a custom call method::
-
-    from ws.tasks import BPMTask
-    
-    class MultiplyTask(BPMTask):
-
-        def call(self, a, b):
-            return a * b
-
-
-If you want to use the ExtJS interface to give execution parameters to the task, you must setup a related form::
+WS task's are celery tasks inheriting :class:`BPMTask`. They must be in a
+module loaded by celery, the typical place it's a tasks.py file in
+the django application's root. It's strongly recommended to define also a
+form describing the task's parameters, but not strictly necessary::
 
     from ws.tasks import BPMTask
     from ws import forms
 
     class MultiplyTaskForm(forms.BPMTaskForm):
-        a = forms.IntegerField()
-        b = forms.IntegerField()
+        a = forms.IntegerField(label='first number')
+        b = forms.IntegerField(label='second number')
 
 
     class MultiplyTask(BPMTask):
@@ -29,10 +21,10 @@ If you want to use the ExtJS interface to give execution parameters to the task,
         def call(self, a, b):
             return a * b
 
+Note that :mod:`ws.forms` module is used instead :mod:`django.forms`. :mod:`ws.forms` are
+basically ExtJS enabled :mod:`django.forms`.
 
-It's also posible to define certain actions that will take place when certain events happen::
-
-    from ws.tasks import BPMTask
+It's also possible to define certain actions that will take place when certain events happen::
 
     class MultiplyTask(BPMTask):
         

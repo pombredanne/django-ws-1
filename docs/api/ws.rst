@@ -1,3 +1,5 @@
 ===
 ws
 ===
+
+.. automodule:: ws

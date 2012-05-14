@@ -16,20 +16,9 @@
 #  You should have received a copy of the GNU Affero General Public License   #
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
-
-'''Celery bindings, signal handling and BPM's logical tasks.
-
-Submodules:
-    :mod:`ws.celery.bpm`
-        BPM's logical tasks
-    :mod:`ws.celery.shortcuts`
-        BPM's logic helpers and shortcuts
-    :mod:`ws.celery.signals`
-        binding beetween Celery's signals and BPM' logical tasks
 '''
-
-__all__ = ['bpm', 'signals', 'shortcuts']
-
+Celery bindings, signal handling and BPM's logical tasks.
+'''
 
 from ws.celery.signals import SignalResponses
 from ws.celery.bpm import (task_started, task_failed, task_retried,

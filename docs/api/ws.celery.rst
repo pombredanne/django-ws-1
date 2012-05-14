@@ -3,7 +3,6 @@ ws.celery
 =========
 
 .. automodule:: ws.celery
-   :members:
 
 
 ws.celery.bpm
@@ -20,10 +19,8 @@ ws.celery.bpm
 ws.celery.signals
 =================
 .. automodule:: ws.celery.signals
-   :members:
 
 
 ws.celery.shortcuts
 ===================
 .. automodule:: ws.celery.shortcuts
-   :members:

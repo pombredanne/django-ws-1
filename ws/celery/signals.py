@@ -17,15 +17,8 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
-"""Bindings for tying BPMTask events to callback celery tasks.
-
-Functions:
-    :func:`bpm_only`
-        decorator for excluding tasks that don't inherit from ws.tasks.BPMTask
-
-Classes:
-    :func:`SignalResponses`
-        bind BPMTasks to callback events
+"""
+Bindings for tying BPMTask events to callback celery tasks.
 """
 
 from time import time
@@ -43,7 +36,10 @@ from ws.tasks import BPMTask
 
 
 def bpm_only(func):
-    """Call a function only when it receives an object inherited from
+    """
+    Decorator for excluding tasks that don't inherit from ws.tasks.BPMTask
+    
+    Call a function only when it receives an object inherited from
     :class:`ws.tasks.BPMTask` as it's 'task' argument.
     """
     @wraps(func)
@@ -55,10 +51,6 @@ def bpm_only(func):
 
 class SignalResponses(object):
     """Binding between celery BPMTask events and callback tasks.
-
-    Methods:
-        :meth:`connect`
-            make the binding between events and tasks
 
     Attributes:
         :attr:`task_started`

@@ -16,12 +16,16 @@
 #  You should have received a copy of the GNU Affero General Public License   #
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
+"""
+WS forms.
+
+
+"""
 
 from functools import wraps
 
 from django.forms import *
 from django.core import validators
-from django.utils.translation import ugettext as _
 
 
 def with_cleaned_data(func):
@@ -35,11 +39,14 @@ def with_cleaned_data(func):
 
 
 class BPMTaskForm(Form):
+    """
+        A Django :class:`Form` with some additions for ExtJS integration
+    """
     def get_title(self):
-        return _('')
+        return ''
 
     def get_description(self):
-        return _('')
+        return ''
 
     def get_fields(self, params={}):
         fields = []
@@ -50,7 +57,11 @@ class BPMTaskForm(Form):
 
 
 class Field(Field):
+    """
+    Base class for ws form fields.
+    """
     def to_ext_dict(self, fieldname):
+        """ Returns a dictionary with field information for ExtJS.  """
         ext_dict = {
             'name': fieldname,
             'xtype': 'textfield',  # Default field type
@@ -64,6 +75,11 @@ class Field(Field):
         return ext_dict
 
     def field_extras(self, ext_dict):
+        """
+        ws forms fiels must define this function with specific information.
+
+        See already implemented fields for examples.
+        """
         raise NotImplementedError
 
 

@@ -16,6 +16,17 @@
 #  You should have received a copy of the GNU Affero General Public License   #
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
+"""
+WS Django application.
+
+Attributes:
+    :attr:`STATES`
+        Dictionary of available task states
+    :attr:`CONDITIONS`
+        Dictionary of node's split and join conditions
+    :attr:`PRIORITIES`
+        Tuple of task priorities
+"""
 
 from __future__ import absolute_import
 

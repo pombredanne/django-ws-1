@@ -17,14 +17,8 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
-"""Celery tasks on steroids.
-
-Submodules:
-    Automatically detected and imported.
-
-Classes:
-    :class:`BPMTask`
-        intended for inheritance by celery tasks
+"""
+WS's Celery tasks. All use :class:`ws.tasks.BPMTask` as base class.
 """
 
 from time import sleep
@@ -43,31 +37,9 @@ from ws.forms import BPMTaskForm
 class BPMTask(AbortableTask):
     """Abstract class intended for inheritance by celery tasks.
 
-    Functions:
-        :meth:`run`
-            actual task, must receive 'workflow_task' argument
-        :meth:`spawn`
-             spawn a subprocess
-        :meth:`notify_progress`
-             execute task for updating the progress of a task
-        :meth:`iter_progress`
-             iterate over the progress of a task
-        :meth:`track_task`
-             track the progress of a task
-        :meth:`on_start`
-             executed when a task starts
-        :meth:`on_success`
-             executed when a task is succeeded
-        :meth:`on_failure`
-             executed when a task fails
-        :meth:`on_retry`
-             executed when a task is retried
-        :meth:`on_revoke`
-            executed when a task is revoked
-
     Attributes:
         :attr:`form`
-            related form
+            related :class:`ws.forms.BPMTaskForm`
     """
     abstract = True
     form = BPMTaskForm
@@ -116,6 +88,7 @@ class BPMTask(AbortableTask):
             return False
 
     def run(self, workflow_task, *args, **kwargs):
+        """ actual task, must receive 'workflow_task' argument """
         raise NotImplemented
 
     def spawn(self, process):
@@ -165,18 +138,23 @@ class BPMTask(AbortableTask):
                 self.notify_progress(workflow_task, progress)
 
     def on_start(self, task_id, args, kwargs):
+        """ executed when a task starts """
         pass
 
     def on_success(self, retval, task_id, args, kwargs):
+        """ executed when a task is succeeded """
         pass
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
+        """ executed when a task fails """
         pass
 
     def on_retry(self, exc, task_id, args, kwargs, einfo):
+        """ executed when a task is retried """
         pass
 
     def on_revoke(self, task_id, args, kwargs):
+        """ executed when a task is revoked """
         pass
 
 

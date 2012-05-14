@@ -22,8 +22,7 @@ AUTHENTICATION_BACKENDS = (
         'guardian.backends.ObjectPermissionBackend',
         )
 
-LOGIN_URL = '/ws/login'
-ANONYMOUS_USER_ID = 1
+ANONYMOUS_USER_ID = -1
 
 import ws
 ws.setup_loader()

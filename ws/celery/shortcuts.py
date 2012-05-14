@@ -16,11 +16,12 @@
 #  You should have received a copy of the GNU Affero General Public License   #
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
+"""
+BPM's logic helpers and shortcuts
+"""
 
 from django.db.models import Count
-from ws.celery import exceptions
-import ws.models
-
+from ws.celery.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 
 def assert_one_in_queryset(queryset):
@@ -33,9 +34,9 @@ def assert_one_in_queryset(queryset):
 
     num = queryset.count()
     if num == 0:
-        raise exceptions.ObjectDoesNotExist()
+        raise ObjectDoesNotExist()
     elif num > 1:
-        raise exceptions.MultipleObjectsReturned()
+        raise MultipleObjectsReturned()
     else:
         return True
 
@@ -44,14 +45,15 @@ def update_task(pk=None, task_id=None, **kwargs):
     """ Get task with pk primary key or task_id task id, update it's
     values with ones specified in kwargs and return it.
     """
+    from ws.models import Task #Import here to avoid recursive imports
 
     if (pk, task_id) == (None, None):
         raise ValueError('pk or task_id argument must be passed.')
 
     if pk is not None:
-        task_q = ws.models.Task.objects.select_for_update().filter(pk=pk)
+        task_q = Task.objects.select_for_update().filter(pk=pk)
     elif task_id is not None:
-        task_q = ws.models.Task.objects.select_for_update().filter(
+        task_q = Task.objects.select_for_update().filter(
                 task_id=task_id)
 
     assert_one_in_queryset(task_q)
@@ -68,7 +70,8 @@ def update_process(pk, **kwargs):
     If the process is a subprocess, update the parent task too.
     """
 
-    process_q = ws.models.Process.objects.select_for_update().filter(pk=pk)
+    from ws.models import Process #Import here to avoid recursive imports
+    process_q = Process.objects.select_for_update().filter(pk=pk)
     assert_one_in_queryset(process_q)
     process_q.update(**kwargs)
     process = process_q[0]
@@ -123,7 +126,6 @@ def is_launchable(node, process):
     return completed == must_complete
 
 
-
 def get_pending_childs(task):
     """Return the list of workflow nodes that must be launched when a task
     finishes. If task's node's split mode is XOR, only first found child node
@@ -164,18 +166,19 @@ def get_revocable_parents(task):
 
 def get_alternative_way(task):
     """Find another node in the workflow that can be started."""
+    from ws.models import Node #Import here to avoid recursive imports
     ways = [task.node]
     while ways:
         way = ways.pop()
         parent_transitions = way.parent_transition_set.filter(split='XOR')
-        siblings = ws.models.Node.objects.filter(
+        siblings = Node.objects.filter(
                 parent_transition_set=parent_transitions)
 
         for sibling in siblings:
             if is_launchable(sibling, task.process):
                 return sibling
 
-        parents = ws.models.Node.objects.filter(
+        parents = Node.objects.filter(
                 child_transition_set=parent_transitions)
         ways.append(parents)
     return None

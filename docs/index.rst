@@ -16,15 +16,12 @@ ExtJS for web interface.
 
    overview
    installation
-   tutorials/index
+   quickstart
+   administration/index
+   development
+   glossary
    api/index
-   testing/index
-
-
-TODOs
-=====
-
-.. todolist::
+   todo
 
 
 Indices and tables

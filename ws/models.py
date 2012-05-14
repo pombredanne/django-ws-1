@@ -30,7 +30,10 @@ from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 
 from ws import STATES, CONDITIONS, PRIORITIES
 from ws.fields import CeleryTaskField
-from ws.celery import shortcuts
+from ws.celery.shortcuts import (is_launchable, update_process,
+                                 update_task, get_pending_childs,
+                                 get_revocable_parents,
+                                 get_alternative_way)
 
 
 def get_task_choices():
@@ -130,7 +133,7 @@ class Node(models.Model):
         super(Node, self).save(*args, **kwargs)
 
     def is_launchable(self, process):
-        return shortcuts.is_launchable(self, process)
+        return is_launchable(self, process)
 
     @property
     def inherited_params(self):
@@ -215,7 +218,7 @@ class Process(models.Model):
         return task
 
     def update(self, **kwargs):
-        return shortcuts.update_process(self.pk, **kwargs)
+        return update_process(self.pk, **kwargs)
 
     @property
     def inherited_params(self):
@@ -283,16 +286,16 @@ class Task(models.Model):
                 )
 
     def update(self, **kwargs):
-        return shortcuts.update_task(pk=self.pk, **kwargs)
+        return update_task(pk=self.pk, **kwargs)
 
     def get_pending_childs(self):
-        return shortcuts.get_pending_childs(self)
+        return get_pending_childs(self)
 
     def get_revocable_parents(self):
-        return shortcuts.get_revocable_parents(self)
+        return get_revocable_parents(self)
 
     def get_alternative_way(self):
-        return shortcuts.get_alternative_way(self)
+        return get_alternative_way(self)
 
     @property
     def inherited_params(self):
