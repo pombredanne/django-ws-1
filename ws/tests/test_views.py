@@ -168,7 +168,9 @@ class ViewsTestCase(TestCase):
         self.assertEqual(json_response['total'], 2)
 
     def testWorkflowGraphView(self):
-        self.fail('TODO')
+        response = self.client.get('/ws/workflows/workflow_1.png')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type', 'image/png')
 
     def testTaskFormView(self):
         self.fail('TODO')
