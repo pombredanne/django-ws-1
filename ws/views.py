@@ -16,6 +16,9 @@
 #  You should have received a copy of the GNU Affero General Public License   #
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
+"""
+WS views, mostly JSON API for ExtJS.
+"""
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
@@ -34,6 +37,7 @@ from ws.models import Task, Process, Workflow, Transition
 
 
 class ProtectedTemplateView(TemplateView):
+    """ Generic template view, users must be logged in. """
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(ProtectedTemplateView, self).dispatch(*args, **kwargs)
@@ -124,6 +128,10 @@ class ExtListView(LoginRequiredMixin, JSONResponseMixin, ListView):
 
 
 def JSONLogin(request):
+    """ Log in users with a JSON POST request.
+
+        The request must give username and password fields.
+    """
     success = False
     message = ""
     if request.method == 'POST':
@@ -143,12 +151,14 @@ def JSONLogin(request):
 
 
 def JSONLogout(request):
+    """ Log out current logged in user """
     logout(request)
     return HttpResponse(json.dumps({'success': True, 'message': 'Logged out'}),
                         mimetype="application/json")
 
 
 class WorkflowListView(ExtListView):
+    """ List of all workflows for a ExtJS store. """
     model = Workflow
 
     def convert_object_to_dict(self, obj):
@@ -162,6 +172,7 @@ class WorkflowListView(ExtListView):
 
 
 class ProcessListView(ExtListView):
+    """ List of all processes for a ExtJS store. """
     model = Process
 
     def convert_object_to_dict(self, obj):
@@ -188,6 +199,15 @@ class ProcessListView(ExtListView):
 
 @permission_required('ws.execute_process')
 def CreateProcess(request):
+    """ Create a new process with a JSON POST request.
+
+        Request params:
+        
+        workflow
+            pk of the process's workflow.
+        autostart
+            'on' or 'off', to start process automatically after creation.
+    """
     success = False
     message = ""
     if request.method == 'POST':
@@ -221,6 +241,13 @@ def CreateProcess(request):
 
 @permission_required('ws.execute_process')
 def StartProcess(request):
+    """ Start a process with a JSON POST request.
+
+        Request params:
+        
+        pk
+            pk of the process
+    """
     success = False
     message = ""
     if request.method == 'POST':
@@ -246,6 +273,13 @@ def StartProcess(request):
 
 @permission_required('ws.execute_process')
 def StopProcess(request):
+    """ Stop a process with a JSON POST request.
+
+        Request params:
+        
+        pk
+            pk of the process
+    """
     success = False
     message = ""
     if request.method == 'POST':
@@ -270,6 +304,9 @@ def StopProcess(request):
 
 
 class TaskListView(ExtListView):
+    """ List of tasks for a ExtJS store. Only tasks where the user has view
+    permission.
+    """
     model = Task
 
     def get_queryset(self):
@@ -301,6 +338,7 @@ class TaskListView(ExtListView):
 
 
 class WorkflowGraphView(DetailView):
+    """ Display a graph of nodes and transitions for a workflow. """
     model = Workflow
 
     def render_to_response(self, context):
@@ -348,6 +386,7 @@ class WorkflowGraphView(DetailView):
 
 
 class TaskFormView(DetailView):
+    """ Return the fields required by the task as a ExtJS form items."""
     model = Task
 
     def render_to_response(self, context):
@@ -375,7 +414,19 @@ def TaskStartView(request, pk):
 
 
 def UserInfoView(request):
-    """ Return information about currently logged user. """
+    """ Return information about currently logged user in a JSON response.
+
+        Returns a dict:
+
+        success
+            true or false. True indicates a successfull request.
+
+        username
+            username of the current user
+
+        pk
+            pk of the current user
+    """
     if request.user.is_authenticated():
         data = {'success': True,
                 'username': request.user.username,
