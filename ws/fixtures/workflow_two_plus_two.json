@@ -165,5 +165,22 @@
             "end_date": null,
             "priority": null
         }
+    },
+    {
+        "model": "ws.task", 
+        "pk": 4, 
+        "fields": {
+            "node": [
+                "add 2 and something",
+                "Two plus two"
+            ], 
+            "process": 1, 
+            "user": [ "boss" ],
+            "state": "PENDING", 
+            "result": "",
+            "start_date": null,
+            "end_date": null,
+            "priority": null
+        }
     }
 ]

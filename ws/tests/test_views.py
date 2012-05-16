@@ -173,7 +173,15 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response['Content-Type'], 'image/png')
 
     def testTaskFormView(self):
-        self.fail('TODO')
+        #Get the form for the "add 2 and something" task
+        # The "add 2 and something" task has no info for b field
+        from ws.tasks.dummy import AddForm
+        response = self.client.get('/ws/task/4/form.json')
+        self.assertEqual(response.status_code, 200)
+        json_response = json.loads(response.content)
+        self.assertEqual(len(json_response), 1)
+        field = AddForm().fields['b']
+        self.assertEqual(field.to_ext_dict('b'), json_response[0])
 
     def testTaskStartView(self):
         self.fail('TODO')
