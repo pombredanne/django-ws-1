@@ -166,3 +166,27 @@ class ViewsTestCase(TestCase):
         json_response = json.loads(response.content)
         self.assertEqual(json_response['success'], True)
         self.assertEqual(json_response['total'], 2)
+
+    def testWorkflowGraphView(self):
+        self.fail('TODO')
+
+    def testTaskFormView(self):
+        self.fail('TODO')
+
+    def testTaskStartView(self):
+        self.fail('TODO')
+
+    def testUserInfoView(self):
+        self.client.login(username='worker', password='worker')
+        response = self.client.get('/ws/user.json')
+        json_response = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_response['success'], True)
+        self.assertEqual(json_response['username'], 'worker')
+
+        self.client.login(username='boss', password='boss')
+        response = self.client.get('/ws/user.json')
+        json_response = json.loads(response.content)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_response['success'], True)
+        self.assertEqual(json_response['username'], 'boss')
