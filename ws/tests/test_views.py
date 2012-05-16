@@ -54,7 +54,18 @@ class ViewsTestCase(TestCase):
         self.assertIn('Guess the number', workflow_names)
 
     def testProcessListView(self):
-        self.fail('TODO: test process list view')
+        # Anonymous users can't get process list
+        response = self.client.get('/ws/processes.json')
+        self.assertEqual(response.status_code, 302)
+
+        self.client.login(username='worker', password='worker')
+        response = self.client.get('/ws/processes.json')
+        self.assertEqual(response.status_code, 200)
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], True)
+        self.assertEqual(json_response['total'], 1)
+        self.assertEqual(json_response['rows'][0]['name'],
+                         'sample process')
 
     def testCreateProcess(self):
         url = '/ws/process/new.json'
@@ -94,3 +105,43 @@ class ViewsTestCase(TestCase):
         #The process is created and one task started
         process = Process.objects.get(name='test process with autostart')
         self.assertEqual(process.task_set.count(), 1)
+
+    def testStartProcess(self):
+        url = '/ws/process/start.json'
+        params = {'pk': 1}
+        # Anonymous users can't start processes
+        response = self.client.post(url,  params)
+        self.assertEqual(response.status_code, 302)
+
+        # workers also, can't start processes
+        self.client.login(username='worker', password='worker')
+        response = self.client.post(url,  params)
+        self.assertEqual(response.status_code, 302)
+
+        self.client.login(username='boss', password='boss')
+        response = self.client.post(url,  params)
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], True)
+        self.assertEqual('Process started', json_response['message'])
+
+    def testStopProcess(self):
+        process = Process.objects.get(pk=1)
+        process.start()
+
+        url = '/ws/process/stop.json'
+        params = {'pk': 1}
+        # Anonymous users can't start processes
+        response = self.client.post(url,  params)
+        self.assertEqual(response.status_code, 302)
+
+        # workers also, can't start processes
+        self.client.login(username='worker', password='worker')
+        response = self.client.post(url,  params)
+        self.assertEqual(response.status_code, 302)
+
+        self.client.login(username='boss', password='boss')
+        response = self.client.post(url,  params)
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], True)
+        self.assertEqual('Process stopped', json_response['message'])
+
