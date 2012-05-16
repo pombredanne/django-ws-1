@@ -84,6 +84,9 @@ class Field(Field):
 
 
 class IntegerField(Field, IntegerField):
+    """
+        :class:`django.forms.IntegerField` adapted for ExtJS
+    """
     def field_extras(self, ext_dict):
         ext_dict['xtype'] = 'numberfield'
         for validator in self.validators:
@@ -94,6 +97,9 @@ class IntegerField(Field, IntegerField):
 
 
 class CharField(Field, CharField):
+    """
+        :class:`django.forms.CharField` adapted for ExtJS
+    """
     def field_extras(self, ext_dict):
         if type(self.widget) == Textarea:
             ext_dict['xtype'] = 'textarea'
@@ -105,6 +111,9 @@ class CharField(Field, CharField):
 
 
 class BooleanField(Field, BooleanField):
+    """
+        :class:`django.forms.BooleanField` adapted for ExtJS
+    """
     def field_extras(self, ext_dict):
         ext_dict['xtype'] = 'checkbox'
         if self.initial:
@@ -112,6 +121,9 @@ class BooleanField(Field, BooleanField):
 
 
 class ChoiceField(Field, ChoiceField):
+    """
+        :class:`django.forms.ChoiceField` adapted for ExtJS
+    """
     def field_extras(self, ext_dict):
         fieldname = ext_dict['name']
         ext_dict['xtype'] = 'fieldcontainer'
@@ -127,4 +139,7 @@ class ChoiceField(Field, ChoiceField):
 
 
 class ModelChoiceField(ModelChoiceField, ChoiceField):
+    """
+        :class:`django.forms.ModelChoiceField` adapted for ExtJS
+    """
     pass
