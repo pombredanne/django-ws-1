@@ -145,3 +145,24 @@ class ViewsTestCase(TestCase):
         self.assertEqual(json_response['success'], True)
         self.assertEqual('Process stopped', json_response['message'])
 
+    def testTaskListView(self):
+        #TODO: add django-guardian required info to fixtures
+        # Anonymous users can't get task list
+        response = self.client.get('/ws/tasks.json')
+        self.assertEqual(response.status_code, 302)
+
+        # Worker only sees his own tasks
+        self.client.login(username='worker', password='worker')
+        response = self.client.get('/ws/tasks.json')
+        self.assertEqual(response.status_code, 200)
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], True)
+        self.assertEqual(json_response['total'], 1)
+
+        # Boss sees all tasks
+        self.client.login(username='boss', password='boss')
+        response = self.client.get('/ws/tasks.json')
+        self.assertEqual(response.status_code, 200)
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], True)
+        self.assertEqual(json_response['total'], 2)
