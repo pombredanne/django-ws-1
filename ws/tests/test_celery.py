@@ -279,11 +279,16 @@ class LoopTest(TestCase):
 
     fixtures = ['authorization', 'workflow_loop']
 
+    def assertTasks(self, *names):
+        ok = Node.objects.filter(task_set__isnull=False)
+        ok = ok.filter(name__in=names)
+        self.assertEqual(ok.count(), len(names))
 
     def test_loop(self):
-        first = Node.objects.get(name='first')
-        task_first = Task.objects.get(node=first)
-        task_middle = task_first.finish('SUCCESS')[0]
-        task_first = task_middle.finish('SUCCESS', 'Fail')[0]
-        task_middle = task_first.finish('SUCCESS')[0]
-        task_last = task_middle.finish('SUCCESS', 'OK')[0]
+        process = Process.objects.all()[0]
+        process.start()
+        task_middle = Task.objects.get(pk=2) # Middle node
+        task_middle.launch({'answer':'Fail'})
+        task_middle = Task.objects.get(pk=4) # Middle node, again
+        task_middle.launch({'answer':'OK'})
+        self.assertTasks('first', 'middle', 'first', 'middle', 'last')

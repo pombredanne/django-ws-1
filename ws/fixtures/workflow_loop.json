@@ -29,14 +29,14 @@
         "model": "ws.node", 
         "pk": null, 
         "fields": {
-            "info_required": false, 
+            "info_required": true, 
             "join": "XOR", 
             "split": "XOR", 
             "name": "middle", 
             "workflow": [ "Loop test" ], 
             "priority": 9,
-            "params": { }, 
-            "celery_task": "ws.tasks.dummy.dummy", 
+            "params": { "title": "test question", "description": "test description" }, 
+            "celery_task": "ws.tasks.human.question", 
             "role": [ "workers" ],
             "is_end": false,
             "is_start": false
@@ -100,20 +100,6 @@
             "priority": null,
             "parent": null,
             "state": "PENDING"
-        }
-    },
-    {
-        "model": "ws.task", 
-        "pk": null, 
-        "fields": {
-            "node": [ "first", "Loop test" ], 
-            "process": 1, 
-            "user": 3,
-            "state": "PENDING", 
-            "result": "",
-            "start_date": null,
-            "end_date": null,
-            "priority": null
         }
     }
 ]
