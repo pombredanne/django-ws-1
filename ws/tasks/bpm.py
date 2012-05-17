@@ -17,12 +17,17 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
+from django.utils.translation import ugettext as _
+
 from ws.tasks import BPMTask
 from ws import forms
 from ws.models import Workflow, Process
 
 
 class SubprocessForm(forms.BPMTaskForm):
+    class Meta:
+        title = _('start a subprocess')
+        description = _('')
     workflow = forms.ModelChoiceField(queryset=Workflow.objects.all(),
                                       label="Workflow",
                                       empty_label=None)

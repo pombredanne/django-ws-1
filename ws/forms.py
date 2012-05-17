@@ -26,6 +26,7 @@ from functools import wraps
 
 from django.forms import *
 from django.core import validators
+from django.utils.translation import ugettext as _
 
 
 def with_cleaned_data(func):
@@ -42,10 +43,19 @@ class BPMTaskForm(Form):
     """
         A Django :class:`Form` with some additions for ExtJS integration
     """
+    class Meta:
+        pass
+
     def get_title(self):
+        if hasattr(self.Meta, 'title'):
+            return self.Meta.title
+        else:
         return ''
 
     def get_description(self):
+        if hasattr(self.Meta, 'description'):
+            return self.Meta.description
+        else:
         return ''
 
     def get_fields(self, params={}):

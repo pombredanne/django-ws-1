@@ -19,11 +19,16 @@
 
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils.translation import ugettext as _
+
 from ws.tasks import BPMTask
 from ws import forms
 
 
 class SendEmailForm(forms.BPMTaskForm):
+    class Meta:
+        title = _('send an email')
+        description = _('')
     subject = forms.CharField(max_length=100, label='Subject')
     from_email = forms.CharField(max_length=100, label='From',
             initial=settings.DEFAULT_FROM_EMAIL)
