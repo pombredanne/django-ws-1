@@ -168,7 +168,7 @@ class Process(models.Model):
     workflow = models.ForeignKey(Workflow)
     name = models.CharField(max_length=100, blank=True)
     parent = models.ForeignKey('Task', null=True, blank=True,
-            related_name='subprocess')
+            related_name='subprocesses')
 
     params = JSONField(null=True, blank=True, default={})
     priority = models.PositiveSmallIntegerField(default=9,

@@ -105,11 +105,7 @@ def task_revoked(task_id):
     revoke(task_id, terminate=True)
 
     task = update_task(task_id=task_id, state='REVOKED', end_date=now())
-    try:
-        subprocess = Process.objects.get(parent=task)
-    except Process.DoesNotExist:
-        pass
-    else:
+    for subprocess in task.subprocesses.iterator():
         subprocess.stop()
         subprocess.update(state='REVOKED', end_date=task.end_date)
         logger.info('Subprocess "{subprocess}" revoked by task '
