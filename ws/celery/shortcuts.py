@@ -49,6 +49,8 @@ def update_task(pk=None, task_id=None, **kwargs):
 
     if (pk, task_id) == (None, None):
         raise ValueError('pk or task_id argument must be passed.')
+    elif None not in (pk, task_id):
+        kwargs['task_id'] = task_id
 
     if pk is not None:
         task_q = Task.objects.select_for_update().filter(pk=pk)
@@ -57,8 +59,6 @@ def update_task(pk=None, task_id=None, **kwargs):
                 task_id=task_id)
 
     assert_one_in_queryset(task_q)
-    if task_id is not None:
-        kwargs['task_id'] = task_id
     task_q.update(**kwargs)
     return task_q[0]
 
