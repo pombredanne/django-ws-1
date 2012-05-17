@@ -24,6 +24,8 @@ from django.contrib.auth.models import Group, User
 from ws.tasks.dummy import add, dummy
 from ws.models import Task, Node, Transition, Process, Workflow
 from ws.celery import shortcuts
+from ws.celery.exceptions import (ObjectDoesNotExist,
+                                  MultipleObjectsReturned)
 import unittest
 from django.conf import settings
 
@@ -36,11 +38,13 @@ class ShortcutsTestCase(TestCase):
         self.boss = User.objects.get(username='boss')
 
     def test_assert_one_in_queryset(self):
-        Workflow.objects.create(name='one')
-        Workflow.objects.create(name='two')
-        with self.assertRaises(Workflow.DoesNotExist):
+        wf = Workflow.objects.create(name='one')
+        wf.save()
+        wf = Workflow.objects.create(name='two')
+        wf.save()
+        with self.assertRaises(ObjectDoesNotExist):
             shortcuts.assert_one_in_queryset(Workflow.objects.none())
-        with self.assertRaises(Workflow.MultipleObjectsReturned):
+        with self.assertRaises(MultipleObjectsReturned):
             shortcuts.assert_one_in_queryset(Workflow.objects.all())
         one = Workflow.objects.filter(name='one')
         self.assertTrue(shortcuts.assert_one_in_queryset(one))
