@@ -50,13 +50,13 @@ class BPMTaskForm(Form):
         if hasattr(self.Meta, 'title'):
             return self.Meta.title
         else:
-        return ''
+            return _('')
 
     def get_description(self):
         if hasattr(self.Meta, 'description'):
             return self.Meta.description
         else:
-        return ''
+            return _('')
 
     def get_fields(self, params={}):
         fields = []
