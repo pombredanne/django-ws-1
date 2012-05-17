@@ -224,9 +224,6 @@ class CeleryIntegrationTestCase(TestCase):
         sleep(1)
         task.revoke()
 
-    def testPriority(self):
-        self.fail("TODO: test priority")
-
 
 class SplitJoinTest(TestCase):
     '''     
