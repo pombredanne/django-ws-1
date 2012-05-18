@@ -119,15 +119,13 @@ Ext.define('WS.controller.Process', {
             form.submit({
                 url: '/ws/process/new.json',
                 success: function(form, action) {
-                    Ext.Msg.alert("process form send");
+                    Ext.Msg.alert("Success", action.result.message);
+                    win.close();
                 },
                 failure: function(form, action) {
-                    Ext.Msg.alert("error sending process form");
+                    Ext.Msg.alert("Error", action.result.message);
                 },
             });
         }
-        //if (win) {
-        //    win.close()
-        //}
     }
 });
