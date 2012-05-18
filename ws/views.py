@@ -400,6 +400,8 @@ class TaskFormView(DetailView):
 @permission_required('ws.execute_task', (Task, 'pk', 'pk'))
 def TaskStartView(request, pk):
     """ Start a task and return success information in a JSON dict. """
+    success = False
+    message = ""
     task = get_object_or_404(Task, pk=pk)
     # FIXME: Convert QueryDict to dict.  This could result in data lost if
     # some param is a "select multiple", but this should never happen.
@@ -407,10 +409,14 @@ def TaskStartView(request, pk):
     try:
         result = task.launch(extra_params)
     except ValidationError:
-        success = False
+        message = "Invalid task parametters"
+    except AssertionError as error:
+        message = error.args and error.args[0] or 'Unknown error'
     else:
         success = True
-    return HttpResponse(json.dumps({"success": success}),
+        message = "Task started successfully"
+    return HttpResponse(json.dumps({"success": success,
+                                    "message": message }),
                         mimetype="application/json")
 
 
