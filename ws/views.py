@@ -399,6 +399,7 @@ class TaskFormView(DetailView):
 
 @permission_required('ws.execute_task', (Task, 'pk', 'pk'))
 def TaskStartView(request, pk):
+    """ Start a task and return success information in a JSON dict. """
     task = get_object_or_404(Task, pk=pk)
     # FIXME: Convert QueryDict to dict.  This could result in data lost if
     # some param is a "select multiple", but this should never happen.

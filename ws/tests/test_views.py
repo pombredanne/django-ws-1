@@ -184,7 +184,26 @@ class ViewsTestCase(TestCase):
         self.assertEqual(field.to_ext_dict('b'), json_response[0])
 
     def testTaskStartView(self):
-        self.fail('TODO')
+        # Anonymous users can't start tasks
+        response = self.client.get('/ws/task/1/start.json')
+        self.assertEqual(response.status_code, 302)
+
+        # Worker can't start task, as it's assigned to boss
+        self.client.login(username='worker', password='worker')
+        response = self.client.get('/ws/task/1/start.json')
+        self.assertEqual(response.status_code, 302)
+
+        self.client.login(username='boss', password='boss')
+        response = self.client.get('/ws/task/1/start.json')
+        self.assertEqual(response.status_code, 200)
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], True)
+
+        #Trying again don't work, since it's already started
+        response = self.client.get('/ws/task/1/start.json')
+        self.assertEqual(response.status_code, 200)
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response['success'], False)
 
     def testUserInfoView(self):
         self.client.login(username='worker', password='worker')
