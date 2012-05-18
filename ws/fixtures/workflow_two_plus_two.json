@@ -182,5 +182,85 @@
             "end_date": null,
             "priority": null
         }
+    },
+    {
+        "model": "guardian.userobjectpermission",
+        "pk": null,
+        "fields": {
+            "object_pk": "1",
+            "user": [ "boss" ],
+            "content_type": [ "ws", "task" ],
+            "permission": [ "execute_task", "ws", "task" ]
+        }
+    },
+    {
+        "model": "guardian.userobjectpermission",
+        "pk": null,
+        "fields": {
+            "object_pk": "1",
+            "user": [ "boss" ],
+            "content_type": [ "ws", "task" ],
+            "permission": [ "view_task", "ws", "task" ]
+        }
+    },
+    {
+        "model": "guardian.userobjectpermission",
+        "pk": null,
+        "fields": {
+            "object_pk": "2",
+            "user": [ "worker" ],
+            "content_type": [ "ws", "task" ],
+            "permission": [ "execute_task", "ws", "task" ]
+        }
+    },
+    {
+        "model": "guardian.userobjectpermission",
+        "pk": null,
+        "fields": {
+            "object_pk": "2",
+            "user": [ "worker" ],
+            "content_type": [ "ws", "task" ],
+            "permission": [ "view_task", "ws", "task" ]
+        }
+    },
+    {
+        "model": "guardian.userobjectpermission",
+        "pk": null,
+        "fields": {
+            "object_pk": "3",
+            "user": [ "boss" ],
+            "content_type": [ "ws", "task" ],
+            "permission": [ "execute_task", "ws", "task" ]
+        }
+    },
+    {
+        "model": "guardian.userobjectpermission",
+        "pk": null,
+        "fields": {
+            "object_pk": "3",
+            "user": [ "boss" ],
+            "content_type": [ "ws", "task" ],
+            "permission": [ "view_task", "ws", "task" ]
+        }
+    },
+    {
+        "model": "guardian.userobjectpermission",
+        "pk": null,
+        "fields": {
+            "object_pk": "4",
+            "user": [ "boss" ],
+            "content_type": [ "ws", "task" ],
+            "permission": [ "execute_task", "ws", "task" ]
+        }
+    },
+    {
+        "model": "guardian.userobjectpermission",
+        "pk": null,
+        "fields": {
+            "object_pk": "4",
+            "user": [ "boss" ],
+            "content_type": [ "ws", "task" ],
+            "permission": [ "view_task", "ws", "task" ]
+        }
     }
 ]
