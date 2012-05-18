@@ -198,12 +198,14 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.content)
         self.assertEqual(json_response['success'], True)
+        self.assertIn('started successfully', json_response['message'].lower())
 
         #Trying again don't work, since it's already started
         response = self.client.get('/ws/task/1/start.json')
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.content)
         self.assertEqual(json_response['success'], False)
+        self.assertIn('already started', json_response['message'].lower())
 
     def testUserInfoView(self):
         self.client.login(username='worker', password='worker')
