@@ -51,3 +51,18 @@ class add(BPMTask):
 
     def run(self, workflow_task, a, b):
         return a + b
+
+
+class WaitForm(forms.BPMTaskForm):
+    secs = forms.IntegerField(label="How many seconds to wait",
+                              initial=2,
+                              help_text="Must be a integer number",
+                              max_value=999,
+                              min_value=0)
+
+class wait(BPMTask):
+    form = WaitForm
+
+    def run(self, workflow_task, secs):
+        sleep(secs)
+        return secs
