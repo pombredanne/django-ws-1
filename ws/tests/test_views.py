@@ -165,7 +165,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         json_response = json.loads(response.content)
         self.assertEqual(json_response['success'], True)
-        self.assertEqual(json_response['total'], 2)
+        self.assertEqual(json_response['total'], 4)
 
     def testWorkflowGraphView(self):
         response = self.client.get('/ws/workflows/workflow_1.png')

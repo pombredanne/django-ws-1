@@ -311,8 +311,12 @@ class TaskListView(ExtListView):
 
     def get_queryset(self):
         queryset = super(TaskListView, self).get_queryset()
-        return get_objects_for_user(self.request.user,
-                'ws.view_task', queryset)
+        #Guardian doesn't handle global permissions
+        if self.request.user.has_perm('ws.view_task'):
+            return queryset
+        else:
+            return get_objects_for_user(self.request.user,
+                                        'ws.view_task', queryset)
 
     def convert_object_to_dict(self, obj):
         #if obj.user:
