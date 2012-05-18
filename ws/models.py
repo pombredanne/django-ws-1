@@ -20,7 +20,6 @@
 from __future__ import absolute_import
 
 from django.db import models
-from django.forms import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group, User
 
@@ -263,6 +262,7 @@ class Task(models.Model):
         assign('view_task', user, self)
 
     def launch(self, extra_params={}):
+        assert self.state == 'PENDING', "Task already started"
         params = self.inherited_params
         params.update(extra_params)
         params = self.node.celery_task.obj._filter_params(params)
