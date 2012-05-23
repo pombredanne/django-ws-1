@@ -29,6 +29,7 @@ from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 
 from ws import STATES, CONDITIONS, PRIORITIES
 from ws.fields import CeleryTaskField
+from ws.celery.bpm import task_revoked
 from ws.celery.shortcuts import (is_launchable, update_process,
                                  update_task, get_pending_childs,
                                  get_revocable_parents,
@@ -269,8 +270,7 @@ class Task(models.Model):
         return self.apply_async(kwargs=params)
 
     def revoke(self):
-        send_task('ws.celery.bpm.task_revoked', kwargs={
-            'task_id': self.task_id})
+        return task_revoked.apply_async(kwargs={'pk': self.pk})
 
     @property
     def average_priority(self):
