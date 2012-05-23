@@ -18,16 +18,17 @@
 ###############################################################################
 
 from time import sleep
+import unittest
 
-from django.test import TestCase
+from django.test import TestCase, skipUnlessDBFeature
 from django.contrib.auth.models import Group, User
+from django.conf import settings
+
 from ws.tasks.dummy import add, dummy
 from ws.models import Task, Node, Transition, Process, Workflow
 from ws.celery import shortcuts
 from ws.celery.exceptions import (ObjectDoesNotExist,
                                   MultipleObjectsReturned)
-import unittest
-from django.conf import settings
 
 
 class ShortcutsTestCase(TestCase):
@@ -57,15 +58,10 @@ class ShortcutsTestCase(TestCase):
                 celery_task=dummy, role=self.bosses)
         task = Task.objects.create(node=node, process=process, user=self.boss)
 
-        with self.assertRaises(ValueError):
-            shortcuts.update_task()
-
-        task = shortcuts.update_task(pk=task.pk, task_id='example', result='2')
+        task = shortcuts.update_task(task.pk, task_id='example', result='2')
         self.assertEquals(task.task_id, 'example')
         self.assertEquals(task.result, '2')
 
-        task = shortcuts.update_task(task_id='example', result='3')
-        self.assertEquals(task.result, '3')
 
     def test_update_process(self):
         workflow = Workflow.objects.create(name='one')
@@ -235,7 +231,7 @@ class SplitJoinTest(TestCase):
 
     def assertTasks(self, *names):
         ok = Node.objects.filter(task_set__isnull=False)
-        ok = ok.filter(name__in=names)
+        ok = ok.filter(name__in=names).distinct()
         self.assertEqual(ok.count(), len(names))
 
     def setUp(self):
@@ -282,14 +278,16 @@ class LoopTest(TestCase):
 
     def assertTasks(self, *names):
         ok = Node.objects.filter(task_set__isnull=False)
-        ok = ok.filter(name__in=names)
+        ok = ok.filter(name__in=names).distinct()
         self.assertEqual(ok.count(), len(names))
 
+    @skipUnlessDBFeature('has_select_for_update')
     def test_loop(self):
-        process = Process.objects.all()[0]
+        process = Process.objects.get(pk=1)
         process.start()
-        task_middle = Task.objects.get(pk=2) # Middle node
-        task_middle.launch({'answer':'Fail'})
-        task_middle = Task.objects.get(pk=4) # Middle node, again
-        task_middle.launch({'answer':'OK'})
+        task_middle = process.task_set.get(node__name='middle')
+        self.assertTasks('first', 'middle')
+        task_middle.update(result='Fail')
+        self.assertTasks('first', 'middle')
+        task_middle.update(result='OK')
         self.assertTasks('first', 'middle', 'first', 'middle', 'last')

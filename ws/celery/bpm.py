@@ -54,13 +54,13 @@ def task_started(pk, task_id):
 
 
 @task(ignore_result=True)
-def task_succeeded(task_id, result):
+def task_succeeded(pk, result):
     """Mark the task as succeeded and execute BPM logic:
 
         - if it's the ending of a process, mark the process as suceeded
         - launch the needed children
     """
-    task = update_task(task_id=task_id, state='SUCCESS', result=result,
+    task = update_task(pk=pk, state='SUCCESS', result=result,
             progress=100, end_date=now())
 
     if task.node.is_end:
@@ -74,14 +74,14 @@ def task_succeeded(task_id, result):
 
 
 @task(ignore_result=True)
-def task_failed(task_id):
+def task_failed(pk):
     """Mark the task as failed and execute BPM logic:
 
         - if it's the ending of a process, mark the process as failed
         - if there's an alternative way to continue the workflow,
           execute the alternative tasks
     """
-    task = update_task(task_id=task_id, state='FAILED', end_date=now())
+    task = update_task(pk=pk, state='FAILED', end_date=now())
 
     if task.node.is_end:
         task.process.update(state='FAILED', end_date=task.end_date)
@@ -95,16 +95,17 @@ def task_failed(task_id):
 
 
 @task(ignore_result=True)
-def task_revoked(task_id):
+def task_revoked(pk):
     """Stop the task, mark it as revoked and execute BPM logic:
 
         - if the task executed a subprocess, revoke the process
     """
-    result = AbortableAsyncResult(task_id)
-    result.abort()
-    revoke(task_id, terminate=True)
+    task = update_task(pk=pk, state='REVOKED', end_date=now())
 
-    task = update_task(task_id=task_id, state='REVOKED', end_date=now())
+    result = AbortableAsyncResult(task.task_id)
+    result.abort()
+    revoke(task.task_id, terminate=True)
+
     for subprocess in task.subprocesses.iterator():
         subprocess.stop()
         subprocess.update(state='REVOKED', end_date=task.end_date)
@@ -113,9 +114,9 @@ def task_revoked(task_id):
 
 
 @task(ignore_result=True)
-def task_retried(task_id):
+def task_retried(pk):
     """Mark the task as retried."""
-    update_task(task_id=task_id, state='RETRIED')
+    update_task(pk, state='RETRIED')
 
 
 @task(ignore_result=True)

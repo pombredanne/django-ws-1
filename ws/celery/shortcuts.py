@@ -41,23 +41,13 @@ def assert_one_in_queryset(queryset):
         return True
 
 
-def update_task(pk=None, task_id=None, **kwargs):
-    """ Get task with pk primary key or task_id task id, update it's
-    values with ones specified in kwargs and return it.
+def update_task(pk, **kwargs):
+    """ Get task with pk primary key, update it's values with ones specified in
+    kwargs and return it.
     """
     from ws.models import Task #Import here to avoid recursive imports
 
-    if (pk, task_id) == (None, None):
-        raise ValueError('pk or task_id argument must be passed.')
-    elif None not in (pk, task_id):
-        kwargs['task_id'] = task_id
-
-    if pk is not None:
-        task_q = Task.objects.select_for_update().filter(pk=pk)
-    elif task_id is not None:
-        task_q = Task.objects.select_for_update().filter(
-                task_id=task_id)
-
+    task_q = Task.objects.select_for_update().filter(pk=pk).all()
     assert_one_in_queryset(task_q)
     task_q.update(**kwargs)
     return task_q[0]

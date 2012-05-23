@@ -94,6 +94,11 @@ class SignalResponses(object):
         """Distinguish between a failed, a retried and a succeeded BPMTask.
         Call the task defined for every of this events."""
 
+        if 'workflow_task' in kwargs:
+            pk = kwargs['workflow_task']
+        else:
+            pk = args[0]
+
         # If the returning value is an exception, it's not succeeded
         if isinstance(retval, ExceptionInfo):
 
@@ -101,13 +106,13 @@ class SignalResponses(object):
             try:
                 task.retry(exc=retval)
                 if self.task_retried is not None:
-                    self.task_retried.apply_async(kwargs={'task_id': task_id})
+                    self.task_retried.apply_async(kwargs={'pk': pk})
 
             # Mark the task failed if it's not
             except task.MaxRetriesExceededError:
                 if self.task_failed is not None:
-                    self.task_failed.apply_async(kwargs={'task_id': task_id})
+                    self.task_failed.apply_async(kwargs={'pk': pk})
         else:
             if self.task_succeeded is not None:
                 self.task_succeeded.apply_async(kwargs={
-                    'task_id': task_id, 'result': retval})
+                    'pk': pk, 'result': retval})
