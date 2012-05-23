@@ -17,6 +17,9 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
+import unittest
+
+from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson as json
@@ -124,6 +127,8 @@ class ViewsTestCase(TestCase):
         self.assertEqual(json_response['success'], True)
         self.assertEqual('Process started', json_response['message'])
 
+    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER == True,
+                     "Endless task blocks everyting on a single process")
     def testStopProcess(self):
         process = Process.objects.get(pk=1)
         process.start()
