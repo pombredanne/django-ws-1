@@ -28,8 +28,10 @@ import ws
 ws.setup_loader()
 
 BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+CELERY_RESULT_BACKEND = 'amqp'
 
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
+#CELERY_ALWAYS_EAGER = False
 
 CELERY_DEFAULT_QUEUE = 'tasks'
 CELERY_QUEUES = {
