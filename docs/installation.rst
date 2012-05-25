@@ -29,15 +29,15 @@ Configuration
 Add this to INSTALLED_APPS in project's settings.py:
 
 * 'ws'
-* 'django-guardian'
+* 'guardian'
 * 'djcelery'
 * 'extjs4'
 
 
-For inpatients, ws.settings module has default values. You could add this
-to your project's settings.py::
+Add also the following line to your project's settings.py::
 
-    from ws.settings import *
+    import ws
+    ws.setup_loader()
 
 
 Celery configuration
@@ -55,14 +55,19 @@ example::
 Django-guardian configuration
 -----------------------------
 
-Add extra authentication backend::
-
-    AUTHENTICATION_BACKENDS = (
-        'django.contrib.auth.backends.ModelBackend', # default
-        'guardian.backends.ObjectPermissionBackend',
-    )
-
 Set anonymous user's id::
 
     ANONYMOUS_USER_ID = -1
 
+
+ExtJS administration interface
+------------------------------
+
+Include `ws.urls` somewhere in your urls::
+
+    (r'^ws/', include('ws.urls'))
+
+
+Collect the static files from `extjs4` and `ws`::
+
+    ./manage.py collectstatic
