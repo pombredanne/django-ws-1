@@ -48,6 +48,10 @@ setup(name='django-%s' % APP_NAME,
           APP_NAME: APP_NAME,
       },
       include_package_data=True,
+      package_data = {
+          'templates': ['*'],
+          'static': ['*'],
+          },
       zip_safe=False,
       install_requires=[
           # -*- Extra requirements: -*-
