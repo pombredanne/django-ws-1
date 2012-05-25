@@ -23,6 +23,10 @@ AUTHENTICATION_BACKENDS = (
         )
 
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
+import sys
+if 'test' in sys.argv:
+    CELERY_ALWAYS_EAGER = True
+
 CELERY_RESULT_BACKEND = 'amqp'
 
 CELERY_DEFAULT_QUEUE = 'tasks'
