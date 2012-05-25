@@ -34,6 +34,7 @@ import os
 
 from celery.states import READY_STATES
 
+
 __all__ = ['STATES', 'CONDITIONS', 'PRIORITIES']
 
 STATES = dict([(s, s) for s in ('PENDING', 'RETRY', 'STARTED')\
@@ -49,4 +50,3 @@ def setup_loader():
 
 # Importing this modules enables the Celery WS Loader
 setup_loader()
-

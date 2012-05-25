@@ -22,16 +22,8 @@ AUTHENTICATION_BACKENDS = (
         'guardian.backends.ObjectPermissionBackend',
         )
 
-ANONYMOUS_USER_ID = -1
-
-import ws
-ws.setup_loader()
-
-BROKER_URL = 'amqp://guest:guest@localhost:5672/'
-CELERY_RESULT_BACKEND = 'amqp'
-
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
-#CELERY_ALWAYS_EAGER = False
+CELERY_RESULT_BACKEND = 'amqp'
 
 CELERY_DEFAULT_QUEUE = 'tasks'
 CELERY_QUEUES = {

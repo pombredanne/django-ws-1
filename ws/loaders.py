@@ -10,11 +10,17 @@ from importlib import import_module
 from djcelery.loaders import DjangoLoader
 from djcelery.loaders import autodiscover as djcelery_autodiscover
 
+from ws.conf import load_settings
+
 
 class WSLoader(DjangoLoader):
     def on_worker_init(self):
         super(WSLoader, self).on_worker_init()
         autodiscover()
+
+    def read_configuration(self):
+        load_settings()
+        return super(WSLoader, self).read_configuration()
 
 def autodiscover():
     djcelery_autodiscover()
