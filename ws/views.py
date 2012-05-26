@@ -16,9 +16,6 @@
 #  You should have received a copy of the GNU Affero General Public License   #
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
-"""
-WS views, mostly JSON API for ExtJS.
-"""
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator

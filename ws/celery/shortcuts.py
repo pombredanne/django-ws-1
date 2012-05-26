@@ -16,9 +16,6 @@
 #  You should have received a copy of the GNU Affero General Public License   #
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
-"""
-BPM's logic helpers and shortcuts
-"""
 
 from django.db.models import Count
 from ws.celery.exceptions import ObjectDoesNotExist, MultipleObjectsReturned

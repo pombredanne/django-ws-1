@@ -16,9 +16,6 @@
 #  You should have received a copy of the GNU Affero General Public License   #
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
-'''
-Celery bindings, signal handling and BPM's logical tasks.
-'''
 
 from ws.celery.signals import SignalResponses
 from ws.celery.bpm import (task_started, task_failed, task_retried,
