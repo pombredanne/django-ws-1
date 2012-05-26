@@ -4,8 +4,6 @@ Documentation is available at `http://django-ws.rtfd.org <http://django-ws.rtfd.
 Installation
 ============
 
-.. todo:: pip install django-ws
-
 WS and all needed dependencies should be installed automatically with::
 
     pip install hg+https://lagunak.gisa-elkartea.org/hg/django-ws
