@@ -48,6 +48,3 @@ PRIORITIES = [(s, s) for s in range(10)] # 0..9
 
 def setup_loader():
     os.environ.setdefault('CELERY_LOADER', 'ws.loaders.WSLoader')
-
-# Importing this modules enables the Celery WS Loader
-setup_loader()

@@ -17,7 +17,8 @@
 #  along with django-ws. If not, see <http://www.gnu.org/licenses/>.          #
 ###############################################################################
 
-
+"""
+WS forms.
 """
 
 from functools import wraps
