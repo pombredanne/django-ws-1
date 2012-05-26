@@ -1,24 +1,28 @@
-====================
-Django WorkSheet BPM
-====================
+Documentation is available at `http://django-ws.rtfd.org <http://django-ws.rtfd.org>`_
 
-A Business Process Manager for Django. Uses Celery for task automation and
-ExtJS for web interface.
+============
+Installation
+============
+
+.. todo:: pip install django-ws
+
+WS and all needed dependencies should be installed automatically with::
+
+    pip install hg+https://lagunak.gisa-elkartea.org/hg/django-ws
 
 
-Instalation
-===========
+Dependencies
+============
 
-The code is developed and tested in Django 1.4 and RabbitMQ 2.8.
+* `django_extjs4 <http://pypi.python.org/pypi/django_extjs4>`_
+* `django-celery <http://pypi.python.org/pypi/django-celery>`_
+* `django-guardian <http://pypi.python.org/pypi/django-celery/>`_
+* `django-jsonfield <http://pypi.python.org/pypi/django-jsonfield>`_
+* `pexpect <http://pypi.python.org/pypi/pexpect>`_
 
-All the dependencies should be installed automatically:
+Also, this project uses `South <http://pypi.python.org/pypi/South>`_ to ease upgrading.
 
-* django_extjs4
-* django-celery
-* django-guardian
-* django-jsonfield
-
-Also, this project uses South to ease upgrading.
+Celery needs an AMQP broker, for example `rabbitmq <http://www.rabbitmq.com/>`_
 
 
 Configuration
@@ -27,24 +31,45 @@ Configuration
 Add this to INSTALLED_APPS in project's settings.py:
 
 * 'ws'
-* 'django-guardian'
+* 'guardian'
 * 'djcelery'
 * 'extjs4'
 
-Configure Celery and add 'ws.tasks' and 'ws.celery.bpm' to CELERY_IMPORTS
 
-For inpatients, ws.settings module has default values. You could add this
-to your project's settings.py::
+Add also the following line to your project's settings.py::
 
-    from ws.settings import *
+    import ws
+    ws.setup_loader()
 
 
-License
-=======
+Celery configuration
+--------------------
 
-django-ws is free software: you can redistribute it and/or modify it under
-the terms of the GNU Affero General Public License as published by the Free
-Software Foundation, either version 3 of the License, or (at your option)
-any later version.
+Celery has many configuration options, take a look at `celery documentation
+<http://docs.celeryproject.org/en/latest/index.html>`_.
 
-See LICENSE file for full license details.
+The simplest configuration requires to set the AMQP broker url. For
+example::
+
+    BROKER_URL = 'amqp://guest:guest@localhost:5672/'
+
+
+Django-guardian configuration
+-----------------------------
+
+Set anonymous user's id::
+
+    ANONYMOUS_USER_ID = -1
+
+
+ExtJS administration interface
+------------------------------
+
+Include `ws.urls` somewhere in your urls::
+
+    (r'^ws/', include('ws.urls'))
+
+
+Collect the static files from `extjs4` and `ws`::
+
+    ./manage.py collectstatic
