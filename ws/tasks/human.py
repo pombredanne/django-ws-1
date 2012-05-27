@@ -32,10 +32,12 @@ class QuestionForm(forms.BPMTaskForm):
             required=False)
     answer = forms.CharField(label=_('Answer'))
 
+    @classmethod
     @forms.with_cleaned_data
     def get_title(self):
         return self.cleaned_data['title']
 
+    @classmethod
     @forms.with_cleaned_data
     def get_description(self):
         return self.cleaned_data['description']

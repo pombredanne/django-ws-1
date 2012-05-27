@@ -45,15 +45,17 @@ class BPMTaskForm(Form):
     class Meta:
         pass
 
-    def get_title(self):
-        if hasattr(self.Meta, 'title'):
-            return self.Meta.title
+    @classmethod
+    def get_title(klass):
+        if hasattr(klass.Meta, 'title'):
+            return klass.Meta.title
         else:
             return ''
 
-    def get_description(self):
-        if hasattr(self.Meta, 'description'):
-            return self.Meta.description
+    @classmethod
+    def get_description(klass):
+        if hasattr(klass.Meta, 'description'):
+            return klass.Meta.description
         else:
             return ''
 

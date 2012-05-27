@@ -29,6 +29,7 @@ from guardian.shortcuts import assign, remove_perm, get_users_with_perms
 
 from ws import STATES, CONDITIONS, PRIORITIES
 from ws.fields import CeleryTaskField
+from ws.utils import import_task
 from ws.celery.bpm import task_revoked
 from ws.celery.shortcuts import (is_launchable, update_process,
                                  update_task, get_pending_childs,
@@ -41,7 +42,8 @@ def get_task_choices():
     from ws.tasks import get_registered_tasks
     loaders.autodiscover()
     for task in get_registered_tasks():
-        yield (task, task)
+        title = import_task(task).get_title()
+        yield (task, title)
 
 
 class WorkflowManager(models.Manager):

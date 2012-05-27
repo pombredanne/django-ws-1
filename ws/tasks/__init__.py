@@ -44,6 +44,23 @@ class BPMTask(AbortableTask):
     abstract = True
     form = BPMTaskForm
 
+    
+    @classmethod
+    def get_title(klass):
+        if klass.form is not None and klass.form.base_fields.keys():
+            title = klass.form.get_title()
+            if title:
+                return title
+        return klass.name
+
+    @classmethod
+    def get_description(klass):
+        if klass.form is not None and klass.form.base_fields.keys():
+            description = klass.form.get_description()
+            if description:
+                return description
+        return ''
+
     @classmethod
     def _filter_params(klass, params):
         # If there's a related form with some fields, cleanup params with it
