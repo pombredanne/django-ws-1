@@ -26,7 +26,7 @@ from ws import forms
 class QuestionForm(forms.BPMTaskForm):
     class Meta:
         title = _('ask a question to a human')
-        description = _('')
+        description = ''
     title = forms.CharField(max_length=100, label=_('Title'))
     description = forms.CharField(max_length=1000, label=_('Description'),
             required=False)
@@ -51,7 +51,7 @@ class question(BPMTask):
 class BooleanQuestionForm(QuestionForm):
     class Meta:
         title = _('ask a true/false question to a human')
-        description = _('')
+        description = ''
     answer = forms.BooleanField(label=_('Answer'), required=False)
 
 

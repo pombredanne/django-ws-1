@@ -27,7 +27,7 @@ from ws.models import Workflow, Process
 class SubprocessForm(forms.BPMTaskForm):
     class Meta:
         title = _('start a subprocess')
-        description = _('')
+        description = ''
     workflow = forms.ModelChoiceField(queryset=Workflow.objects.all(),
                                       label="Workflow",
                                       empty_label=None)

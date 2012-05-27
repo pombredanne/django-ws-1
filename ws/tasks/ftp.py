@@ -25,7 +25,7 @@ from ws.tasks.http import _download
 class DownloadForm(forms.BPMTaskForm):
     class Meta:
         title = _('download a file from a FTP server')
-        description = _('')
+        description = ''
     url = forms.CharField(max_length=500, label='url', initial='ftp://')
 
 

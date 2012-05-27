@@ -28,7 +28,7 @@ from ws import forms
 class SendEmailForm(forms.BPMTaskForm):
     class Meta:
         title = _('send an email')
-        description = _('')
+        description = ''
     subject = forms.CharField(max_length=100, label='Subject')
     from_email = forms.CharField(max_length=100, label='From',
             initial=settings.DEFAULT_FROM_EMAIL)
