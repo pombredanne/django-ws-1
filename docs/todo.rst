@@ -13,6 +13,5 @@ TODO
 Optional
 ========
 
-* mirrors on bitbucket and github
 * announcement on reddit and freashmeat
 
