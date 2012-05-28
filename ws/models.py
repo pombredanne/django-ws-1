@@ -241,7 +241,6 @@ class Task(models.Model):
                                                 help_text="0 highest, 9 lowest")
     task_id = models.CharField(max_length=36, blank=True)
     params = JSONField(null=True, blank=True, default={})
-    info_required = models.BooleanField(editable=False)
 
     progress = models.PositiveSmallIntegerField(default=0)
     result = models.CharField(max_length=100, blank=True)
@@ -258,10 +257,6 @@ class Task(models.Model):
 
     def __unicode__(self):
         return u'{0} [{1}]'.format(self.node, self.pk)
-
-    def save(self, *args, **kwargs):
-        self.info_required = self.node.celery_task.obj._info_required(self.inherited_params)
-        super(Node, self).save(*args, **kwargs)
 
     def assign(self, user):
         for user, perms in get_users_with_perms(self, attach_perms=True):
